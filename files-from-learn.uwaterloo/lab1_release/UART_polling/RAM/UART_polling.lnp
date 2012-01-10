@@ -1,0 +1,4 @@
+--cpu Cortex-M3 ".\ram\startup_lpc17xx.o" ".\ram\system_lpc17xx.o" ".\ram\uart_polling.o" ".\ram\main_uart_polling.o" --strict --scatter ".\RAM\UART_polling.sct" 
+--autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\RAM\UART_polling.map" -o ".\RAM\UART_polling.axf"

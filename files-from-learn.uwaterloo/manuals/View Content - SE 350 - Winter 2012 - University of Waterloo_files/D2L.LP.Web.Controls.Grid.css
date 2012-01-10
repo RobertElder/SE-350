@@ -1,0 +1,566 @@
+
+
+table.d_gd {			
+}
+
+table.d_gl {			
+}
+table.d_gn {			
+}
+
+table.d_g {
+	margin: 2px 0 5px 0;
+	padding: 0px;
+	width: 100%;
+	border-collapse: collapse; 	
+	line-height: 1.5;
+}
+
+
+table.d_g tr.fgskip td {
+	height: 1px;
+	line-height: 1px;
+	padding: 0px;
+	font-size: 1px;
+	border-style: none;
+}
+
+
+
+
+ 
+
+table.d_gd td.d_gact {
+	background-color: #eeeeee;
+	border: solid 1px #ccc;	
+	padding: 3px 3px 3px 0px;
+	white-space: nowrap;	
+}
+
+
+table.d_gl td.d_gact {
+	background-color: #f5f5f5;
+	border-bottom: solid 1px #bbb;	
+	border-top: solid 1px #bbb;
+	padding: 3px 3px 3px 0px;
+	white-space: nowrap;
+}
+
+
+table.d_gn td.d_gact {
+	background-color: #f5f5f5;
+	border-bottom: solid 1px #bbb;	
+	border-top: solid 1px #bbb;
+	padding: 3px 3px 3px 0px;
+	white-space: nowrap;	
+}
+
+
+table.d_gact {
+	width:100%;
+	border-collapse:collapse;
+	padding:0px;
+}
+
+
+table.d_gact td.d_gs {
+	white-space:nowrap;
+	vertical-align:middle;
+	padding-left:0px
+}
+
+
+table.d_gact td.d_gs input.d_chb {
+	margin-bottom:1px;
+	margin-right:15px
+}
+
+
+table.d_gact td.d_gp {
+	text-align:center;
+	width:100%;
+}
+
+
+table.d_gact td.d_gn {
+	text-align:right;	
+	white-space:nowrap;
+}
+
+
+
+
+
+table.d_gd tr {
+	background-color: #fff;
+}
+
+
+table.d_gd tr.d_gd, table.d_gl tr.d_gd {
+	background-color: #fbfbfb;
+}
+
+
+table.d_gd tr.d_gdsm {
+	background-color: #f6f6f6;
+}
+
+
+
+
+
+
+
+
+table.d_g tr.d_dbold {
+	font-weight: bold;
+}
+
+
+table.d_g tr.d_gs {
+	background-color: #eaffe7 !important;
+}
+
+
+table.d_g tr.d_ga {
+	background-color: #ffffe8 !important;
+}
+
+
+table.d_g tr.d_gc {
+	background-color: #e8e8ff !important;
+}
+
+
+table.d_gd tr.d_ggl1 {
+	background-color: #e3e3e3;
+}
+
+
+table.d_gd tr.d_ggl2 {
+	background-color: #ebebeb;
+}
+
+
+table.d_gl tr.d_ggl1, table.d_gn tr.d_ggl1 {
+	background-color: #f6f6f6;
+}
+
+
+table.d_gl tr.d_ggl2, table.d_gn tr.d_ggl2 {
+	background-color: #efefef;
+}
+
+
+table.d_g tr.d_gh {
+
+}
+
+
+table.d_g tr th.d_hch {
+	text-align:center;
+	white-space:nowrap;
+	padding:3px 4px 3px 4px;
+}
+
+
+table.d_gd tr th.d_hch {	
+	border: solid 1px #bbb;
+	background-color: #dedee2;	
+	font-weight: bold;
+}
+
+
+table.d_gl tr th.d_hch {
+	text-align:left;
+	border-bottom: solid 1px #bbb;
+	border-top: solid 1px #bbb;		
+	background-color: #e3e3e3;
+	font-weight: bold;
+}
+
+
+table.d_gn tr th.d_hch {
+	text-align:left;
+	border-top: solid 1px #bbb;
+	border-bottom: solid 1px #bbb;		
+	background-color: #fafafa;	
+	font-weight: bold;
+}
+
+
+table.d_g tr th.d_gw {
+	white-space:normal;	
+}
+
+
+table.d_g tr th.d_gl {
+	text-align:left;
+}
+
+
+table.d_g tr th.d_gc {
+	text-align:center;
+}
+
+
+table.d_g tr th.d_gr {
+	text-align:right;
+}
+
+
+table.d_g tr th.d_gt {
+	vertical-align:top;
+}
+
+
+table.d_g tr th.d_gb {
+	vertical-align:bottom;
+}
+
+
+table.d_g tr.d_gh a:visited, table.d_g tr.d_gh a:active, table.d_g tr.d_gh a:link, table.d_g tr.d_gh a:hover {
+	color: #000000;		
+	text-decoration: none;
+}
+
+table.d_g tr.d_gh a:hover {
+	color: #003399;
+}
+
+
+
+table.d_g tr td.d_gtsl {
+	vertical-align:top;
+	padding:.2em .3em .3em 0px;
+	white-space:nowrap;	
+}
+
+
+table.d_g tr td.d_gtsr {
+	vertical-align:top;
+	padding:5px 0px .3em 0px;
+}
+
+
+a.d_gt {
+	text-decoration:none;	
+}
+
+
+
+
+
+table.d_gd tr td, table.d_gd tr th.d_ich {
+	border: solid 1px #ccc;
+}
+
+
+table.d_gd tr td.d_gd {
+	border-top: none;
+}
+
+
+
+table.d_gl tr td, table.d_gl tr th.d_ich {
+	border-bottom: solid 1px #ccc;
+	border-top: solid 1px #ccc;
+}
+
+
+table.d_gl tr td.d_gdb, table.d_gl tr th.d_gdb {
+	border-bottom:none;
+}
+
+
+table.d_gl tr td.d_gd {
+	border-top: none;
+}
+
+
+tr.d_gdel td, tr.d_gdel th.d_ich {
+	color: #aaaaaa;
+	text-decoration: line-through;
+}
+
+
+tr.d_gdel a, tr.d_gdel a:link, tr.d_gdel a:visited, tr.d_gdel a:hover {
+	color: #aaaaaa;
+}
+
+
+
+table.d_gn tr td, table.d_gn tr th.d_ich {
+	padding: 2px 5px 2px 5px;
+}
+
+
+th.d_ich {
+	font-weight : normal;
+}
+
+table.d_g tr.d_dbold th.d_ich {
+	font-weight : bold;
+}
+
+
+table.d_g td.d_gn, table.d_g th.d_gn {
+	white-space: nowrap !important;
+}
+
+table.d_g td.d_gc, table.d_g th.d_gc {
+	text-align:center !important;
+}
+
+table.d_g td.d_gr, table.d_g th.d_gr {
+	text-align:right !important;
+}
+
+table.d_g td.d_gt, table.d_g th.d_gt {
+	vertical-align:top !important;
+}
+
+
+table.d_g td.d_gch, table.d_g th.d_gch {
+	background-color: #e8e8ff !important;
+}
+
+table.d_g td.d_gb, table.d_g th.d_gb {
+	vertical-align:bottom !important;
+}
+
+
+table.d_g tr td, table.d_g tr th.d_ich {
+	padding: 2px 3px 2px 3px;
+	text-align: left;
+	vertical-align: middle;
+	white-space: normal;
+}
+
+
+table.d_g tr td.d_gc {
+	width: 1%;
+}
+
+
+
+table.d_g tr.d_gg0 {
+	font-weight: bold;
+	font-size: 1.2em;		
+	white-space: nowrap;
+}
+table.d_g tr.d_gg td table tr td {
+	border: none !important;
+}
+
+
+table.d_g tr.d_gg1 {
+	font-weight: bold;
+	font-size: 1.1em;
+	white-space: nowrap;
+}
+
+
+table.d_g tr.d_gg2 {
+	font-weight: bold;
+	font-size: 1em;
+	white-space: nowrap;
+}
+
+
+table.d_g tr.d_gg3 {
+	font-weight: bold;
+	font-size: 1em;
+	white-space: nowrap;
+}
+
+
+table.d_gd tr.d_gg0 {
+	background-color: #ccc;
+}
+table.d_gd tr.d_gg1 {
+	background-color: #ddd;
+}
+table.d_gd tr.d_gg2 {
+	background-color: #e5e5e5;
+}
+table.d_gd tr.d_gg3 {
+	background-color: #eee;
+}
+
+
+table.d_gl tr.d_gg0 {
+	background-color: #f5f5f5;	
+}
+table.d_gl tr.d_gg1 {
+	background-color: #f5f5f5;
+}
+table.d_gl tr.d_gg2 {
+	background-color: #f5f5f5;		
+}
+table.d_gl tr.d_gg3 {
+	background-color: #f5f5f5;
+}
+
+
+table.d_gn tr.d_gg0 {
+	background-color: #f5f5f5;	
+}
+table.d_gn tr.d_gg1 {
+	background-color: #f5f5f5;
+}
+table.d_gn tr.d_gg2 {
+	background-color: #f5f5f5;		
+}
+table.d_gn tr.d_gg3 {
+	background-color: #f5f5f5;
+}
+
+
+
+table.d_gd tr.d_gg td {
+	padding: 2px 4px 2px 0px;
+	border: solid 1px #ccc;
+}
+
+
+table.d_gl tr.d_gg td {
+	padding: 2px 4px 2px 2px;
+	border-top: solid 1px #bbb;	
+	border-bottom: solid 1px #bbb;	
+}
+
+
+table.d_gn tr.d_gg td {
+	padding: 5px 4px 4px 0px;
+	border-top: solid 1px #bbb;	
+	border-bottom: solid 1px #bbb;	
+}
+
+
+table.d_g tr.d_gg table {
+	width:100%
+}
+
+
+
+
+
+table.d_g td.d_gsearch {
+	text-align:left;
+	padding-right:0px;
+	padding-left:0px;	
+	padding-top: 0px;		
+	white-space: nowrap;	
+	border: none;	
+}
+
+
+table.d_gempty {
+	margin: 5px 0 5px 0;
+}
+table.d_g tr td.d_gempty div {
+	border: solid 1px #ffe6ac !important;
+	text-align:left;
+	padding: 6px 20px 6px 10px;
+	background-color:#fefbeb;
+	white-space: nowrap;	
+}
+
+
+
+
+
+td.D2LGridSummaryCell_Data
+{
+	padding: 2px 3px 2px 3px;
+	border: solid 1px #555;
+	text-align: left;
+	vertical-align: middle;
+	white-space: normal;
+}
+
+
+
+
+
+tr.D2LGridActionRow_List
+{
+	background-color: #f5f5f5;			
+}
+
+td.D2LGridActionCell_List
+{
+	border-bottom: solid 1px #bbbbbb;	
+	border-top: solid 1px #bbbbbb;
+	margin: 0px;
+	padding: 3px 3px 3px 0px;
+	white-space: nowrap;
+}
+
+
+
+
+td.d_gdnr, th.d_gdnr {
+	white-space: nowrap !important;
+}
+
+
+
+table.d_g tr table tr td {
+	border: none;
+}
+
+table.d_g tr table tr th {
+	border: none;
+}
+
+
+table.d_g tr table tr {	
+	background-color: Transparent;	
+}
+
+td.d_g_l_r, td.d_g_l_tb, td.d_g_l_tr, td.d_g_l_trb, td.d_g_l_rb, td.d_g_l_rbl, td.d_g_l_rl {
+	padding: 0px !important;
+	white-space: nowrap !important;
+	vertical-align: top !important;
+}
+
+td.d_g_l_e {
+	padding: 0px !important;
+	vertical-align: top !important;
+}
+
+td.d_g_l_r {
+	background-image: url(/d2l/img/LP/grid/r.gif);
+	background-repeat: no-repeat;
+}
+	
+td.d_g_l_tb {
+	background-image: url(/d2l/img/LP/grid/tb.gif);
+	background-repeat: repeat-y;
+}
+td.d_g_l_tr {
+	background-image: url(/d2l/img/LP/grid/tr.gif);
+	background-repeat: no-repeat;
+}
+td.d_g_l_trb {
+	background-image: url(/d2l/img/LP/grid/trb.gif);
+	background-repeat: repeat-y;
+}
+td.d_g_l_rb {
+	background-image: url(/d2l/img/LP/grid/rb.gif);
+	background-repeat: repeat-y;
+}
+td.d_g_l_rbl {
+	background-image: url(/d2l/img/LP/grid/rbl.gif);
+	background-repeat: repeat-y;
+}
+td.d_g_l_rl {
+	background-image: url(/d2l/img/LP/grid/rl.gif);
+	background-repeat: no-repeat;
+}
+
+table.d_dgsearch {	
+	width: 100%;		
+}

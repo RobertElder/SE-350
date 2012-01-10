@@ -1,0 +1,153 @@
+
+div#d_content_l, div#d_content_lw  {
+	position: relative;
+}
+div.dab_c {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#f1f1f1),
+		to(#e4e4e4)
+	);
+}
+span.dab_i a.dab_d {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#cccccc),
+		to(#f0f0f0)
+	);
+}li.da_ai a:hover, li.da_ai a:focus {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#f8fbff),
+		to(#d7e2f4)
+	);
+}
+li.da_aid a:hover, li.da_aid a:focus {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#fdfdfd),
+		to(#f2f2f2)
+	);
+}
+.da_a a.dcm {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#ffffff),
+		to(#efefef)
+	);
+}
+a.d2l-audiocapture-startstop > div > div,
+	a.d2l-audiocapture-startstop-capturing > div > div {
+	background: -webkit-gradient( 
+		linear, 
+		left top, 
+		left bottom, 
+		from(#fbfbfb), 
+		to(#d9e5f5) 
+	);
+}
+
+a.d2l-audiocapture-startstop-disabled > div > div {	
+	background: -webkit-gradient( 
+		linear, 
+		left top, 
+		left bottom, 
+		from(#fefefe), 
+		to(#e6e6e6) 
+	);
+}a.d2l-audiocapture-startstop > div,
+	a.d2l-audiocapture-startstop-capturing > div,
+	a.d2l-audiocapture-startstop-disabled > div {
+	-webkit-border-radius: 3px;	
+}
+
+a.d2l-audiocapture-startstop > div > div,
+	a.d2l-audiocapture-startstop-capturing > div > div,
+	a.d2l-audiocapture-startstop-disabled > div > div {
+	-webkit-border-radius: 3px;	
+}button.dbtn_n, .d2l-button {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#ffffff),
+		to(#cecece)
+	);
+}
+button.dbtn[disabled], button.dbtn_d {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#ffffff),
+		to(#cacaca)
+	);
+}
+button.dbtn_o, .d2l-button:hover, .d2l-button:focus {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#ffffff),
+		to(#e6d9a2)
+	);
+}
+button.dbtn_c {
+	background: none;
+	background-color: #DFDFDF;
+}a.dcm_h, a.dcm:hover {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#f8fbff),
+		to(#d7e2f4)
+	);
+}
+.dcm_ah, .dcm_ah:hover {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#f8fbff),
+		to(#d7e2f4)
+	);
+}
+.dcm_adh, .dcm_adh:hover {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#fdfdfd),
+		to(#f2f2f2)
+	);
+}div.dmb {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#f1f1f1),
+		to(#e4e4e4)
+	);
+}div.d_ma_s {
+	-webkit-box-shadow: 2px 2px 2px #666666;
+}
+div.d_ma_e {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#ffffff),
+		to(#faf0f0)
+	);
+}

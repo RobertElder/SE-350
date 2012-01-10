@@ -1,0 +1,140 @@
+div#d_navBar img.d_nb_mi {
+	padding: 1px 10px 1px 14px 
+}
+div#d_navBar div.d_nb_mt {
+	font-family: arial, sans-serif;
+	font-size: 1.60em;
+	color: #ffffff;
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+	text-align:left;
+	padding: 5px 5px 5px 30px 
+}
+div#d_navBar div.d_nb_c1 {
+	background-color: #000000;
+	background-image: url('/content/middle_background.png?v=9.2.1.129-4');
+	background-position: right center;
+	background-repeat: no-repeat;
+}
+div#d_navBar div.d_nb_c2 {
+}
+div#d_navBar div.d_nb_c3 {
+}
+div#d_navBar div.d_nb_c4 {
+	background-color: #333333;
+	border-top: 2px solid #f9c700;
+}
+div#d_navBar div.d_nb_p1 div.d_nb_pd {
+	padding: 2px 3px 3px 3px 
+}
+div#d_navBar div.d_nb_p1 span.d_nb_ni {
+	background-image: url('/shared/navbars/UWaterloo-link-separator-top.gif?v=9.2.1.129-4');
+	padding-left: 4px;
+	padding-right: 4px;
+}
+div#d_navBar div.d_nb_p1 a, div#d_navBar div.d_nb_p1 a:visited, div#d_navBar div.d_nb_p1 span.d_nb_nl span {
+	color: #ffffff;
+}
+div#d_navBar div.d_nb_p1 a span, div#d_navBar div.d_nb_p1 a:visited span, div#d_navBar div.d_nb_p1 span.d_nb_nl span {
+	font-family: arial, sans-serif;
+	font-size: 1.10em;
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+}div#d_navBar div.d_nb_p1 a:hover, div#d_navBar div.d_nb_p1 a:focus, div#d_navBar div.d_nb_p1 a:active {
+	outline: none;
+	color: #ffcc00;
+}
+div#d_navBar div.d_nb_p1 a:hover span, div#d_navBar div.d_nb_p1 a:focus span, div#d_navBar div.d_nb_p1 a:active span {
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+}
+div#d_navBar div.d_nb_p2 div.d_nb_pd {
+	padding: 2px 3px 3px 3px 
+}
+div#d_navBar div.d_nb_p2 span.d_nb_ni {
+	background-image: url('/shared/navbars/UWaterloo-link-separator-top.gif?v=9.2.1.129-4');
+	padding-left: 4px;
+	padding-right: 4px;
+}
+div#d_navBar div.d_nb_p2 a, div#d_navBar div.d_nb_p2 a:visited, div#d_navBar div.d_nb_p2 span.d_nb_nl span {
+	color: #ffffff;
+}
+div#d_navBar div.d_nb_p2 a span, div#d_navBar div.d_nb_p2 a:visited span, div#d_navBar div.d_nb_p2 span.d_nb_nl span {
+	font-family: arial, sans-serif;
+	font-size: 1.10em;
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+}div#d_navBar div.d_nb_p2 a:hover, div#d_navBar div.d_nb_p2 a:focus, div#d_navBar div.d_nb_p2 a:active {
+	outline: none;
+	color: #ffcc00;
+}
+div#d_navBar div.d_nb_p2 a:hover span, div#d_navBar div.d_nb_p2 a:focus span, div#d_navBar div.d_nb_p2 a:active span {
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+}
+div#d_navBar div.d_nb_p3 div.d_nb_pd {
+	padding: 3px 3px 2px 3px 
+}
+div#d_navBar div.d_nb_p3 span.d_nb_ni {
+	padding-left: 4px;
+	padding-right: 4px;
+}
+div#d_navBar div.d_nb_p3 a, div#d_navBar div.d_nb_p3 a:visited, div#d_navBar div.d_nb_p3 span.d_nb_nl span {
+	color: #bbbbbb;
+}
+div#d_navBar div.d_nb_p3 a span, div#d_navBar div.d_nb_p3 a:visited span, div#d_navBar div.d_nb_p3 span.d_nb_nl span {
+	font-family: arial, sans-serif;
+	font-size: 1.10em;
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+}div#d_navBar div.d_nb_p3 a:hover, div#d_navBar div.d_nb_p3 a:focus, div#d_navBar div.d_nb_p3 a:active {
+	outline: none;
+	background-color: #000000;
+	color: #ffffff;
+}
+div#d_navBar div.d_nb_p3 a:hover span, div#d_navBar div.d_nb_p3 a:focus span, div#d_navBar div.d_nb_p3 a:active span {
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+}
+div#d_navBar div.d_nb_p4 div.d_nb_pd {
+	padding: 3px 3px 2px 3px 
+}
+div#d_navBar div.d_nb_p4 span.d_nb_ni {
+	padding-left: 4px;
+	padding-right: 4px;
+}
+div#d_navBar div.d_nb_p4 a, div#d_navBar div.d_nb_p4 a:visited, div#d_navBar div.d_nb_p4 span.d_nb_nl span {
+	color: #bbbbbb;
+}
+div#d_navBar div.d_nb_p4 a span, div#d_navBar div.d_nb_p4 a:visited span, div#d_navBar div.d_nb_p4 span.d_nb_nl span {
+	font-family: arial, sans-serif;
+	font-size: 1.10em;
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+}div#d_navBar div.d_nb_p4 a:hover, div#d_navBar div.d_nb_p4 a:focus, div#d_navBar div.d_nb_p4 a:active {
+	outline: none;
+	background-color: #000000;
+	color: #ffffff;
+}
+div#d_navBar div.d_nb_p4 a:hover span, div#d_navBar div.d_nb_p4 a:focus span, div#d_navBar div.d_nb_p4 a:active span {
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	text-transform: none;
+}

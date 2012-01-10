@@ -1,0 +1,5 @@
+Dependencies for Project 'UART_polling', Target 'UART_polling RAM': (DO NOT MODIFY !)
+F (.\src\startup_LPC17xx.s)(0x4EE130CA)(--cpu Cortex-M3 -g --apcs=interwork -I "C:\Keil\ARM\CMSIS\Include" -I "C:\Keil\ARM\INC\NXP\LPC17xx" --list ".\RAM\startup_LPC17xx.lst" --xref -o ".\RAM\startup_LPC17xx.o" --depend ".\RAM\startup_LPC17xx.d")
+F (.\src\system_LPC17xx.c)(0x4EE1322B)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I "C:\Keil\ARM\CMSIS\Include" -I "C:\Keil\ARM\INC\NXP\LPC17xx" -o ".\RAM\system_lpc17xx.o" --omf_browse ".\RAM\system_lpc17xx.crf" --depend ".\RAM\system_lpc17xx.d")
+F (.\src\uart_polling.c)(0x4F0A1AF4)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I "C:\Keil\ARM\CMSIS\Include" -I "C:\Keil\ARM\INC\NXP\LPC17xx" -o ".\RAM\uart_polling.o" --omf_browse ".\RAM\uart_polling.crf" --depend ".\RAM\uart_polling.d")
+F (.\src\main_uart_polling.c)(0x4F0A373B)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I "C:\Keil\ARM\CMSIS\Include" -I "C:\Keil\ARM\INC\NXP\LPC17xx" -o ".\RAM\main_uart_polling.o" --omf_browse ".\RAM\main_uart_polling.crf" --depend ".\RAM\main_uart_polling.d")

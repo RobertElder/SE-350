@@ -9,7 +9,7 @@ compiling HAL.c...
 linking...
 Program Size: Code=2160 RO-data=236 RW-data=12 ZI-data=516  
 ".\RAM\SVC.axf" - 0 Error(s), 0 Warning(s).
-Load "D:\\Users\\Yiqing\\nonwin\\yqwork\\ece\\ece354\\se350w12\\manual_code\\lab1_release\\SVC\\RAM\\SVC.AXF" 
+Load "P:\\code\\non_cvs\\se350w12\\manual_code\\lab1_release\\SVC\\RAM\\SVC.AXF" 
 No Algorithm found for: 10000000H - 10000963H
 Partial Erase Done (areas with no algorithms skipped!)
 No Algorithm found for: 10000000H - 10000963H

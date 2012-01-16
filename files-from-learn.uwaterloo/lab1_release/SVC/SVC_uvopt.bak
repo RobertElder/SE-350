@@ -528,16 +528,28 @@
       <ActiveTab>0</ActiveTab>
       <Documents>
         <Doc>
-          <Name>D:\Users\Yiqing\nonwin\yqwork\ece\ece354\se350w12\manual_code\lab1_release\UART_polling\src\uart_polling.c</Name>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\src\uart_polling.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>84</TopLine>
-          <CurrentLine>88</CurrentLine>
+          <TopLine>85</TopLine>
+          <CurrentLine>89</CurrentLine>
         </Doc>
         <Doc>
-          <Name>D:\Users\Yiqing\nonwin\yqwork\ece\ece354\se350w12\manual_code\lab1_release\UART_polling\src\main_uart_polling.c</Name>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\src\main_uart_polling.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>12</TopLine>
-          <CurrentLine>16</CurrentLine>
+          <TopLine>18</TopLine>
+          <CurrentLine>18</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\src\startup_LPC17xx.s</Name>
+          <ColumnNumber>16</ColumnNumber>
+          <TopLine>97</TopLine>
+          <CurrentLine>97</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\RAM.ini</Name>
+          <ColumnNumber>15</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>19</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

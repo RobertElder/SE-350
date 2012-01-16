@@ -73,7 +73,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>1</IsCurrentTarget>
+        <IsCurrentTarget>0</IsCurrentTarget>
       </OPTFL>
       <CpuCode>8</CpuCode>
       <Books>
@@ -236,7 +236,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>0</IsCurrentTarget>
+        <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
       <CpuCode>8</CpuCode>
       <Books>
@@ -322,7 +322,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>-UM0505FCE -O463 -S0 -C0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000</Name>
+          <Name>-UM0516FCE -O463 -S0 -C0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <DebugFlag>
@@ -330,7 +330,7 @@
         <periodic>1</periodic>
         <aLwin>1</aLwin>
         <aCover>0</aCover>
-        <aSer1>1</aSer1>
+        <aSer1>0</aSer1>
         <aSer2>0</aSer2>
         <aPa>0</aPa>
         <viewmode>1</viewmode>
@@ -369,8 +369,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>131</TopLine>
+      <CurrentLine>138</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\startup_LPC17xx.s</PathWithFileName>
       <FilenameWithoutPath>startup_LPC17xx.s</FilenameWithoutPath>
@@ -418,8 +418,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>19</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\main_svc.c</PathWithFileName>
       <FilenameWithoutPath>main_svc.c</FilenameWithoutPath>
@@ -525,31 +525,43 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>3</ActiveTab>
+      <ActiveTab>5</ActiveTab>
       <Documents>
         <Doc>
-          <Name>D:\Users\Yiqing\nonwin\yqwork\ece\ece354\se350w12\manual_code\lab1_release\UART_polling\src\uart_polling.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>84</TopLine>
-          <CurrentLine>88</CurrentLine>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\RAM.ini</Name>
+          <ColumnNumber>15</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>19</CurrentLine>
         </Doc>
         <Doc>
-          <Name>D:\Users\Yiqing\nonwin\yqwork\ece\ece354\se350w12\manual_code\lab1_release\UART_polling\src\main_uart_polling.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>12</TopLine>
-          <CurrentLine>16</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>D:\Users\Yiqing\nonwin\yqwork\ece\ece354\se350w12\manual_code\lab1_release\UART_polling\src\startup_LPC17xx.s</Name>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\src\startup_LPC17xx.s</Name>
           <ColumnNumber>16</ColumnNumber>
           <TopLine>97</TopLine>
           <CurrentLine>97</CurrentLine>
         </Doc>
         <Doc>
-          <Name>D:\Users\Yiqing\nonwin\yqwork\ece\ece354\se350w12\manual_code\lab1_release\UART_polling\RAM.ini</Name>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\src\main_uart_polling.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>18</TopLine>
+          <CurrentLine>18</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\src\uart_polling.c</Name>
+          <ColumnNumber>4</ColumnNumber>
+          <TopLine>85</TopLine>
+          <CurrentLine>92</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\src\main_svc.c</Name>
           <ColumnNumber>0</ColumnNumber>
           <TopLine>1</TopLine>
-          <CurrentLine>1</CurrentLine>
+          <CurrentLine>19</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\src\startup_LPC17xx.s</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>131</TopLine>
+          <CurrentLine>138</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

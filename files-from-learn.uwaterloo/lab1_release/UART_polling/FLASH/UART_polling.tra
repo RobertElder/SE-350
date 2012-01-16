@@ -13,7 +13,7 @@
 ### ADS-LD Output File: '.\FLASH\UART_polling.axf'
 ### ADS-LD Command File: '.\FLASH\UART_polling.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile '.\FLASH\UART_polling.lnp', Handle=0x000004EC
+### Creating CmdFile '.\FLASH\UART_polling.lnp', Handle=0x00000350
 ### Writing '.lnp' file
 ### ADS-LD Command file '.\FLASH\UART_polling.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.

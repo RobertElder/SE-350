@@ -73,7 +73,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>0</IsCurrentTarget>
+        <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
       <CpuCode>8</CpuCode>
       <Books>
@@ -241,7 +241,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>1</IsCurrentTarget>
+        <IsCurrentTarget>0</IsCurrentTarget>
       </OPTFL>
       <CpuCode>8</CpuCode>
       <Books>
@@ -404,10 +404,10 @@
       <FileType>1</FileType>
       <tvExp>1</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>4</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>84</TopLine>
-      <CurrentLine>88</CurrentLine>
+      <TopLine>85</TopLine>
+      <CurrentLine>92</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\uart_polling.c</PathWithFileName>
       <FilenameWithoutPath>uart_polling.c</FilenameWithoutPath>
@@ -420,8 +420,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>12</TopLine>
-      <CurrentLine>16</CurrentLine>
+      <TopLine>18</TopLine>
+      <CurrentLine>18</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\main_uart_polling.c</PathWithFileName>
       <FilenameWithoutPath>main_uart_polling.c</FilenameWithoutPath>
@@ -429,9 +429,9 @@
   </Group>
 
   <AlienFiles>
-    <PathWithFilename>D:\Users\Yiqing\nonwin\yqwork\ece\ece354\se350w12\manual_code\lab1_release\UART_polling\RAM.ini</PathWithFilename>
+    <PathWithFilename>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\RAM.ini</PathWithFilename>
     <TopLine>1</TopLine>
-    <CurrentLine>1</CurrentLine>
+    <CurrentLine>19</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -459,19 +459,13 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>3</ActiveTab>
+      <ActiveTab>5</ActiveTab>
       <Documents>
         <Doc>
-          <Name>.\src\uart_polling.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>84</TopLine>
-          <CurrentLine>88</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>.\src\main_uart_polling.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>12</TopLine>
-          <CurrentLine>16</CurrentLine>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\UART_polling\RAM.ini</Name>
+          <ColumnNumber>15</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>19</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\src\startup_LPC17xx.s</Name>
@@ -480,10 +474,28 @@
           <CurrentLine>97</CurrentLine>
         </Doc>
         <Doc>
-          <Name>D:\Users\Yiqing\nonwin\yqwork\ece\ece354\se350w12\manual_code\lab1_release\UART_polling\RAM.ini</Name>
+          <Name>.\src\main_uart_polling.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>18</TopLine>
+          <CurrentLine>18</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\src\uart_polling.c</Name>
+          <ColumnNumber>4</ColumnNumber>
+          <TopLine>85</TopLine>
+          <CurrentLine>92</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\SVC\src\main_svc.c</Name>
           <ColumnNumber>0</ColumnNumber>
           <TopLine>1</TopLine>
-          <CurrentLine>1</CurrentLine>
+          <CurrentLine>19</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>P:\code\non_cvs\se350w12\manual_code\lab1_release\SVC\src\startup_LPC17xx.s</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>131</TopLine>
+          <CurrentLine>138</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

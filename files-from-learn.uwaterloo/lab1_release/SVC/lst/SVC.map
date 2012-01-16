@@ -300,7 +300,6 @@ Image Symbol Table
 
     Symbol Name                              Value     Ov Type        Size  Object(Section)
 
-    RESET                                    0x00000000   Section      204  startup_lpc17xx.o(RESET)
     ../../microlib/division.c                0x00000000   Number         0  uldiv.o ABSOLUTE
     ../../microlib/division.c                0x00000000   Number         0  uidiv.o ABSOLUTE
     ../../microlib/fpadd.c                   0x00000000   Number         0  dadd.o ABSOLUTE
@@ -308,24 +307,24 @@ Image Symbol Table
     ../../microlib/fpepilogue.c              0x00000000   Number         0  depilogue.o ABSOLUTE
     ../../microlib/fpfix.c                   0x00000000   Number         0  dfixul.o ABSOLUTE
     ../../microlib/fpmul.c                   0x00000000   Number         0  dmul.o ABSOLUTE
-    ../../microlib/init/entry.s              0x00000000   Number         0  entry2.o ABSOLUTE
     ../../microlib/init/entry.s              0x00000000   Number         0  entry7.o ABSOLUTE
     ../../microlib/init/entry.s              0x00000000   Number         0  entry5.o ABSOLUTE
+    ../../microlib/init/entry.s              0x00000000   Number         0  entry2.o ABSOLUTE
     ../../microlib/init/entry.s              0x00000000   Number         0  entry.o ABSOLUTE
     ../../microlib/longlong.c                0x00000000   Number         0  llushr.o ABSOLUTE
     ../../microlib/longlong.c                0x00000000   Number         0  llshl.o ABSOLUTE
     ../../microlib/longlong.c                0x00000000   Number         0  llsshr.o ABSOLUTE
-    ../../microlib/printf/printf.c           0x00000000   Number         0  printf7.o ABSOLUTE
+    ../../microlib/printf/printf.c           0x00000000   Number         0  printf1.o ABSOLUTE
     ../../microlib/printf/printf.c           0x00000000   Number         0  printf6.o ABSOLUTE
+    ../../microlib/printf/printf.c           0x00000000   Number         0  printf7.o ABSOLUTE
     ../../microlib/printf/printf.c           0x00000000   Number         0  printf5.o ABSOLUTE
     ../../microlib/printf/printf.c           0x00000000   Number         0  printfa.o ABSOLUTE
     ../../microlib/printf/printf.c           0x00000000   Number         0  printf8.o ABSOLUTE
     ../../microlib/printf/printf.c           0x00000000   Number         0  printf4.o ABSOLUTE
-    ../../microlib/printf/printf.c           0x00000000   Number         0  printf0.o ABSOLUTE
     ../../microlib/printf/printf.c           0x00000000   Number         0  printf3.o ABSOLUTE
     ../../microlib/printf/printf.c           0x00000000   Number         0  printf2.o ABSOLUTE
-    ../../microlib/printf/printf.c           0x00000000   Number         0  printf1.o ABSOLUTE
     ../../microlib/printf/printf.c           0x00000000   Number         0  printfb.o ABSOLUTE
+    ../../microlib/printf/printf.c           0x00000000   Number         0  printf0.o ABSOLUTE
     ../../microlib/printf/stubs.s            0x00000000   Number         0  stubs.o ABSOLUTE
     ../../microlib/stubs.s                   0x00000000   Number         0  useno.o ABSOLUTE
     ../../microlib/stubs.s                   0x00000000   Number         0  iusefp.o ABSOLUTE
@@ -344,33 +343,34 @@ Image Symbol Table
     src\startup_LPC17xx.s                    0x00000000   Number         0  startup_lpc17xx.o ABSOLUTE
     src\system_LPC17xx.c                     0x00000000   Number         0  system_lpc17xx.o ABSOLUTE
     src\uart_polling.c                       0x00000000   Number         0  uart_polling.o ABSOLUTE
-    .ARM.Collect$$$$00000000                 0x000000cc   Section        0  entry.o(.ARM.Collect$$$$00000000)
-    .ARM.Collect$$$$00000001                 0x000000cc   Section        4  entry2.o(.ARM.Collect$$$$00000001)
-    .ARM.Collect$$$$00000004                 0x000000d0   Section        4  entry5.o(.ARM.Collect$$$$00000004)
-    .ARM.Collect$$$$00000007                 0x000000d4   Section        8  entry7.o(.ARM.Collect$$$$00000007)
-    .ARM.Collect$$$$00002712                 0x000000dc   Section        4  entry2.o(.ARM.Collect$$$$00002712)
-    __lit__00000000                          0x000000dc   Data           4  entry2.o(.ARM.Collect$$$$00002712)
-    .emb_text                                0x000000e0   Section       36  hal.o(.emb_text)
-    .text                                    0x00000104   Section       28  startup_lpc17xx.o(.text)
-    .text                                    0x00000120   Section        0  uart_polling.o(.text)
-    .text                                    0x00000208   Section        0  main_svc.o(.text)
-    .text                                    0x00000274   Section        0  rtx.o(.text)
-    .text                                    0x000002dc   Section        0  llshl.o(.text)
-    i.__scatterload_null                     0x000002fa   Section        2  handlers.o(i.__scatterload_null)
     .ARM.__at_0x02FC                         0x000002fc   Section        4  startup_lpc17xx.o(.ARM.__at_0x02FC)
-    .text                                    0x00000300   Section        0  system_lpc17xx.o(.text)
-    .text                                    0x00000524   Section        0  retarget.o(.text)
-    .text                                    0x0000057a   Section        0  uldiv.o(.text)
-    .text                                    0x000005e0   Section       36  init.o(.text)
-    .text                                    0x00000604   Section        0  llushr.o(.text)
-    i.__0printf$5                            0x00000624   Section        0  printf5.o(i.__0printf$5)
-    i.__scatterload_copy                     0x00000644   Section       14  handlers.o(i.__scatterload_copy)
-    i.__scatterload_zeroinit                 0x00000652   Section       14  handlers.o(i.__scatterload_zeroinit)
-    i._printf_core                           0x00000660   Section        0  printf5.o(i._printf_core)
-    _printf_core                             0x00000661   Thumb Code   682  printf5.o(i._printf_core)
-    .data                                    0x10000000   Section        4  system_lpc17xx.o(.data)
-    .data                                    0x10000004   Section        8  retarget.o(.data)
-    STACK                                    0x10000010   Section      512  startup_lpc17xx.o(STACK)
+    RESET                                    0x10000000   Section      204  startup_lpc17xx.o(RESET)
+    .ARM.Collect$$$$00000000                 0x100000cc   Section        0  entry.o(.ARM.Collect$$$$00000000)
+    .ARM.Collect$$$$00000001                 0x100000cc   Section        4  entry2.o(.ARM.Collect$$$$00000001)
+    .ARM.Collect$$$$00000004                 0x100000d0   Section        4  entry5.o(.ARM.Collect$$$$00000004)
+    .ARM.Collect$$$$00000007                 0x100000d4   Section        8  entry7.o(.ARM.Collect$$$$00000007)
+    .ARM.Collect$$$$00002712                 0x100000dc   Section        4  entry2.o(.ARM.Collect$$$$00002712)
+    __lit__00000000                          0x100000dc   Data           4  entry2.o(.ARM.Collect$$$$00002712)
+    .emb_text                                0x100000e0   Section       36  hal.o(.emb_text)
+    .text                                    0x10000104   Section       28  startup_lpc17xx.o(.text)
+    .text                                    0x10000120   Section        0  system_lpc17xx.o(.text)
+    .text                                    0x10000344   Section        0  uart_polling.o(.text)
+    .text                                    0x1000042c   Section        0  main_svc.o(.text)
+    .text                                    0x10000498   Section        0  rtx.o(.text)
+    .text                                    0x10000500   Section        0  retarget.o(.text)
+    .text                                    0x10000556   Section        0  uldiv.o(.text)
+    .text                                    0x100005bc   Section       36  init.o(.text)
+    .text                                    0x100005e0   Section        0  llshl.o(.text)
+    .text                                    0x100005fe   Section        0  llushr.o(.text)
+    i.__0printf$5                            0x10000620   Section        0  printf5.o(i.__0printf$5)
+    i.__scatterload_copy                     0x10000640   Section       14  handlers.o(i.__scatterload_copy)
+    i.__scatterload_null                     0x1000064e   Section        2  handlers.o(i.__scatterload_null)
+    i.__scatterload_zeroinit                 0x10000650   Section       14  handlers.o(i.__scatterload_zeroinit)
+    i._printf_core                           0x10000660   Section        0  printf5.o(i._printf_core)
+    _printf_core                             0x10000661   Thumb Code   682  printf5.o(i._printf_core)
+    .data                                    0x10004000   Section        4  system_lpc17xx.o(.data)
+    .data                                    0x10004004   Section        8  retarget.o(.data)
+    STACK                                    0x10004010   Section      512  startup_lpc17xx.o(STACK)
 
     Global Symbols
 
@@ -378,7 +378,6 @@ Image Symbol Table
 
     BuildAttributes$$THM_ISAv4$P$D$K$B$S$PE$A:L22UL41UL21$X:L11$S22US41US21$IEEE1$IW$USESV6$~STKCKD$USESV7$~SHL$OSPACE$ROPI$EBA8$MICROLIB$REQ8$PRES8$EABIv2 0x00000000   Number         0  anon$$obj.o ABSOLUTE
     __ARM_use_no_argv                        0x00000000   Number         0  main_svc.o ABSOLUTE
-    __Vectors                                0x00000000   Data           4  startup_lpc17xx.o(RESET)
     __use_no_errno                           0x00000000   Number         0  useno.o ABSOLUTE
     __use_no_exception_handling              0x00000000   Number         0  useno.o ABSOLUTE
     __use_no_fp                              0x00000000   Number         0  useno.o ABSOLUTE
@@ -429,92 +428,93 @@ Image Symbol Table
     _printf_widthprec                        0x00000000   Number         0  stubs.o ABSOLUTE
     _printf_x                                0x00000000   Number         0  stubs.o ABSOLUTE
     __decompress                              - Undefined Weak Reference
-    __main                                   0x000000cd   Thumb Code     0  entry.o(.ARM.Collect$$$$00000000)
-    _main_stk                                0x000000cd   Thumb Code     0  entry2.o(.ARM.Collect$$$$00000001)
-    _main_scatterload                        0x000000d1   Thumb Code     0  entry5.o(.ARM.Collect$$$$00000004)
-    __main_after_scatterload                 0x000000d5   Thumb Code     0  entry5.o(.ARM.Collect$$$$00000004)
-    _main_init                               0x000000d5   Thumb Code     0  entry7.o(.ARM.Collect$$$$00000007)
-    SVC_Handler                              0x000000e1   Thumb Code    36  hal.o(.emb_text)
-    Reset_Handler                            0x00000105   Thumb Code     4  startup_lpc17xx.o(.text)
-    NMI_Handler                              0x00000109   Thumb Code     2  startup_lpc17xx.o(.text)
-    HardFault_Handler                        0x0000010b   Thumb Code     2  startup_lpc17xx.o(.text)
-    MemManage_Handler                        0x0000010d   Thumb Code     2  startup_lpc17xx.o(.text)
-    BusFault_Handler                         0x0000010f   Thumb Code     2  startup_lpc17xx.o(.text)
-    UsageFault_Handler                       0x00000111   Thumb Code     2  startup_lpc17xx.o(.text)
-    DebugMon_Handler                         0x00000115   Thumb Code     2  startup_lpc17xx.o(.text)
-    PendSV_Handler                           0x00000117   Thumb Code     2  startup_lpc17xx.o(.text)
-    SysTick_Handler                          0x00000119   Thumb Code     2  startup_lpc17xx.o(.text)
-    ADC_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    BOD_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    CANActivity_IRQHandler                   0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    CAN_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    DMA_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    EINT0_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    EINT1_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    EINT2_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    EINT3_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    ENET_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    I2C0_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    I2C1_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    I2C2_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    I2S_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    MCPWM_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    PLL0_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    PLL1_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    PWM1_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    QEI_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    RIT_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    RTC_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    SPI_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    SSP0_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    SSP1_IRQHandler                          0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    TIMER0_IRQHandler                        0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    TIMER1_IRQHandler                        0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    TIMER2_IRQHandler                        0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    TIMER3_IRQHandler                        0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    UART0_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    UART1_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    UART2_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    UART3_IRQHandler                         0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    USBActivity_IRQHandler                   0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    USB_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    WDT_IRQHandler                           0x0000011b   Thumb Code     0  startup_lpc17xx.o(.text)
-    uart_init                                0x00000121   Thumb Code   104  uart_polling.o(.text)
-    uart_get_char                            0x00000189   Thumb Code    36  uart_polling.o(.text)
-    uart_put_char                            0x000001ad   Thumb Code    38  uart_polling.o(.text)
-    uart_put_string                          0x000001d3   Thumb Code    42  uart_polling.o(.text)
-    main                                     0x00000209   Thumb Code    80  main_svc.o(.text)
-    k_release_processor                      0x00000275   Thumb Code    14  rtx.o(.text)
-    k_request_memory_block                   0x00000283   Thumb Code    18  rtx.o(.text)
-    k_release_memory_block                   0x00000295   Thumb Code     8  rtx.o(.text)
-    __aeabi_llsl                             0x000002dd   Thumb Code    30  llshl.o(.text)
-    _ll_shift_l                              0x000002dd   Thumb Code     0  llshl.o(.text)
-    __scatterload_null                       0x000002fb   Thumb Code     2  handlers.o(i.__scatterload_null)
-    SystemInit                               0x00000301   Thumb Code   484  system_lpc17xx.o(.text)
-    sendchar                                 0x00000525   Thumb Code    28  retarget.o(.text)
-    getkey                                   0x00000541   Thumb Code    10  retarget.o(.text)
-    fputc                                    0x0000054b   Thumb Code    14  retarget.o(.text)
-    fgetc                                    0x00000559   Thumb Code    10  retarget.o(.text)
-    ferror                                   0x00000563   Thumb Code     8  retarget.o(.text)
-    _ttywrch                                 0x0000056b   Thumb Code    12  retarget.o(.text)
-    _sys_exit                                0x00000577   Thumb Code     4  retarget.o(.text)
-    __aeabi_uldivmod                         0x0000057b   Thumb Code   100  uldiv.o(.text)
-    __scatterload                            0x000005e1   Thumb Code    28  init.o(.text)
-    __scatterload_rt2                        0x000005e1   Thumb Code     0  init.o(.text)
-    __aeabi_llsr                             0x00000605   Thumb Code    32  llushr.o(.text)
-    _ll_ushift_r                             0x00000605   Thumb Code     0  llushr.o(.text)
-    __0printf$5                              0x00000625   Thumb Code    22  printf5.o(i.__0printf$5)
-    __1printf$5                              0x00000625   Thumb Code     0  printf5.o(i.__0printf$5)
-    __2printf                                0x00000625   Thumb Code     0  printf5.o(i.__0printf$5)
-    __scatterload_copy                       0x00000645   Thumb Code    14  handlers.o(i.__scatterload_copy)
-    __scatterload_zeroinit                   0x00000653   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    Region$$Table$$Base                      0x00000938   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x00000958   Number         0  anon$$obj.o(Region$$Table)
-    SystemFrequency                          0x10000000   Data           4  system_lpc17xx.o(.data)
-    __stdout                                 0x10000004   Data           4  retarget.o(.data)
-    __stdin                                  0x10000008   Data           4  retarget.o(.data)
-    Image$$RW_IRAM1$$ZI$$Limit               0x10000210   Number         0  startup_lpc17xx.o(STACK)
-    __initial_sp                             0x10000210   Data           0  startup_lpc17xx.o(STACK)
+    __Vectors                                0x10000000   Data           4  startup_lpc17xx.o(RESET)
+    __main                                   0x100000cd   Thumb Code     0  entry.o(.ARM.Collect$$$$00000000)
+    _main_stk                                0x100000cd   Thumb Code     0  entry2.o(.ARM.Collect$$$$00000001)
+    _main_scatterload                        0x100000d1   Thumb Code     0  entry5.o(.ARM.Collect$$$$00000004)
+    __main_after_scatterload                 0x100000d5   Thumb Code     0  entry5.o(.ARM.Collect$$$$00000004)
+    _main_init                               0x100000d5   Thumb Code     0  entry7.o(.ARM.Collect$$$$00000007)
+    SVC_Handler                              0x100000e1   Thumb Code    36  hal.o(.emb_text)
+    Reset_Handler                            0x10000105   Thumb Code     4  startup_lpc17xx.o(.text)
+    NMI_Handler                              0x10000109   Thumb Code     2  startup_lpc17xx.o(.text)
+    HardFault_Handler                        0x1000010b   Thumb Code     2  startup_lpc17xx.o(.text)
+    MemManage_Handler                        0x1000010d   Thumb Code     2  startup_lpc17xx.o(.text)
+    BusFault_Handler                         0x1000010f   Thumb Code     2  startup_lpc17xx.o(.text)
+    UsageFault_Handler                       0x10000111   Thumb Code     2  startup_lpc17xx.o(.text)
+    DebugMon_Handler                         0x10000115   Thumb Code     2  startup_lpc17xx.o(.text)
+    PendSV_Handler                           0x10000117   Thumb Code     2  startup_lpc17xx.o(.text)
+    SysTick_Handler                          0x10000119   Thumb Code     2  startup_lpc17xx.o(.text)
+    ADC_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    BOD_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    CANActivity_IRQHandler                   0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    CAN_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    DMA_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    EINT0_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    EINT1_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    EINT2_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    EINT3_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    ENET_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    I2C0_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    I2C1_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    I2C2_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    I2S_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    MCPWM_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    PLL0_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    PLL1_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    PWM1_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    QEI_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    RIT_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    RTC_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    SPI_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    SSP0_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    SSP1_IRQHandler                          0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    TIMER0_IRQHandler                        0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    TIMER1_IRQHandler                        0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    TIMER2_IRQHandler                        0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    TIMER3_IRQHandler                        0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    UART0_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    UART1_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    UART2_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    UART3_IRQHandler                         0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    USBActivity_IRQHandler                   0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    USB_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    WDT_IRQHandler                           0x1000011b   Thumb Code     0  startup_lpc17xx.o(.text)
+    SystemInit                               0x10000121   Thumb Code   484  system_lpc17xx.o(.text)
+    uart_init                                0x10000345   Thumb Code   104  uart_polling.o(.text)
+    uart_get_char                            0x100003ad   Thumb Code    36  uart_polling.o(.text)
+    uart_put_char                            0x100003d1   Thumb Code    38  uart_polling.o(.text)
+    uart_put_string                          0x100003f7   Thumb Code    42  uart_polling.o(.text)
+    main                                     0x1000042d   Thumb Code    80  main_svc.o(.text)
+    k_release_processor                      0x10000499   Thumb Code    14  rtx.o(.text)
+    k_request_memory_block                   0x100004a7   Thumb Code    18  rtx.o(.text)
+    k_release_memory_block                   0x100004b9   Thumb Code     8  rtx.o(.text)
+    sendchar                                 0x10000501   Thumb Code    28  retarget.o(.text)
+    getkey                                   0x1000051d   Thumb Code    10  retarget.o(.text)
+    fputc                                    0x10000527   Thumb Code    14  retarget.o(.text)
+    fgetc                                    0x10000535   Thumb Code    10  retarget.o(.text)
+    ferror                                   0x1000053f   Thumb Code     8  retarget.o(.text)
+    _ttywrch                                 0x10000547   Thumb Code    12  retarget.o(.text)
+    _sys_exit                                0x10000553   Thumb Code     4  retarget.o(.text)
+    __aeabi_uldivmod                         0x10000557   Thumb Code   100  uldiv.o(.text)
+    __scatterload                            0x100005bd   Thumb Code    28  init.o(.text)
+    __scatterload_rt2                        0x100005bd   Thumb Code     0  init.o(.text)
+    __aeabi_llsl                             0x100005e1   Thumb Code    30  llshl.o(.text)
+    _ll_shift_l                              0x100005e1   Thumb Code     0  llshl.o(.text)
+    __aeabi_llsr                             0x100005ff   Thumb Code    32  llushr.o(.text)
+    _ll_ushift_r                             0x100005ff   Thumb Code     0  llushr.o(.text)
+    __0printf$5                              0x10000621   Thumb Code    22  printf5.o(i.__0printf$5)
+    __1printf$5                              0x10000621   Thumb Code     0  printf5.o(i.__0printf$5)
+    __2printf                                0x10000621   Thumb Code     0  printf5.o(i.__0printf$5)
+    __scatterload_copy                       0x10000641   Thumb Code    14  handlers.o(i.__scatterload_copy)
+    __scatterload_null                       0x1000064f   Thumb Code     2  handlers.o(i.__scatterload_null)
+    __scatterload_zeroinit                   0x10000651   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
+    Region$$Table$$Base                      0x10000938   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x10000958   Number         0  anon$$obj.o(Region$$Table)
+    SystemFrequency                          0x10004000   Data           4  system_lpc17xx.o(.data)
+    __stdout                                 0x10004004   Data           4  retarget.o(.data)
+    __stdin                                  0x10004008   Data           4  retarget.o(.data)
+    Image$$RW_IRAM1$$ZI$$Limit               0x10004210   Number         0  startup_lpc17xx.o(STACK)
+    __initial_sp                             0x10004210   Data           0  startup_lpc17xx.o(STACK)
 
 
 
@@ -522,49 +522,60 @@ Image Symbol Table
 
 Memory Map of the image
 
-  Image Entry point : 0x000000cd
+  Image Entry point : 0x100000cd
 
-  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x00000964, Max: 0x00080000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x10000000, Size: 0x00000964, Max: 0x00004000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Base: 0x00000000, Size: 0x00000958, Max: 0x00080000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x10000000, Size: 0x00000958, Max: 0x00004000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x00000000   0x000000cc   Data   RO            3    RESET               startup_lpc17xx.o
-    0x000000cc   0x00000000   Code   RO          143  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
-    0x000000cc   0x00000004   Code   RO          407    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
-    0x000000d0   0x00000004   Code   RO          410    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
-    0x000000d4   0x00000008   Code   RO          411    .ARM.Collect$$$$00000007  mc_w.l(entry7.o)
-    0x000000dc   0x00000004   Code   RO          408    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
-    0x000000e0   0x00000024   Code   RO          136    .emb_text           hal.o
-    0x00000104   0x0000001c   Code   RO            5    .text               startup_lpc17xx.o
-    0x00000120   0x000000e8   Code   RO           53    .text               uart_polling.o
-    0x00000208   0x0000006c   Code   RO           76    .text               main_svc.o
-    0x00000274   0x00000068   Code   RO          101    .text               rtx.o
-    0x000002dc   0x0000001e   Code   RO          429    .text               mc_w.l(llshl.o)
-    0x000002fa   0x00000002   Code   RO          440    i.__scatterload_null  mc_w.l(handlers.o)
+    0x10000000   0x000000cc   Data   RO            3    RESET               startup_lpc17xx.o
+    0x100000cc   0x00000000   Code   RO          143  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
+    0x100000cc   0x00000004   Code   RO          407    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
+    0x100000d0   0x00000004   Code   RO          410    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
+    0x100000d4   0x00000008   Code   RO          411    .ARM.Collect$$$$00000007  mc_w.l(entry7.o)
+    0x100000dc   0x00000004   Code   RO          408    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
+    0x100000e0   0x00000024   Code   RO          136    .emb_text           hal.o
+    0x10000104   0x0000001c   Code   RO            5    .text               startup_lpc17xx.o
+    0x10000120   0x00000224   Code   RO           14    .text               system_lpc17xx.o
+    0x10000344   0x000000e8   Code   RO           53    .text               uart_polling.o
+    0x1000042c   0x0000006c   Code   RO           76    .text               main_svc.o
+    0x10000498   0x00000068   Code   RO          101    .text               rtx.o
+    0x10000500   0x00000056   Code   RO          114    .text               retarget.o
+    0x10000556   0x00000064   Code   RO          414    .text               mc_w.l(uldiv.o)
+    0x100005ba   0x00000002   PAD
+    0x100005bc   0x00000024   Code   RO          427    .text               mc_w.l(init.o)
+    0x100005e0   0x0000001e   Code   RO          429    .text               mc_w.l(llshl.o)
+    0x100005fe   0x00000020   Code   RO          431    .text               mc_w.l(llushr.o)
+    0x1000061e   0x00000002   PAD
+    0x10000620   0x00000020   Code   RO          279    i.__0printf$5       mc_w.l(printf5.o)
+    0x10000640   0x0000000e   Code   RO          439    i.__scatterload_copy  mc_w.l(handlers.o)
+    0x1000064e   0x00000002   Code   RO          440    i.__scatterload_null  mc_w.l(handlers.o)
+    0x10000650   0x0000000e   Code   RO          441    i.__scatterload_zeroinit  mc_w.l(handlers.o)
+    0x1000065e   0x00000002   PAD
+    0x10000660   0x000002d8   Code   RO          286    i._printf_core      mc_w.l(printf5.o)
+    0x10000938   0x00000020   Data   RO          437    Region$$Table       anon$$obj.o
+
+
+    Execution Region RW_IRAM1 (Base: 0x10004000, Size: 0x00000210, Max: 0x00004000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x10004000   0x00000004   Data   RW           15    .data               system_lpc17xx.o
+    0x10004004   0x00000008   Data   RW          115    .data               retarget.o
+    0x1000400c   0x00000004   PAD
+    0x10004010   0x00000200   Zero   RW            1    STACK               startup_lpc17xx.o
+
+
+
+  Load Region LR$$.ARM.__at_0x02FC (Base: 0x000002fc, Size: 0x00000004, Max: 0x00000004, ABSOLUTE)
+
+    Execution Region ER$$.ARM.__at_0x02FC (Base: 0x000002fc, Size: 0x00000004, Max: 0x00000004, ABSOLUTE, UNINIT)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
     0x000002fc   0x00000004   Code   RO            4    .ARM.__at_0x02FC    startup_lpc17xx.o
-    0x00000300   0x00000224   Code   RO           14    .text               system_lpc17xx.o
-    0x00000524   0x00000056   Code   RO          114    .text               retarget.o
-    0x0000057a   0x00000064   Code   RO          414    .text               mc_w.l(uldiv.o)
-    0x000005de   0x00000002   PAD
-    0x000005e0   0x00000024   Code   RO          427    .text               mc_w.l(init.o)
-    0x00000604   0x00000020   Code   RO          431    .text               mc_w.l(llushr.o)
-    0x00000624   0x00000020   Code   RO          279    i.__0printf$5       mc_w.l(printf5.o)
-    0x00000644   0x0000000e   Code   RO          439    i.__scatterload_copy  mc_w.l(handlers.o)
-    0x00000652   0x0000000e   Code   RO          441    i.__scatterload_zeroinit  mc_w.l(handlers.o)
-    0x00000660   0x000002d8   Code   RO          286    i._printf_core      mc_w.l(printf5.o)
-    0x00000938   0x00000020   Data   RO          437    Region$$Table       anon$$obj.o
-
-
-    Execution Region RW_IRAM1 (Base: 0x10000000, Size: 0x00000210, Max: 0x00008000, ABSOLUTE)
-
-    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
-
-    0x10000000   0x00000004   Data   RW           15    .data               system_lpc17xx.o
-    0x10000004   0x00000008   Data   RW          115    .data               retarget.o
-    0x1000000c   0x00000004   PAD
-    0x10000010   0x00000200   Zero   RW            1    STACK               startup_lpc17xx.o
 
 
 ==============================================================================
@@ -574,16 +585,16 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-        36          0          0          0          0        308   hal.o
+        36          0          0          0          0        284   hal.o
        108         28          0          0          0       1895   main_svc.o
-        86          0          0          8          0       3134   retarget.o
-       104         64          0          0          0        892   rtx.o
-        32          8        204          0        512        972   startup_lpc17xx.o
-       548         64          0          4          0      21931   system_lpc17xx.o
-       232         12          0          0          0       1848   uart_polling.o
+        86          0          0          8          0       3098   retarget.o
+       104         64          0          0          0        864   rtx.o
+        32          8        204          0        512        924   startup_lpc17xx.o
+       548         64          0          4          0      21943   system_lpc17xx.o
+       232         12          0          0          0       1816   uart_polling.o
 
     ----------------------------------------------------------------------
-      1146        176        236         12        516      30980   Object Totals
+      1146        176        236         12        516      30824   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          0          0          0          0          4          0   (incl. Padding)
 
@@ -603,8 +614,8 @@ Image component sizes
        100          0          0          0          0         92   uldiv.o
 
     ----------------------------------------------------------------------
-      1010         72          0          0          0        480   Library Totals
-         2          0          0          0          0          0   (incl. Padding)
+      1014         72          0          0          0        480   Library Totals
+         6          0          0          0          0          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -613,7 +624,7 @@ Image component sizes
       1008         72          0          0          0        480   mc_w.l
 
     ----------------------------------------------------------------------
-      1010         72          0          0          0        480   Library Totals
+      1014         72          0          0          0        480   Library Totals
 
     ----------------------------------------------------------------------
 
@@ -622,15 +633,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      2156        248        236         12        516      30888   Grand Totals
-      2156        248        236         12        516      30888   ELF Image Totals
-      2156        248        236         12          0          0   ROM Totals
+      2160        248        236         12        516      30732   Grand Totals
+      2160        248        236         12        516      30732   ELF Image Totals
+      2160        248        236         12          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 2392 (   2.34kB)
+    Total RO  Size (Code + RO Data)                 2396 (   2.34kB)
     Total RW  Size (RW Data + ZI Data)               528 (   0.52kB)
-    Total ROM Size (Code + RO Data + RW Data)       2404 (   2.35kB)
+    Total ROM Size (Code + RO Data + RW Data)       2408 (   2.35kB)
 
 ==============================================================================
 

@@ -13,7 +13,7 @@
 ### ADS-LD Output File: '.\RAM\UART_polling.axf'
 ### ADS-LD Command File: '.\RAM\UART_polling.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile '.\RAM\UART_polling.lnp', Handle=0x00000350
+### Creating CmdFile '.\RAM\UART_polling.lnp', Handle=0x0000036C
 ### Writing '.lnp' file
 ### ADS-LD Command file '.\RAM\UART_polling.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.

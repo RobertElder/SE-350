@@ -422,9 +422,9 @@ ARM Macro Assembler    Page 7
               00000200 
               00000000 
 Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\FLASH\
-startup_LPC17xx.d -o.\FLASH\startup_LPC17xx.o -IC:\Keil\ARM\CMSIS\Include -IC:\
-Keil\ARM\INC\NXP\LPC17xx --list=.\FLASH\startup_LPC17xx.lst src\startup_LPC17xx
-.s
+startup_LPC17xx.d -o.\FLASH\startup_LPC17xx.o -I"F:\Program Files\Keil\ARM\CMSI
+S\Include" -I"F:\Program Files\Keil\ARM\INC\NXP\LPC17xx" --list=.\FLASH\startup
+_LPC17xx.lst src\startup_LPC17xx.s
 
 
 

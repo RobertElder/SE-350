@@ -16,7 +16,7 @@
 ### ADS-LD Output File: '.\RAM\SVC.axf'
 ### ADS-LD Command File: '.\RAM\SVC.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile '.\RAM\SVC.lnp', Handle=0x000005C4
+### Creating CmdFile '.\RAM\SVC.lnp', Handle=0x0000044C
 ### Writing '.lnp' file
 ### ADS-LD Command file '.\RAM\SVC.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.

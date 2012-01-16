@@ -411,10 +411,10 @@ ARM Macro Assembler    Page 7
   279 00000018         
   280 00000018                 END
               00000000 
-Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\flash\
-startup_LPC17xx.d -o.\flash\startup_LPC17xx.o -IC:\Keil\ARM\CMSIS\Include -IC:\
-Keil\ARM\INC\NXP\LPC17xx --predefine="__MICROLIB SETA 1" --list=.\lst\startup_L
-PC17xx.lst src\startup_LPC17xx.s
+Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\RAM\st
+artup_LPC17xx.d -o.\RAM\startup_LPC17xx.o -I"F:\Program Files\Keil\ARM\CMSIS\In
+clude" -I"F:\Program Files\Keil\ARM\INC\NXP\LPC17xx" --predefine="__MICROLIB SE
+TA 1" --list=.\lst\startup_LPC17xx.lst src\startup_LPC17xx.s
 
 
 

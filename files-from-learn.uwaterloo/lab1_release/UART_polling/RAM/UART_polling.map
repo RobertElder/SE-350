@@ -518,13 +518,13 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-        80         10          0          0          0        483   main_uart_polling.o
-        56         22        204          0        512        996   startup_lpc17xx.o
-       548         64          0          4          0      21955   system_lpc17xx.o
-       232         12          0          0          0       1872   uart_polling.o
+        80         10          0          0          0        459   main_uart_polling.o
+        56         22        204          0        512        948   startup_lpc17xx.o
+       548         64          0          4          0      21967   system_lpc17xx.o
+       232         12          0          0          0       1832   uart_polling.o
 
     ----------------------------------------------------------------------
-       916        108        236          4        512      25306   Object Totals
+       916        108        236          4        512      25206   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          0          0          0          0          0          2   (incl. Padding)
 
@@ -575,8 +575,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      1212        128        236          4        612      25504   Grand Totals
-      1212        128        236          4        612      25504   ELF Image Totals
+      1212        128        236          4        612      25404   Grand Totals
+      1212        128        236          4        612      25404   ELF Image Totals
       1212        128        236          4          0          0   ROM Totals
 
 ==============================================================================

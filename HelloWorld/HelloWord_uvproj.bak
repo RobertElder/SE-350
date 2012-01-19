@@ -411,11 +411,6 @@
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
             </File>
-            <File>
-              <FileName>assert.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\assert.c</FilePath>
-            </File>
           </Files>
         </Group>
       </Groups>

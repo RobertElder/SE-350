@@ -107,7 +107,7 @@
         <uSim>1</uSim>
         <uTrg>0</uTrg>
         <sLdApp>1</sLdApp>
-        <sGomain>1</sGomain>
+        <sGomain>0</sGomain>
         <sRbreak>1</sRbreak>
         <sRwatch>1</sRwatch>
         <sRmem>1</sRmem>
@@ -152,6 +152,37 @@
           <Name>-O463 -S0 -C0 -FO7 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>114</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>1668</Address>
+          <ByteObject>0</ByteObject>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename></Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\HelloWord\main.c\114</Expression>
+        </Bp>
+      </Breakpoint>
+      <MemoryWindow1>
+        <Mm>
+          <WinNumber>1</WinNumber>
+          <SubType>0</SubType>
+          <ItemText>0x01008000</ItemText>
+        </Mm>
+      </MemoryWindow1>
+      <MemoryWindow2>
+        <Mm>
+          <WinNumber>2</WinNumber>
+          <SubType>0</SubType>
+          <ItemText>0x01000000</ItemText>
+        </Mm>
+      </MemoryWindow2>
       <DebugFlag>
         <trace>0</trace>
         <periodic>1</periodic>
@@ -197,7 +228,7 @@
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>129</TopLine>
-      <CurrentLine>129</CurrentLine>
+      <CurrentLine>132</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\startup_LPC17xx.s</PathWithFileName>
       <FilenameWithoutPath>startup_LPC17xx.s</FilenameWithoutPath>
@@ -217,8 +248,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>405</TopLine>
-      <CurrentLine>405</CurrentLine>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\system_LPC17xx.c</PathWithFileName>
       <FilenameWithoutPath>system_LPC17xx.c</FilenameWithoutPath>
@@ -231,8 +262,8 @@
       <Focus>0</Focus>
       <ColumnNumber>21</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>119</TopLine>
-      <CurrentLine>123</CurrentLine>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\uart_polling.c</PathWithFileName>
       <FilenameWithoutPath>uart_polling.c</FilenameWithoutPath>
@@ -243,10 +274,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>34</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>5</CurrentLine>
+      <TopLine>44</TopLine>
+      <CurrentLine>64</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>

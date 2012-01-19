@@ -12,7 +12,7 @@
 ### ADS-LD Output File: 'HelloWord.axf'
 ### ADS-LD Command File: 'HelloWord.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile 'HelloWord.lnp', Handle=0x00000398
+### Creating CmdFile 'HelloWord.lnp', Handle=0x000042C0
 ### Writing '.lnp' file
 ### ADS-LD Command file 'HelloWord.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.

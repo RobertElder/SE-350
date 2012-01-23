@@ -2,19 +2,20 @@
 #include <system_LPC17xx.h>
 #include "uart_polling.h"
 
-#define START_OF_MEMORY_ALLOCATION_TABLE 0x1008000
-#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0x0001000
+extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;
+unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
+
+#define START_OF_MEMORY_ALLOCATION_TABLE free_mem
+#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0x00002000
 #define MEMORY_BLOCK_SIZE 0x100
 
 #define MAX_ALLOWED_MEMORY_BLOCKS 0x100
-
-extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;
 
 int * pMaxNumberOfMemoryBlocksEverAllocated;
 
 void assert(int value, unsigned char * message){
 	if(value == 0){
-		uart0_put_string("\nHOLY FUCK ASS THERE WAS AN ASSERTION FAILURE!!!\n\n");
+		uart0_put_string("\nTHERE WAS AN ASSERTION FAILURE!!!\n\n");
 		uart0_put_string(message);
 	}
 }
@@ -105,12 +106,11 @@ void run_memory_tests(){
 
 	for(i=0; i < 10; i++){
 		int * pInt = get_address_of_memory_block_at_index(i);
-		assert((*pInt) == i, "Fuck, the first memory test failed.");
+		assert((*pInt) == i, "the first memory test failed.");
 	}
 }
 
 int	main(){
-    unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 	SystemInit();
 	uart0_init();
 	uart0_put_string("Hello World!\n\r");

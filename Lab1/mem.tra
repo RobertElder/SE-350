@@ -1,0 +1,22 @@
+*** Creating Trace Output File 'mem.tra' Ok.
+### Preparing for ADS-LD.
+### Creating ADS-LD Command Line
+### List of Objects: adding '"startup_lpc17xx.o"'
+### List of Objects: adding '"system_lpc17xx.o"'
+### List of Objects: adding '"uart_polling.o"'
+### List of Objects: adding '"main.o"'
+### ADS-LD Command completed:
+--cpu Cortex-M3 "startup_lpc17xx.o" "system_lpc17xx.o" "uart_polling.o" "main.o" --strict --scatter "mem.sct" 
+--autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\mem.map" -o "mem.axf"### Preparing Environment (PrepEnvAds)
+### ADS-LD Output File: 'mem.axf'
+### ADS-LD Command File: 'mem.lnp'
+### Checking for dirty Components...
+### Creating CmdFile 'mem.lnp', Handle=0x00000184
+### Writing '.lnp' file
+### ADS-LD Command file 'mem.lnp' is ready.
+### ADS-LD: About to start ADS-LD Thread.
+### ADS-LD: executed with 0 errors
+### Updating obj list
+### LDADS_file() completed.

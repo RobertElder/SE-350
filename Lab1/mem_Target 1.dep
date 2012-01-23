@@ -1,0 +1,4 @@
+Dependencies for Project 'mem', Target 'Target 1': (DO NOT MODIFY !)
+F (.\src\system_LPC17xx.c)(0x4EE1322B)()
+F (.\src\uart_polling.c)(0x4F0A1AF4)()
+F (.\src\startup_LPC17xx.s)(0x4F104629)()

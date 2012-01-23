@@ -1,0 +1,76 @@
+10c10
+<       <TargetName>Target 1</TargetName>
+---
+>       <TargetName>mem SIM</TargetName>
+47c47
+<           <OutputName>Lab1</OutputName>
+---
+>           <OutputName>mem</OutputName>
+139c139
+<           <TargetSelection>0</TargetSelection>
+---
+>           <TargetSelection>1</TargetSelection>
+153c153
+<             <Driver>BIN\UL2CM3.DLL</Driver>
+---
+>             <Driver></Driver>
+223c223
+<             <Ro1Chk>0</Ro1Chk>
+---
+>             <Ro1Chk>1</Ro1Chk>
+280c280
+<                 <Type>1</Type>
+---
+>                 <Type>0</Type>
+285c285
+<                 <Type>1</Type>
+---
+>                 <Type>0</Type>
+290c290
+<                 <Type>1</Type>
+---
+>                 <Type>0</Type>
+300c300
+<                 <Type>1</Type>
+---
+>                 <Type>0</Type>
+368c368
+<             <umfTarg>0</umfTarg>
+---
+>             <umfTarg>1</umfTarg>
+387c387
+<           <GroupName>Startup Code</GroupName>
+---
+>           <GroupName>Startup</GroupName>
+392c392
+<               <FilePath>.\startup_LPC17xx.s</FilePath>
+---
+>               <FilePath>.\src\startup_LPC17xx.s</FilePath>
+397c397
+<           <GroupName>Source Code</GroupName>
+---
+>           <GroupName>Source</GroupName>
+400c400
+<               <FileName>main.c</FileName>
+---
+>               <FileName>system_LPC17xx.c</FileName>
+402c402
+<               <FilePath>.\main.c</FilePath>
+---
+>               <FilePath>.\src\system_LPC17xx.c</FilePath>
+405c405
+<               <FileName>system_LPC17xx.c</FileName>
+---
+>               <FileName>uart_polling.c</FileName>
+407c407
+<               <FilePath>.\system_LPC17xx.c</FilePath>
+---
+>               <FilePath>.\src\uart_polling.c</FilePath>
+410c410
+<               <FileName>uart_polling.c</FileName>
+---
+>               <FileName>main.c</FileName>
+412c412
+<               <FilePath>.\uart_polling.c</FilePath>
+---
+>               <FilePath>.\src\main.c</FilePath>

@@ -486,4 +486,9 @@ void SystemInit (void)
 #if (FLASH_SETUP == 1)                  /* Flash Accelerator Setup            */
   LPC_SC->FLASHCFG  = (LPC_SC->FLASHCFG & ~0x0000F000) | FLASHCFG_Val;
 #endif
+
+// Set Vector table offset value
+#if (__RAM_MODE__==1) // <--- i didn't discover the definition on project yet !!!
+SCB->VTOR = 0x10000000 & 0x3FFFFF80;
+#endif
 }

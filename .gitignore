@@ -1,3 +1,6 @@
 Lab1/Lab1*
 *.uvproj
 *.o
+Lab1/*.crf
+Lab1/*.d
+Lab1/*.lst

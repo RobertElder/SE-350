@@ -10,8 +10,6 @@
 
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;
 
-
-
 int * pMaxNumberOfMemoryBlocksEverAllocated;
 
 void assert(int value, unsigned char * message){

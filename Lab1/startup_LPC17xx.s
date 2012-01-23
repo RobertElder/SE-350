@@ -1,28 +1,24 @@
-;/**************************************************************************//**
-; * @file     startup_LPC17xx.s
-; * @brief    CMSIS Cortex-M3 Core Device Startup File for
-; *           NXP LPC17xx Device Series
-; * @version  V1.10
-; * @date     06. April 2011
+;/*****************************************************************************
+; * @file:    startup_LPC17xx.s
+; * @purpose: CMSIS Cortex-M3 Core Device Startup File 
+; *           for the NXP LPC17xx Device Series 
+; * @version: V1.01
+; * @date:    21. December 2009
+; *------- <<< Use Configuration Wizard in Context Menu >>> ------------------
 ; *
-; * @note
-; * Copyright (C) 2009-2011 ARM Limited. All rights reserved.
+; * Copyright (C) 2009 ARM Limited. All rights reserved.
+; * ARM Limited (ARM) is supplying this software for use with Cortex-M3 
+; * processor based microcontrollers.  This file can be freely distributed 
+; * within development tools that are supporting such ARM based processors. 
 ; *
-; * @par
-; * ARM Limited (ARM) is supplying this software for use with Cortex-M
-; * processor based microcontrollers.  This file can be freely distributed
-; * within development tools that are supporting such ARM based processors.
-; *
-; * @par
 ; * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
 ; * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
 ; * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
 ; * ARM SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
 ; * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
 ; *
-; ******************************************************************************/
+; *****************************************************************************/
 
-; *------- <<< Use Configuration Wizard in Context Menu >>> ------------------
 
 ; <h> Stack Configuration
 ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
@@ -107,8 +103,8 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 DCD     MCPWM_IRQHandler          ; 46: Motor Control PWM
                 DCD     QEI_IRQHandler            ; 47: Quadrature Encoder Interface
                 DCD     PLL1_IRQHandler           ; 48: PLL1 Lock (USB PLL)
-                DCD     USBActivity_IRQHandler    ; 49: USB Activity interrupt to wakeup
-                DCD     CANActivity_IRQHandler    ; 50: CAN Activity interrupt to wakeup
+				DCD		USBActivity_IRQHandler    ; USB Activity interrupt to wakeup
+				DCD		CANActivity_IRQHandler    ; CAN Activity interrupt to wakeup
 
 
                 IF      :LNOT::DEF:NO_CRP
@@ -124,16 +120,13 @@ CRP_Key         DCD     0xFFFFFFFF
 
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
-                IMPORT  SystemInit
                 IMPORT  __main
-                LDR     R0, =SystemInit
-                BLX     R0
                 LDR     R0, =__main
                 BX      R0
                 ENDP
 
 
-; Dummy Exception Handlers (infinite loops which can be modified)
+; Dummy Exception Handlers (infinite loops which can be modified)                
 
 NMI_Handler     PROC
                 EXPORT  NMI_Handler               [WEAK]
@@ -212,42 +205,42 @@ Default_Handler PROC
                 EXPORT  MCPWM_IRQHandler          [WEAK]
                 EXPORT  QEI_IRQHandler            [WEAK]
                 EXPORT  PLL1_IRQHandler           [WEAK]
-                EXPORT  USBActivity_IRQHandler    [WEAK]
-                EXPORT  CANActivity_IRQHandler    [WEAK]
+				EXPORT  USBActivity_IRQHandler    [WEAK]
+				EXPORT  CANActivity_IRQHandler    [WEAK]
 
-WDT_IRQHandler
-TIMER0_IRQHandler
-TIMER1_IRQHandler
-TIMER2_IRQHandler
-TIMER3_IRQHandler
-UART0_IRQHandler
-UART1_IRQHandler
-UART2_IRQHandler
-UART3_IRQHandler
-PWM1_IRQHandler
-I2C0_IRQHandler
-I2C1_IRQHandler
-I2C2_IRQHandler
-SPI_IRQHandler
-SSP0_IRQHandler
-SSP1_IRQHandler
-PLL0_IRQHandler
-RTC_IRQHandler
-EINT0_IRQHandler
-EINT1_IRQHandler
-EINT2_IRQHandler
-EINT3_IRQHandler
-ADC_IRQHandler
-BOD_IRQHandler
-USB_IRQHandler
-CAN_IRQHandler
-DMA_IRQHandler
-I2S_IRQHandler
-ENET_IRQHandler
-RIT_IRQHandler
-MCPWM_IRQHandler
-QEI_IRQHandler
-PLL1_IRQHandler
+WDT_IRQHandler           
+TIMER0_IRQHandler         
+TIMER1_IRQHandler         
+TIMER2_IRQHandler         
+TIMER3_IRQHandler         
+UART0_IRQHandler          
+UART1_IRQHandler          
+UART2_IRQHandler          
+UART3_IRQHandler          
+PWM1_IRQHandler           
+I2C0_IRQHandler           
+I2C1_IRQHandler           
+I2C2_IRQHandler           
+SPI_IRQHandler            
+SSP0_IRQHandler           
+SSP1_IRQHandler           
+PLL0_IRQHandler           
+RTC_IRQHandler            
+EINT0_IRQHandler          
+EINT1_IRQHandler          
+EINT2_IRQHandler          
+EINT3_IRQHandler          
+ADC_IRQHandler            
+BOD_IRQHandler            
+USB_IRQHandler            
+CAN_IRQHandler            
+DMA_IRQHandler          
+I2S_IRQHandler            
+ENET_IRQHandler       
+RIT_IRQHandler          
+MCPWM_IRQHandler             
+QEI_IRQHandler            
+PLL1_IRQHandler           
 USBActivity_IRQHandler
 CANActivity_IRQHandler
 
@@ -262,13 +255,13 @@ CANActivity_IRQHandler
 ; User Initial Stack & Heap
 
                 IF      :DEF:__MICROLIB
-
+                
                 EXPORT  __initial_sp
                 EXPORT  __heap_base
                 EXPORT  __heap_limit
-
+                
                 ELSE
-
+                
                 IMPORT  __use_two_region_memory
                 EXPORT  __user_initial_stackheap
 __user_initial_stackheap

@@ -2,11 +2,14 @@
 #include <system_LPC17xx.h>
 #include "uart_polling.h"
 
-#define START_OF_MEMORY_ALLOCATION_TABLE 0x1000A000
-#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0x00002000
+#define START_OF_MEMORY_ALLOCATION_TABLE 0x1008000
+#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0x0001000
 #define MEMORY_BLOCK_SIZE 0x100
 
 #define MAX_ALLOWED_MEMORY_BLOCKS 0x100
+
+extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;
+
 
 
 int * pMaxNumberOfMemoryBlocksEverAllocated;
@@ -109,6 +112,7 @@ void run_memory_tests(){
 }
 
 int	main(){
+    unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 	SystemInit();
 	uart0_init();
 	uart0_put_string("Hello World!\n\r");

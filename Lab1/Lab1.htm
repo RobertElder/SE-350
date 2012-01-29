@@ -1,9 +1,9 @@
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
-<title>Static Call Graph - [C:\Assignments\SE-350\Lab1\Lab1.axf]</title></head>
+<title>Static Call Graph - [C:\Users\robert-elder\SE-350\Lab1\Lab1.axf]</title></head>
 <body><HR>
-<H1>Static Call Graph for image C:\Assignments\SE-350\Lab1\Lab1.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 4.1 [Build 894]: Last Updated: Mon Jan 23 11:11:01 2012
+<H1>Static Call Graph for image C:\Users\robert-elder\SE-350\Lab1\Lab1.axf</H1><HR>
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 4.1 [Build 894]: Last Updated: Sun Jan 29 18:15:12 2012
 <BR><P>
 <H3>Maximum Stack Usage =         68 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -480,14 +480,14 @@ Global Symbols
 <LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;allocate_memory_block_at_index
 </UL>
 
-<P><STRONG><a name="[48]"></a>get_address_of_memory_block_allocation_status_at_index</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, main.o(.text))
+<P><STRONG><a name="[48]"></a>get_address_of_memory_block_allocation_status_at_index</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, main.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;release_memory_block
 <LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;request_memory_block
 <LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;allocate_memory_block_at_index
 </UL>
 
-<P><STRONG><a name="[47]"></a>allocate_memory_block_at_index</STRONG> (Thumb, 24 bytes, Stack size 4 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = allocate_memory_block_at_index
+<P><STRONG><a name="[47]"></a>allocate_memory_block_at_index</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = allocate_memory_block_at_index
 </UL>
 <BR>[Calls]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_address_of_memory_block_allocation_status_at_index
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_address_of_memory_block_at_index
@@ -495,7 +495,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;request_memory_block
 </UL>
 
-<P><STRONG><a name="[4a]"></a>request_memory_block</STRONG> (Thumb, 100 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[4a]"></a>request_memory_block</STRONG> (Thumb, 98 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = request_memory_block &rArr; assert &rArr; uart_put_string
 </UL>
 <BR>[Calls]<UL><LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;allocate_memory_block_at_index
@@ -514,7 +514,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[4c]"></a>run_memory_tests</STRONG> (Thumb, 70 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[4c]"></a>run_memory_tests</STRONG> (Thumb, 68 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = run_memory_tests &rArr; request_memory_block &rArr; assert &rArr; uart_put_string
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;request_memory_block

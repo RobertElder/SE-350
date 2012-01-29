@@ -49,7 +49,7 @@ void * request_memory_block (){
 		//  Check the bit at the start of the memory allocation table plus the number of bytes
 	 	pIsMemoryInUse = get_address_of_memory_block_allocation_status_at_index(i);
 		//	Does this byte indicate that the memory at block i is already in use?
-		if(*pIsMemoryInUse > 0)	{
+		if(*pIsMemoryInUse == 0)	{
 			return allocate_memory_block_at_index(i);
 		}
 	}
@@ -97,7 +97,9 @@ void init_memory_allocation_table(){
 void run_memory_tests(){
 	// This test assumes that they were allocated in consecutive order
 
-	int i = 0;
+	int i;
+
+
 	for(i=0; i < 10; i++){
 		int * pInt = request_memory_block();
 		assert((int)pInt, "Request memory returned null");

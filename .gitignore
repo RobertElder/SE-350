@@ -1,1 +1,5 @@
 *.plg
+*.axf
+*.tra
+*.htm
+*.o

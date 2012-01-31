@@ -3,3 +3,12 @@
 *.tra
 *.htm
 *.o
+*.lnp
+*.map
+*.crf
+*.d
+*.robert-elder
+*.bak
+*.uvopt
+*.uvproj
+*.dep

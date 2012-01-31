@@ -8,7 +8,9 @@
 *.crf
 *.d
 *.robert-elder
+*.James
 *.bak
+*.Bak
 *.uvopt
 *.uvproj
 *.dep

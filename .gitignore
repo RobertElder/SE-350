@@ -7,3 +7,5 @@
 *.o
 *.dep
 *.lst
+*.plg
+*.tra

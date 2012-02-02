@@ -1,4 +1,0 @@
---cpu Cortex-M3 ".\flash\startup_lpc17xx.o" ".\flash\system_lpc17xx.o" ".\flash\uart_polling.o" ".\flash\main_uart_polling.o" --strict --scatter ".\FLASH\UART_polling.sct" 
---autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
---info sizes --info totals --info unused --info veneers 
- --list ".\FLASH\UART_polling.map" -o ".\FLASH\UART_polling.axf"

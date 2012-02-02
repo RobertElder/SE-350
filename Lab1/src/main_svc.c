@@ -6,7 +6,7 @@
  *       it is OK if you only use the C library for debugging purpose 
  *       during the development/prototyping phase
  */
-
+#define DEBUG_0 1
 #include <LPC17xx.h>
 #include <system_LPC17xx.h>
 #ifdef DEBUG_0
@@ -58,8 +58,8 @@ void run_memory_tests(){
 		//  If that address points to nothing, allocate new memory and put the pointer there
 		if(*pointerToCurrentMemoryBlockPointer == (int *)0){
 			*pointerToCurrentMemoryBlockPointer = (int *)request_memory_block();
-			uart0_put_string("Test case ");print_unsigned_integer(currentTestCase);	uart0_put_string(" of "); print_unsigned_integer(testCases);uart0_put_string(": ");
-			uart0_put_string("Allocated memory block: ");print_unsigned_integer((int)(*pointerToCurrentMemoryBlockPointer));uart0_put_string("\n\r");
+			//uart0_put_string("Test case ");print_unsigned_integer(currentTestCase);	uart0_put_string(" of "); print_unsigned_integer(testCases);uart0_put_string(": ");
+			//uart0_put_string("Allocated memory block: ");print_unsigned_integer((int)(*pointerToCurrentMemoryBlockPointer));uart0_put_string("\n\r");
 			for(tmpCounter = 0; tmpCounter < numberOfPointersYouCanPutInOneBlockOfMemory; tmpCounter++){
 				// Fill this new block of memory with the ints that are the address of the block itself plus the offset(tmpCounter) of the that int 
 				(*pointerToCurrentMemoryBlockPointer)[tmpCounter] = ((int)(*pointerToCurrentMemoryBlockPointer)) + tmpCounter;
@@ -71,8 +71,8 @@ void run_memory_tests(){
 				assert((*pointerToCurrentMemoryBlockPointer)[tmpCounter] == ((int)(*pointerToCurrentMemoryBlockPointer)) + tmpCounter,"Memory test failure: block failed sanity check.");
 			}
 			//  Delete this block
-			uart0_put_string("Test case ");print_unsigned_integer(currentTestCase);	uart0_put_string(" of "); print_unsigned_integer(testCases);uart0_put_string(": ");
-			uart0_put_string("Memory block ");print_unsigned_integer((int)(*pointerToCurrentMemoryBlockPointer));uart0_put_string(" looks OK, releasing.\n\r");
+			//uart0_put_string("Test case ");print_unsigned_integer(currentTestCase);	uart0_put_string(" of "); print_unsigned_integer(testCases);uart0_put_string(": ");
+			//uart0_put_string("Memory block ");print_unsigned_integer((int)(*pointerToCurrentMemoryBlockPointer));uart0_put_string(" looks OK, releasing.\n\r");
 			release_memory_block(*pointerToCurrentMemoryBlockPointer);
 			*pointerToCurrentMemoryBlockPointer = 0;
 		}
@@ -138,8 +138,9 @@ int main()
 
 	run_memory_tests();
     print_some_numbers();
-	ret_val = release_processor();
 
-	// should never reach here!!!
+	ret_val = release_processor();
+	uart0_put_string("\nShould never reach here!!!\n\r");
+	
 	return -1;	
 }

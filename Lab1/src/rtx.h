@@ -31,9 +31,4 @@ extern int _release_memory_block(U32 p_func, void * p_mem_blk) __SVC_0;
 
 #define MAX_ALLOWED_MEMORY_BLOCKS 0x100
 
-int k_release_processor(void);
-void* k_request_memory_block(void);
-int k_release_memory_block(void *);
-
-
 #endif

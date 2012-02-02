@@ -48,7 +48,7 @@ uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
 pcb_t pcb1;
 pcb_t pcb2;
 
-pcb_t  *gp_current_process = NULL;  // always point to the current process
+pcb_t* gp_current_process = NULL;  // always point to the current process
 
 
 extern void process_init(void);	    // initialize all procs in the system

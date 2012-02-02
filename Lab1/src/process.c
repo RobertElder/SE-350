@@ -25,10 +25,10 @@
  * @brief: initialize all processes in the system
  * NOTE: We assume there are only two user processes in the system in this example.
 
- *       We should have used an array or linked list pcbs so the repetive coding
+ *       TODO: We should have used an array or linked list pcbs so the repetive coding
  *       can be eliminated.
 
- *       We should have also used an initialization table which contains the entry
+ *       TODO: We should have also used an initialization table which contains the entry
  *       points of each process so that this code does not have to hard code
  *       proc1 and proc2 symbols. We leave all these imperfections as excercies to the reader 
  */
@@ -112,15 +112,15 @@ int k_release_processor(void)
 {
 	 volatile int pid;
 	 volatile proc_state_t state;
-	 pcb_t * p_pcb_old = NULL;
+	 pcb_t* p_pcb_old = NULL;
 
 	 pid = scheduler();
 	 if (gp_current_process == NULL) {
+	 	// error occured (scheduler should null-check)
 	     return -1;  
 	 }
 
 	 p_pcb_old = gp_current_process;
-
 
 	 if (pid == 1) {
 	     gp_current_process = &pcb1;
@@ -135,6 +135,7 @@ int k_release_processor(void)
      if (state == NEW) {
 	     if (p_pcb_old->m_state != NEW) {
 		     p_pcb_old->m_state = RDY;
+			 // TODO: figure out what __get_MSP() does
 			 p_pcb_old->mp_sp = (uint32_t *) __get_MSP();
 		 }
 		 gp_current_process->m_state = RUN;

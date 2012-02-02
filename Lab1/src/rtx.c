@@ -16,18 +16,6 @@
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
                                                  // refer to RVCT Linker User Guide
 
-void* k_request_memory_block(void) {
-     #ifdef DEBUG_0
-	 unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
-	 printf("free mem starts at 0x%x\n", free_mem);
-	 #endif // DEBUG_0
-	 return (void *)0;
-}
-
-int k_release_memory_block(void* p_mem_blk) {
-     return 0;
-}
-
 
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;
 unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
@@ -54,7 +42,7 @@ void * allocate_memory_block_at_index(int memoryBlockIndex){
 	return get_address_of_memory_block_at_index(memoryBlockIndex);
 }
 
-void * request_memory_block (){
+void * k_request_memory_block (){
 	// This variable will point to a byte that will be 
 	// 0 if no block is allocated at that index or 
 	// 1 if there is a block allocated there
@@ -80,7 +68,7 @@ void * request_memory_block (){
 	return rtn;
 }
 
-int release_memory_block (void * MemoryBlock){
+int k_release_memory_block (void * MemoryBlock){
 	// Whatever value we are given it should be inside the range of possible allocated blocks
 	//  I don't know why you can't just subtract the constant, but for some reason, when you do it will add 0x4000 to the result: WTF?
 	int startOfAllocatableMemory = START_OF_ALLOCATABLE_MEMORY;

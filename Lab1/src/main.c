@@ -186,7 +186,7 @@ void print_some_numbers(){
 	}
 }
 
-int	main(){
+int	main2(){
 	SystemInit();
 	uart0_init();
 	uart0_put_string("Hello World!\n\r");
@@ -196,6 +196,7 @@ int	main(){
 	uart0_put_string("\nProgram Terminated normally\n\r");
 	return 0;
 }
+
 
 
 

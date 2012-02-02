@@ -11,11 +11,16 @@
 #include <system_LPC17xx.h>
 #ifdef DEBUG_0
 #include <stdio.h>
+#else
+#define NULL 0
 #endif // DEBUG_0
 #include "uart_polling.h"
+
 #include "rtx.h"
 
-int main()
+extern void process_init(void);
+
+int main() 
 {
 	 
 	volatile unsigned int ret_val = 1234;
@@ -23,21 +28,15 @@ int main()
 
 	SystemInit();	// initialize the system
 	__disable_irq();
-	uart0_init();
+	uart0_init();   
+	process_init();
 	__enable_irq();
 	
 	// transit to unprivileged level, default MSP is used
 	__set_CONTROL(__get_CONTROL() | BIT(0));  
 
 	ret_val = release_processor();
-	ret_val = release_memory_block(NULL);
-	ret_val = (unsigned int) request_memory_block();
-#ifdef DEBUG_0
-	// printf has been retargeted to use the UART0
-	// check Retarget.c file
-	printf("The ret_val=%d\n",ret_val); 
-#endif // DEBUG_0
-	 
-	
-	return 0;	
+
+	// should never reach here!!!
+	return -1;	
 }

@@ -36,7 +36,7 @@ typedef struct pcb {
 } pcb_t;
 
 
-// NOTE the example code uses compile time memory for stack allocation
+// TODO the example code uses compile time memory for stack allocation
 // This makes the image size quite large. 
 // The project requires you to use dynamically allocated memory for
 // stack operation. The focus of the example code is for context switching,

@@ -1,7 +1,7 @@
 /* @brief: rtx.h User API prototype, this is an example only
  * @author: Yiqing Huang
  * @date: 2012/01/08
- */
+  */
 #ifndef _RTX_H
 #define _RTX_H
 
@@ -23,4 +23,17 @@ extern int k_release_memory_block(void *);
 #define release_memory_block(p_mem_blk) _release_memory_block((U32)k_release_memory_block, p_mem_blk)
 extern int _release_memory_block(U32 p_func, void * p_mem_blk) __SVC_0;
 
-#endif // !_RTX_H_
+
+
+#define START_OF_MEMORY_ALLOCATION_TABLE free_mem
+#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0x00002000
+#define MEMORY_BLOCK_SIZE 0x100
+
+#define MAX_ALLOWED_MEMORY_BLOCKS 0x100
+
+int k_release_processor(void);
+void* k_request_memory_block(void);
+int k_release_memory_block(void *);
+
+
+#endif

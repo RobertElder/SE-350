@@ -139,7 +139,7 @@ int scheduler(void)
 	//Scan for highest priority process
 	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
 		pcb_t *proc = &process_array[procIndex];
-		if(proc->m_pid != pid && proc->m_priority < highest_priority) {
+		if(proc->m_pid != current_pid && proc->m_priority < highest_priority) {
 		 	highest_priority = proc->m_priority;
 			pid_to_select = proc->m_pid;
 		}

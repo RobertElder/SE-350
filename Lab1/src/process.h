@@ -12,7 +12,7 @@
 #ifdef DEBUG_0
 #define USR_SZ_STACK 0x200   // user proc stack size 2048 = 0x200 *4 bytes
 #else
-#define USR_SZ_STACK 0x080   // user proc stack size 512 = 0x80 *4 bytes
+#define USR_SZ_STACK 0x080   // user process stack size 512 = 0x80 *4 bytes
 #endif // DEBUG_0
 
 #define NULL 0
@@ -38,7 +38,7 @@ typedef struct pcb {
 // This makes the image size quite large. 
 // The project requires you to use dynamically allocated memory for
 // stack operation. The focus of the example code is for context switching,
-// so we use statically allocated stack to simply the code.
+// so we use statically allocated stack to simplify the code.
 uint32_t stack1[USR_SZ_STACK];      // stack for proc1
 uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
 

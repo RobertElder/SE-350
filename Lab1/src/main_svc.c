@@ -25,11 +25,17 @@ int main()
 	 
 	volatile unsigned int ret_val = 1234;
 	
-
 	SystemInit();	// initialize the system
+
+	// Disable interrupt requests
 	__disable_irq();
+
+	// Initialize UART output
 	uart0_init();   
+
+	// Initialize stack and PCB for processes
 	process_init();
+	// Enable interrupt requests
 	__enable_irq();
 	
 	// transit to unprivileged level, default MSP is used

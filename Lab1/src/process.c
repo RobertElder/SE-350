@@ -22,10 +22,12 @@
 #endif // DEBUG_0
 
 /**
- * @biref: initialize all processes in the system
+ * @brief: initialize all processes in the system
  * NOTE: We assume there are only two user processes in the system in this example.
+
  *       We should have used an array or linked list pcbs so the repetive coding
  *       can be eliminated.
+
  *       We should have also used an initialization table which contains the entry
  *       points of each process so that this code does not have to hard code
  *       proc1 and proc2 symbols. We leave all these imperfections as excercies to the reader 
@@ -35,6 +37,7 @@ void process_init()
     volatile int i;
 	uint32_t * sp;
 
+	/* INIT FIRST PROCESS */
 	// initialize the first process	exception stack frame
 	pcb1.m_pid = 1;
 	pcb1.m_state = NEW;
@@ -42,6 +45,8 @@ void process_init()
 	sp  = stack1 + USR_SZ_STACK;
     
 	// 8 bytes alignement adjustment to exception stack frame
+	// TODO: figure out why we want sp to have 4 right-aligned non-zero bits before 
+	// decrementing it.
 	if (!(((uint32_t)sp) & 0x04)) {
 	    --sp; 
 	}
@@ -49,11 +54,11 @@ void process_init()
 	*(--sp)  = INITIAL_xPSR;      // user process initial xPSR  
 	*(--sp)  = (uint32_t) proc1; // PC contains the entry point of the process
 
-	for (i=0; i<6; i++) { // R0-R3, R12 are cleared with 0
+	for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
 		*(--sp) = 0x0;
 	}
     pcb1.mp_sp = sp;
-
+	/* END INIT FIRST PROCESS */
 
 	// initialize the second process exception stack frame
     pcb2.m_pid = 2;

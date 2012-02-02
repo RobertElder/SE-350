@@ -13,11 +13,6 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
 int * pMaxNumberOfMemoryBlocksEverAllocated;
 
-
-
-
-
-
 void * get_address_of_memory_block_at_index(int memoryBlockIndex){
 	//  taken up by pMaxNumberOfMemoryBlocksEverAllocated plus the offset of the byte for that memory block
 	return (void*)(START_OF_ALLOCATABLE_MEMORY + (memoryBlockIndex * MEMORY_BLOCK_SIZE));

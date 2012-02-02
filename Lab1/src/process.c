@@ -87,6 +87,9 @@ void process_init()
 				break;
 		}
 
+		// 8 bytes alignement adjustment to exception stack frame
+		// TODO: figure out why we want sp to have 4 right-aligned non-zero bits before 
+		// decrementing it.
 		if (!(((uint32_t)sp) & 0x04)) {
 		    --sp; 
 		}
@@ -109,6 +112,10 @@ void process_init()
 				break;
 		}
 
+		for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
+			*(--sp) = 0x0;
+		}
+
 		process.mp_sp = sp;
 
 		process_array[procIndex] = process;
@@ -127,6 +134,7 @@ int scheduler(void)
 	volatile int pid_to_select;
 	volatile int highest_priority;
 	int procIndex;
+	pcb_t *proc;
 
 	if (gp_current_process == NULL) {
 	   gp_current_process = &process_array[1];
@@ -136,9 +144,11 @@ int scheduler(void)
 	current_pid = gp_current_process->m_pid;
 	highest_priority = 4;	
 
+	
+
 	//Scan for highest priority process
 	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
-		pcb_t *proc = &process_array[procIndex];
+		proc = &process_array[procIndex];
 		if(proc->m_pid != current_pid && proc->m_priority < highest_priority) {
 		 	highest_priority = proc->m_priority;
 			pid_to_select = proc->m_pid;

@@ -22,7 +22,7 @@
 
 extern int const NUM_PROCESSES = 3;
 
-typedef enum {NEW = 0, RDY, RUN, BLK} proc_state_t;  // process states, note we only assume three states in this example
+typedef enum {NEW = 0, RDY, RUN} proc_state_t;  // process states, note we only assume three states in this example
 
 typedef struct pcb {
   

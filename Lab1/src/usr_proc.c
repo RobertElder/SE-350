@@ -5,6 +5,12 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
+void nullProc() {
+	while(1) {
+		release_processor();
+	}
+}
+
 void proc1(void)
 {
     volatile int i =0;

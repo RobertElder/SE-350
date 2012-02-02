@@ -21,6 +21,38 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
+int set_process_priority (int process_ID, int priority) {	
+	pcb_t * process = get_process_pointer_from_id(process_ID);
+
+	assert(process != NULL, "Invalid process ID");
+
+   	if(priority >= 0 && priority < 4) {
+		process->m_priority = priority;
+		return 0;
+	} else {
+	 	return -1;
+	}
+}
+
+int get_process_priority (int process_ID) {
+	pcb_t * process = get_process_pointer_from_id(process_ID);
+
+	assert(process != NULL, "Invalid process ID");
+
+	return process->m_priority;
+}
+
+pcb_t * get_process_pointer_from_id(int process_ID) {
+	switch(process_ID) {
+	 	case 1:
+			return &pcb1;
+		case 2:
+			return &pcb2;
+		default:
+			return NULL;	
+	}
+}
+
 /**
  * @biref: initialize all processes in the system
  * NOTE: We assume there are only two user processes in the system in this example.
@@ -38,6 +70,7 @@ void process_init()
 	// initialize the first process	exception stack frame
 	pcb1.m_pid = 1;
 	pcb1.m_state = NEW;
+	pcb1.m_priority = 0;
 
 	sp  = stack1 + USR_SZ_STACK;
     
@@ -45,7 +78,7 @@ void process_init()
 	if (!(((uint32_t)sp) & 0x04)) {
 	    --sp; 
 	}
-	
+											  
 	*(--sp)  = INITIAL_xPSR;      // user process initial xPSR  
 	*(--sp)  = (uint32_t) proc1; // PC contains the entry point of the process
 
@@ -58,6 +91,7 @@ void process_init()
 	// initialize the second process exception stack frame
     pcb2.m_pid = 2;
 	pcb2.m_state = NEW;
+	pcb2.m_priority = 1;
 
 	sp  = stack2 + USR_SZ_STACK;
     if (!(((uint32_t)sp) & 0x04)) {    
@@ -71,11 +105,31 @@ void process_init()
 		*(--sp) = 0x0;
 	}
 	pcb2.mp_sp = sp;
+
+	// initialize the null process	exception stack frame
+	pcb0.m_pid = 0;
+	pcb0.m_state = NEW;
+	pcb0.m_priority = 4;
+
+	sp  = stack0 + USR_SZ_STACK;
+    
+	// 8 bytes alignement adjustment to exception stack frame
+	if (!(((uint32_t)sp) & 0x04)) {
+	    --sp; 
+	}
+	
+	*(--sp)  = INITIAL_xPSR;      // user process initial xPSR  
+	*(--sp)  = (uint32_t) nullProc; // PC contains the entry point of the process
+
+	for (i=0; i<6; i++) { // R0-R3, R12 are cleared with 0
+		*(--sp) = 0x0;
+	}
+    pcb0.mp_sp = sp;
 }
 
 /*@brief: scheduler, pick the pid of the next to run process
  *@return: pid of the next to run process
- *         -1 if error happens
+ *         selects null process by default
  *POST: if gp_current_process was NULL, then it gets set to &pcb1.
  *      No other effect on other global variables.
  */
@@ -95,7 +149,7 @@ int scheduler(void)
 	} else if (pid == 2) {
 		return 1;
 	} else {
-		return -1; // error code -1
+		return 0; // null process
 	}
 }
 /**
@@ -117,13 +171,11 @@ int k_release_processor(void)
 	 p_pcb_old = gp_current_process;
 
 
-	 if (pid == 1) {
-	     gp_current_process = &pcb1;
-	 } else if (pid ==2){
-	     gp_current_process = &pcb2;
-	 } else {
-	     return -1;
-	 }					 
+	gp_current_process = get_process_pointer_from_id(pid);
+
+	if(gp_current_process == NULL) {
+	 	return -1;
+	}
 
 	 state = gp_current_process->m_state;
 

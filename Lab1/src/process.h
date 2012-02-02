@@ -30,7 +30,9 @@ typedef struct pcb {
   
   uint32_t *mp_sp;      // stack pointer of the process
   uint32_t m_pid;		// process id
-  proc_state_t m_state; // state of the process       
+  proc_state_t m_state; // state of the process  
+  uint32_t m_priority; //Priority of the process     
+
 } pcb_t;
 
 
@@ -39,24 +41,32 @@ typedef struct pcb {
 // The project requires you to use dynamically allocated memory for
 // stack operation. The focus of the example code is for context switching,
 // so we use statically allocated stack to simply the code.
+
+// TODO: fix this
+uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
 uint32_t stack1[USR_SZ_STACK];      // stack for proc1
 uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
 
 // NOTE: The example code uses compile time memory for pcb storage.
 //       If the system supports dynamica process creation/deletion,
 //       then pcb data structure should use dynamically allocated memory
+pcb_t pcb0;
 pcb_t pcb1;
 pcb_t pcb2;
 
 pcb_t  *gp_current_process = NULL;  // always point to the current process
 
-
+pcb_t * get_process_pointer_from_id(int);
+int set_process_priority (int, int);
+int get_process_priority (int);
+										
 extern void process_init(void);	    // initialize all procs in the system
 int scheduler(void);				// pick the pid of the next to run process
 int k_release_process(void);		// kernel release_process API
 
 extern void proc1(void);			// user process 1
 extern void proc2(void);			// user process 2
+extern void nullProc(void);				// null process
 extern void __rte(void);			// pop exception stack frame
 
 #endif // ! _PROCESS_H_

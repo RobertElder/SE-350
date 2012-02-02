@@ -407,14 +407,34 @@
               <FilePath>.\src\uart_polling.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\main.c</FilePath>
-            </File>
-            <File>
               <FileName>utils.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\rtx.c</FilePath>
+            </File>
+            <File>
+              <FileName>main_svc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\main_svc.c</FilePath>
+            </File>
+            <File>
+              <FileName>process.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\process.c</FilePath>
+            </File>
+            <File>
+              <FileName>usr_proc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\usr_proc.c</FilePath>
+            </File>
+            <File>
+              <FileName>HAL.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\HAL.c</FilePath>
             </File>
           </Files>
         </Group>

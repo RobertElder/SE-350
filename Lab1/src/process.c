@@ -22,7 +22,9 @@
 #endif // DEBUG_0
 
 /**
- * @biref: initialize all processes in the system
+ * 
+
+
  * NOTE: We assume there are only two user processes in the system in this example.
  *       We should have used an array or linked list pcbs so the repetive coding
  *       can be eliminated.

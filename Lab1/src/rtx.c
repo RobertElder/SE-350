@@ -16,11 +16,6 @@
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
                                                  // refer to RVCT Linker User Guide
 
-int k_release_processor(void){
-     uart0_put_string("k_release_processor: entering\n\r");
-	 return 0;
-}
-
 void* k_request_memory_block(void) {
      #ifdef DEBUG_0
 	 unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
@@ -32,9 +27,6 @@ void* k_request_memory_block(void) {
 int k_release_memory_block(void* p_mem_blk) {
      return 0;
 }
-
-
-
 
 
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;

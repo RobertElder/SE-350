@@ -16,6 +16,7 @@ __asm void __rte(void)
 __asm void SVC_Handler (void) 
 {
 	PRESERVE8			; 8 bytes alignement of the stack
+;MRS: Move the contents of a special register to a general-purpose register.
 	MRS  R0, MSP		; Read MSP
 	
 	LDR  R1, [R0, #24]	; Read Saved PC from SP
@@ -30,10 +31,14 @@ __asm void SVC_Handler (void)
 	BNE  SVC_EXIT       ; if SVC Number !=0, exit
 
 	LDM  R0, {R0-R3, R12}; Read R0-R3, R12 from stack. NOTE R0 contains the sp before this instruction
+;  From the manual
+;The BL and BLX instructions write the address of the next instruction to LR (the link register, R14).
+;The Link Register (LR) is register R14. It stores the return information for subroutines,function calls, and exceptions.
 	BLX  R12             ; Call SVC Function, 
 	                     ; R12 contains the corresponding 
 						 ; C kernel functions entry point
 						 ; R0-R3 contains the kernel function input params according to AAPCS
+						;  The BX and BLX Rm instructions cause a UsageFault exception if bit[0] of Rm is 0.
 						 
 	MRS  R12, MSP        ; Read MSP
 	STR  R0, [R12]       ; store C kernel function return value in R0

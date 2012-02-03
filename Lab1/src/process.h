@@ -57,9 +57,9 @@ uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
 
 pcb_t *gp_current_process = NULL;  // always point to the current process
 
-pcb_t * get_process_pointer_from_id(int);
-int set_process_priority (int, int);
-int get_process_priority (int);
+extern pcb_t * get_process_pointer_from_id(int);
+extern int set_process_priority (int, int);
+extern int get_process_priority (int);
 										
 extern void process_init(void);	    // initialize all procs in the system
 int scheduler(void);				// pick the pid of the next to run process

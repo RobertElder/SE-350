@@ -14,7 +14,7 @@
 
 #include <LPC17xx.h>
 #include <system_LPC17xx.h>
-#include "uart_polling.h"
+#include "utils.h"
 #include "process.h"
 #include "utils.h"
 

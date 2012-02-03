@@ -93,6 +93,10 @@ void run_priority_tests() {
 	 		assert(get_process_priority(procIndex) == procIndex - 1, "Process priority is invalid. Test failed.");
 		}
 	}
+
+	for(procIndex = 1; procIndex < NUM_PROCESSES - 1; ++procIndex) {
+		assert(set_process_priority(procIndex, 3) == 0 && get_process_priority(procIndex) == 3, "Could not set process priority. Test failed.");
+	}
 	
 	uart0_put_string("Priority test passed. \n\r");
 }

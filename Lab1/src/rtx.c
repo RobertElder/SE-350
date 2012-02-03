@@ -75,7 +75,7 @@ void * k_request_memory_block (){
 }
 
 int k_release_memory_block (void * MemoryBlock){
-	/*  THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
+	/*  TODO: THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
 	This primitive returns the memory block to the RTX. If there are processes waiting for a block, the block is given to the
 	highest priority process, which is then unblocked. The caller of this primitive never blocks, but could be preempted. Thus,
 	it may affect the currently executing process.

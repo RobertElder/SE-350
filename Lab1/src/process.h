@@ -22,6 +22,7 @@
 
 extern int const NUM_PROCESSES = 3;
 
+// TODO add BLOCKED state						   
 typedef enum {NEW = 0, RDY, RUN} proc_state_t;  // process states, note we only assume three states in this example
 
 typedef struct pcb {

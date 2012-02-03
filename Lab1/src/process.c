@@ -137,14 +137,13 @@ int scheduler(void)
 	pcb_t *proc;
 
 	if (gp_current_process == NULL) {
+		// TODO: set it ti NULL process
 	   gp_current_process = &process_array[1];
 	   return 1;
 	}
 
 	current_pid = gp_current_process->m_pid;
 	highest_priority = 4;	
-
-	
 
 	//Scan for highest priority process
 	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {

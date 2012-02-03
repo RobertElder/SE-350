@@ -16,7 +16,6 @@
 #include <system_LPC17xx.h>
 #include "utils.h"
 #include "process.h"
-#include "utils.h"
 
 #ifdef DEBUG_0
 #include <stdio.h>
@@ -70,7 +69,7 @@ void process_init()
 
 		process.m_pid = procIndex;
 		process.m_state = NEW;
-		process.m_priority = (procIndex == 0) ? 4 : procIndex - 1;
+		process.m_priority = (procIndex == 0) ? 4 : (procIndex - 1);
 
 
 		switch(procIndex) {
@@ -82,7 +81,13 @@ void process_init()
 				break;
 			case 2:
 				sp  = stack2 + USR_SZ_STACK;
-				break;					
+				break;	
+			case 3:
+				sp  = stack3 + USR_SZ_STACK;
+				break;				
+			case 4:
+				sp  = stack4 + USR_SZ_STACK;
+				break;
 			default:
 				sp  = stack0 + USR_SZ_STACK;
 				break;
@@ -107,7 +112,13 @@ void process_init()
 				break;
 			case 2:
 				*(--sp)  = (uint32_t) proc2;
-				break;					
+				break;	
+			case 3:
+				*(--sp)  = (uint32_t) run_memory_tests;
+				break;
+			case 4:
+				*(--sp)  = (uint32_t) run_priority_tests;
+				break;						
 			default:
 				*(--sp)  = (uint32_t) nullProc;
 				break;
@@ -145,18 +156,16 @@ int scheduler(void)
 	current_pid = gp_current_process->m_pid;
 	highest_priority = 4;	
 
-	
+	//Select random process
+	//for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
+		//proc = &process_array[(get_random() % NUM_PROCESSES) - 1];
+		//if(proc->m_pid != current_pid && proc->m_priority < highest_priority) {
+		// 	highest_priority = proc->m_priority;
+		//pid_to_select = proc->m_pid;
+		//}
+	//} 
 
-	//Scan for highest priority process
-	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
-		proc = &process_array[procIndex];
-		if(proc->m_pid != current_pid && proc->m_priority < highest_priority) {
-		 	highest_priority = proc->m_priority;
-			pid_to_select = proc->m_pid;
-		}
-	}
-
-	return pid_to_select;	
+	return (gp_current_process->m_pid < (NUM_PROCESSES - 1)) ? gp_current_process->m_pid + 1 : 0;	
 }
 /**
  * @brief release_processor(). 

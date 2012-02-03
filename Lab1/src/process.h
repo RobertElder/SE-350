@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 
-extern int const NUM_PROCESSES = 3;
+extern int const NUM_PROCESSES = 5;
 
 typedef enum {NEW = 0, RDY, RUN} proc_state_t;  // process states, note we only assume three states in this example
 
@@ -49,6 +49,8 @@ pcb_t process_array[NUM_PROCESSES];
 uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
 uint32_t stack1[USR_SZ_STACK];      // stack for proc1
 uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
+uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
+uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
 
 // NOTE: The example code uses compile time memory for pcb storage.
 //       If the system supports dynamica process creation/deletion,
@@ -67,6 +69,8 @@ int k_release_process(void);		// kernel release_process API
 extern void proc1(void);			// user process 1
 extern void proc2(void);			// user process 2
 extern void nullProc(void);				// null process
+extern void run_priority_tests(void);
+extern void run_memory_tests(void);
 extern void __rte(void);			// pop exception stack frame
 
 #endif // ! _PROCESS_H_

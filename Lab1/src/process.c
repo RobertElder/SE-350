@@ -16,6 +16,7 @@
 #include <system_LPC17xx.h>
 #include "utils.h"
 #include "process.h"
+#include "utils.h"
 
 #ifdef DEBUG_0
 #include <stdio.h>

@@ -18,8 +18,10 @@
 #include "rtx.h"
 #include "utils.h"
 
+extern int NUM_PROCESSES;
 extern void process_init(void);
-
+extern int get_process_priority(int);
+extern int set_process_priority(int, int);
 
 void run_memory_tests(){
 
@@ -77,42 +79,42 @@ void run_memory_tests(){
 			*pointerToCurrentMemoryBlockPointer = 0;
 		}
 	}
+
+	uart0_put_string("Memory test passed. \n\r");
+}
+
+void run_priority_tests() {
+	int procIndex;
+
+	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
+		if(procIndex == 0) {
+		  	assert(get_process_priority(procIndex) == 4, "Null process priority is invalid. Test failed.");
+		} else {
+	 		assert(get_process_priority(procIndex) == procIndex - 1, "Process priority is invalid. Test failed.");
+		}
+	}
+
+	for(procIndex = 1; procIndex < NUM_PROCESSES - 1; ++procIndex) {
+		assert(set_process_priority(procIndex, 3) == 0 && get_process_priority(procIndex) == 3, "Could not set process priority. Test failed.");
+	}
+	
+	uart0_put_string("Priority test passed. \n\r");
 }
 
 void print_some_numbers(){
 	int i;
 
-	print_unsigned_integer(5002);
-	uart0_put_string("\n\r");
-	print_unsigned_integer(542342);
-	uart0_put_string("\n\r");
-	print_unsigned_integer(782342);
-	uart0_put_string("\n\r");
-	print_unsigned_integer(5543242);
-	uart0_put_string("\n\r");
-	print_unsigned_integer(544342);
-	uart0_put_string("\n\r");
-	print_unsigned_integer(5442342);
-	uart0_put_string("\n\r");
-	print_signed_integer(-42);
-	uart0_put_string("\n\r");
-	print_signed_integer(0);
-	uart0_put_string("\n\r");
-	print_signed_integer(-0);
-	uart0_put_string("\n\r");
-	print_signed_integer(2);
-	uart0_put_string("\n\r");
-	print_signed_integer(666);
-	uart0_put_string("\n\r");
-	print_signed_integer(345303);
-	uart0_put_string("\n\r");
-	print_signed_integer(-402);
-	uart0_put_string("\n\r");
-
 	for(i = 0; i < 10; i++){
 		print_unsigned_integer(get_random() % 200);
 		uart0_put_string("\n\r");
 	}
+
+	for(i = 0; i < 10; i++){
+		print_signed_integer((get_random() % 200) * -1);
+		uart0_put_string("\n\r");
+	}
+
+	uart0_put_string("Print stuff test passed. \n\r");
 }
 
 int main() 
@@ -138,6 +140,7 @@ int main()
 
 	run_memory_tests();
     print_some_numbers();
+	run_priority_tests();
 
 	ret_val = release_processor();
 	uart0_put_string("\nShould never reach here!!!\n\r");

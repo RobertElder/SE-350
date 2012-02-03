@@ -20,6 +20,8 @@
 
 #include <stdint.h>
 
+extern int const NUM_PROCESSES = 3;
+
 typedef enum {NEW = 0, RDY, RUN} proc_state_t;  // process states, note we only assume three states in this example
 
 typedef struct pcb {
@@ -35,6 +37,7 @@ typedef struct pcb {
 
 } pcb_t;
 
+pcb_t process_array[NUM_PROCESSES];
 
 // TODO the example code uses compile time memory for stack allocation
 // This makes the image size quite large. 
@@ -50,11 +53,8 @@ uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
 // NOTE: The example code uses compile time memory for pcb storage.
 //       If the system supports dynamica process creation/deletion,
 //       then pcb data structure should use dynamically allocated memory
-pcb_t pcb0;
-pcb_t pcb1;
-pcb_t pcb2;
 
-pcb_t* gp_current_process = NULL;  // always point to the current process
+pcb_t *gp_current_process = NULL;  // always point to the current process
 
 pcb_t * get_process_pointer_from_id(int);
 int set_process_priority (int, int);

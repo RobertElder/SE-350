@@ -14,7 +14,7 @@
 
 #include <LPC17xx.h>
 #include <system_LPC17xx.h>
-#include "uart_polling.h"
+#include "utils.h"
 #include "process.h"
 
 #ifdef DEBUG_0
@@ -43,14 +43,7 @@ int get_process_priority (int process_ID) {
 }
 
 pcb_t * get_process_pointer_from_id(int process_ID) {
-	switch(process_ID) {
-	 	case 1:
-			return &pcb1;
-		case 2:
-			return &pcb2;
-		default:
-			return NULL;	
-	}
+	return (process_ID > NUM_PROCESSES - 1) ? NULL : &process_array[process_ID];
 }
 
 /**
@@ -68,68 +61,65 @@ void process_init()
 {
     volatile int i;
 	uint32_t * sp;
+	int procIndex;
 
-	/* INIT FIRST PROCESS */
-	// initialize the first process	exception stack frame
-	pcb1.m_pid = 1;
-	pcb1.m_state = NEW;
-	pcb1.m_priority = 0;
+	//Init all the processes
+	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
+		pcb_t process;
 
-	sp  = stack1 + USR_SZ_STACK;
-    
-	// 8 bytes alignement adjustment to exception stack frame
-	// TODO: figure out why we want sp to have 4 right-aligned non-zero bits before 
-	// decrementing it.
-	if (!(((uint32_t)sp) & 0x04)) {
-	    --sp; 
+		process.m_pid = procIndex;
+		process.m_state = NEW;
+		process.m_priority = (procIndex == 0) ? 4 : procIndex - 1;
+
+
+		switch(procIndex) {
+		 	case 0:
+				sp  = stack0 + USR_SZ_STACK;
+				break;
+			case 1:
+				sp  = stack1 + USR_SZ_STACK;
+				break;
+			case 2:
+				sp  = stack2 + USR_SZ_STACK;
+				break;					
+			default:
+				sp  = stack0 + USR_SZ_STACK;
+				break;
+		}
+
+		// 8 bytes alignement adjustment to exception stack frame
+		// TODO: figure out why we want sp to have 4 right-aligned non-zero bits before 
+		// decrementing it.
+		if (!(((uint32_t)sp) & 0x04)) {
+		    --sp; 
+		}
+
+		*(--sp)  = INITIAL_xPSR;      // user process initial xPSR  
+
+		// Set the entry point of the process
+		switch(procIndex) {
+		 	case 0:
+				*(--sp)  = (uint32_t) nullProc;
+				break;
+			case 1:
+				*(--sp)  = (uint32_t) proc1;
+				break;
+			case 2:
+				*(--sp)  = (uint32_t) proc2;
+				break;					
+			default:
+				*(--sp)  = (uint32_t) nullProc;
+				break;
+		}
+
+		for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
+			*(--sp) = 0x0;
+		}
+
+		process.mp_sp = sp;
+
+		process_array[procIndex] = process;
 	}
-											  
-	*(--sp)  = INITIAL_xPSR;      // user process initial xPSR  
-	*(--sp)  = (uint32_t) proc1; // PC contains the entry point of the process
-
-	for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
-		*(--sp) = 0x0;
-	}
-    pcb1.mp_sp = sp;
-	/* END INIT FIRST PROCESS */
-
-	// initialize the second process exception stack frame
-    pcb2.m_pid = 2;
-	pcb2.m_state = NEW;
-	pcb2.m_priority = 1;
-
-	sp  = stack2 + USR_SZ_STACK;
-    if (!(((uint32_t)sp) & 0x04)) {    
-	    sp--;  // 8 bytes alignement adjustment to exception stack frame
-	}
-	
-	*(--sp) = INITIAL_xPSR;
-	*(--sp) = (uint32_t) proc2;
-
-	for (i=0; i<6; i++) {
-		*(--sp) = 0x0;
-	}
-	pcb2.mp_sp = sp;
-
-	// initialize the null process	exception stack frame
-	pcb0.m_pid = 0;
-	pcb0.m_state = NEW;
-	pcb0.m_priority = 4;
-
-	sp  = stack0 + USR_SZ_STACK;
-    
-	// 8 bytes alignement adjustment to exception stack frame
-	if (!(((uint32_t)sp) & 0x04)) {
-	    --sp; 
-	}
-	
-	*(--sp)  = INITIAL_xPSR;      // user process initial xPSR  
-	*(--sp)  = (uint32_t) nullProc; // PC contains the entry point of the process
-
-	for (i=0; i<6; i++) { // R0-R3, R12 are cleared with 0
-		*(--sp) = 0x0;
-	}
-    pcb0.mp_sp = sp;
 }
 
 /*@brief: scheduler, pick the pid of the next to run process
@@ -140,22 +130,32 @@ void process_init()
  */
 int scheduler(void)
 {
-    volatile int pid;
+    volatile int current_pid;
+	volatile int pid_to_select;
+	volatile int highest_priority;
+	int procIndex;
+	pcb_t *proc;
 
 	if (gp_current_process == NULL) {
-	   gp_current_process = &pcb1;
+	   gp_current_process = &process_array[1];
 	   return 1;
 	}
 
-	pid = gp_current_process->m_pid;
+	current_pid = gp_current_process->m_pid;
+	highest_priority = 4;	
+
 	
-	if (pid == 1 ) {
-	    return 2;
-	} else if (pid == 2) {
-		return 1;
-	} else {
-		return 0; // null process
+
+	//Scan for highest priority process
+	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
+		proc = &process_array[procIndex];
+		if(proc->m_pid != current_pid && proc->m_priority < highest_priority) {
+		 	highest_priority = proc->m_priority;
+			pid_to_select = proc->m_pid;
+		}
 	}
+
+	return pid_to_select;	
 }
 /**
  * @brief release_processor(). 

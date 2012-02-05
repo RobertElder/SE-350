@@ -30,10 +30,10 @@ typedef struct pcb {
   //in order to finish P1 and the entire project 
   //struct ProcessControlBlock *mp_next;  // next ProcessControlBlock, not used in this example, RTX project most likely will need it, keep here for reference
   
-  uint32_t * mp_sp;      // stack pointer of the process
-  uint32_t m_pid;		// process id
+  uint32_t * processStackPointer;      // stack pointer of the process
+  uint32_t processId;		// process id
   proc_state_t currentState; // state of the process  
-  uint32_t m_priority; //Priority of the process     
+  uint32_t processPriority; //Priority of the process     
 
 } ProcessControlBlock;
 

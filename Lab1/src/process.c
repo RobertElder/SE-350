@@ -27,7 +27,7 @@ int set_process_priority (int process_ID, int priority) {
 	assert(process != NULL, "Invalid process ID in set process priority.");
 
    	if(priority >= 0 && priority < 4) {
-		process->m_priority = priority;
+		process->processPriority = priority;
 		return 0;
 	} else {
 	 	return -1;
@@ -39,7 +39,7 @@ int get_process_priority (int process_ID) {
 
 	assert(process != NULL, "Invalid process ID in get process priority.");
 
-	return process->m_priority;
+	return process->processPriority;
 }
 
 ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
@@ -66,9 +66,9 @@ void process_init()
 	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
 		ProcessControlBlock process;
 
-		process.m_pid = procIndex;
+		process.processId = procIndex;
 		process.currentState = NEW;
-		process.m_priority = (procIndex == 0) ? 4 : (procIndex - 1);
+		process.processPriority = (procIndex == 0) ? 4 : (procIndex - 1);
 
 
 		switch(procIndex) {
@@ -127,7 +127,7 @@ void process_init()
 			*(--sp) = 0x0;
 		}
 
-		process.mp_sp = sp;
+		process.processStackPointer = sp;
 
 		process_array[procIndex] = process;
 	}
@@ -152,7 +152,7 @@ int scheduler(void)
 	   return 1;
 	}
 
-	current_pid = pCurrentProcessPCB->m_pid;
+	current_pid = pCurrentProcessPCB->processId;
 	highest_priority = 4;	
 
 	//Select random process
@@ -164,7 +164,7 @@ int scheduler(void)
 		//}
 	//} 
 
-	return (pCurrentProcessPCB->m_pid < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->m_pid + 1 : 0;	
+	return (pCurrentProcessPCB->processId < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->processId + 1 : 0;	
 }
 /**
  * @brief release_processor(). 
@@ -172,22 +172,24 @@ int scheduler(void)
  * POST: gp_current_process gets updated
  */
 int k_release_processor(void){
-	volatile int pid;
+	volatile int idOfNextProcessToRun;
 	volatile proc_state_t state;
 	ProcessControlBlock * pOldProcessPCB = NULL;
 	
-	pid = scheduler();
+	idOfNextProcessToRun = scheduler();
+
 	if (pCurrentProcessPCB == NULL) {
-		assert((int)pCurrentProcessPCB,"gp_current_process was null.");// error occured (scheduler should null-check)
+		// error occured (scheduler should null-check)
+		assert((int)pCurrentProcessPCB,"pCurrentProcessPCB was null.");
 		return -1;  
 	}
 	
 	pOldProcessPCB = pCurrentProcessPCB;
 	
-	pCurrentProcessPCB = get_process_pointer_from_id(pid);
+	pCurrentProcessPCB = get_process_pointer_from_id(idOfNextProcessToRun);
 	
 	if(pCurrentProcessPCB == NULL) {
-		assert((int)pCurrentProcessPCB,"gp_current_process was null after calling get process pointer from id.");
+		assert((int)pCurrentProcessPCB,"pCurrentProcessPCB was null after calling get process pointer from id.");
 		return -1;
 	}
 	
@@ -199,20 +201,27 @@ int k_release_processor(void){
 	switch(pCurrentProcessPCB->currentState) {
 		case NEW:{
 			if (pOldProcessPCB->currentState != NEW) {
+				//  I don't completely understand why this is done, but I'll trust whoever wrote it
 				pOldProcessPCB->currentState = RDY;
-				pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP();
+				//  Save the stack pointer for the old process
+				pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 			}
+			//  New process is now runing
 			pCurrentProcessPCB->currentState = RUN;
-			__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp);
-			__rte();  // pop exception stack frame from the stack for new processes
+			//  Update the stack pointer for the new current process
+			__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+			// pop exception stack frame from the stack for new processes
+			__rte();
 			break;
 		}
-		case RDY: {     
-			pOldProcessPCB->currentState = RDY; 
-			pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
+		case RDY: {
+			//  Again, I don't completely understand why this is done, but I'll trust whoever wrote it     
+			pOldProcessPCB->currentState = RDY;
+			//  Save the stack pointer for the old process 
+			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP(); // save the old process's sp
 			
 			pCurrentProcessPCB->currentState = RUN;
-			__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp); //switch to the new proc's stack
+			__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer); //switch to the new proc's stack
 			break;
 		}		
 		default: {

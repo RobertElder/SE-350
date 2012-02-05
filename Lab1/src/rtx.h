@@ -5,6 +5,8 @@
 #ifndef _RTX_H
 #define _RTX_H
 
+#include <LPC17xx.h>
+#include <system_LPC17xx.h>
 #include "utils.h"
 #include "process.h"
 
@@ -33,6 +35,6 @@ void init_memory_allocation_table(void);
 #define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0x00002000
 #define MEMORY_BLOCK_SIZE 0x100
 
-#define MAX_ALLOWED_MEMORY_BLOCKS 0x30
+#define MAX_ALLOWED_MEMORY_BLOCKS 0x50
 
 #endif

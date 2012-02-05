@@ -136,7 +136,7 @@ void process_init()
 /*@brief: scheduler, pick the pid of the next to run process
  *@return: pid of the next to run process
  *         selects null process by default
- *POST: if gp_current_process was NULL, then it gets set to &pcb1.
+ *POST: if pCurrentProcessPCB was NULL, then it gets set to &pcb1.
  *      No other effect on other global variables.
  */
 int scheduler(void)
@@ -174,7 +174,7 @@ int scheduler(void)
 int k_release_processor(void){
 	volatile int pid;
 	volatile proc_state_t state;
-	ProcessControlBlock * p_pcb_old = NULL;
+	ProcessControlBlock * pOldProcessPCB = NULL;
 	
 	pid = scheduler();
 	if (pCurrentProcessPCB == NULL) {
@@ -182,7 +182,7 @@ int k_release_processor(void){
 		return -1;  
 	}
 	
-	p_pcb_old = pCurrentProcessPCB;
+	pOldProcessPCB = pCurrentProcessPCB;
 	
 	pCurrentProcessPCB = get_process_pointer_from_id(pid);
 	
@@ -199,21 +199,22 @@ int k_release_processor(void){
 	*/
 
 	if (state == NEW) {
-		if (p_pcb_old->m_state != NEW) {
-			p_pcb_old->m_state = RDY;
-			p_pcb_old->mp_sp = (uint32_t *) __get_MSP();
+		if (pOldProcessPCB->m_state != NEW) {
+			pOldProcessPCB->m_state = RDY;
+			pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP();
 		}
 		pCurrentProcessPCB->m_state = RUN;
 		__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp);
 		__rte();  // pop exception stack frame from the stack for new processes
 	} else if (state == RDY){     
-		p_pcb_old->m_state = RDY; 
-		p_pcb_old->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
+		pOldProcessPCB->m_state = RDY; 
+		pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
 		
 		pCurrentProcessPCB->m_state = RUN;
 		__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp); //switch to the new proc's stack		
 	} else {
-		pCurrentProcessPCB = p_pcb_old; // revert back to the old proc on error
+		pCurrentProcessPCB = pOldProcessPCB; // revert back to the old proc on error
+		assert(0,"Reverting back to old process, no state matched.");
 		return -1;
 	}	 	 
 	return 0;

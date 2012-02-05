@@ -114,7 +114,7 @@ void run_memory_tests(void){
 			}
 		}
 
-		//  At this point there are possible still pointers in the block that have memory allocated
+		//  At this point there are possibly still pointers in the block that have memory allocated
 
 		for(i = 0; i < numberOfPointersYouCanPutInOneBlockOfMemory; i++){
 			// Look at every pointer in the block

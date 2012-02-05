@@ -24,7 +24,7 @@
 int set_process_priority (int process_ID, int priority) {	
 	pcb_t * process = get_process_pointer_from_id(process_ID);
 
-	assert(process != NULL, "Invalid process ID");
+	assert(process != NULL, "Invalid process ID in set process priority.");
 
    	if(priority >= 0 && priority < 4) {
 		process->m_priority = priority;
@@ -37,7 +37,7 @@ int set_process_priority (int process_ID, int priority) {
 int get_process_priority (int process_ID) {
 	pcb_t * process = get_process_pointer_from_id(process_ID);
 
-	assert(process != NULL, "Invalid process ID");
+	assert(process != NULL, "Invalid process ID in get process priority.");
 
 	return process->m_priority;
 }
@@ -48,7 +48,6 @@ pcb_t * get_process_pointer_from_id(int process_ID) {
 
 /**
  * @brief: initialize all processes in the system
- * NOTE: We assume there are only two user processes in the system in this example.
 
  *       TODO: We should have used an array or linked list pcbs so the repetive coding
  *       can be eliminated.
@@ -145,8 +144,8 @@ int scheduler(void)
     volatile int current_pid;
 	volatile int pid_to_select;
 	volatile int highest_priority;
-	int procIndex;
-	pcb_t *proc;
+	//int procIndex;
+	//pcb_t *proc;
 
 	if (gp_current_process == NULL) {
 	   gp_current_process = &process_array[1];
@@ -172,46 +171,46 @@ int scheduler(void)
  * @return -1 on error and zero on success
  * POST: gp_current_process gets updated
  */
-int k_release_processor(void)
-{
-	 volatile int pid;
-	 volatile proc_state_t state;
-	 pcb_t* p_pcb_old = NULL;
-
-	 pid = scheduler();
-	 if (gp_current_process == NULL) {
-	 	// error occured (scheduler should null-check)
-	     return -1;  
-	 }
-
-	 p_pcb_old = gp_current_process;
-
-	gp_current_process = get_process_pointer_from_id(pid);
-
-	if(gp_current_process == NULL) {
-	 	return -1;
+int k_release_processor(void){
+	volatile int pid;
+	volatile proc_state_t state;
+	pcb_t* p_pcb_old = NULL;
+	
+	pid = scheduler();
+	if (gp_current_process == NULL) {
+		assert((int)gp_current_process,"gp_current_process was null.");// error occured (scheduler should null-check)
+		return -1;  
 	}
-
-	 state = gp_current_process->m_state;
-
-     if (state == NEW) {
-	     if (p_pcb_old->m_state != NEW) {
-		     p_pcb_old->m_state = RDY;
-			 // TODO: figure out what __get_MSP() does
-			 p_pcb_old->mp_sp = (uint32_t *) __get_MSP();
-		 }
-		 gp_current_process->m_state = RUN;
-		 __set_MSP((uint32_t) gp_current_process->mp_sp);
-		 __rte();  // pop exception stack frame from the stack for new processes
-	 } else if (state == RDY){     
-		 p_pcb_old->m_state = RDY; 
-		 p_pcb_old->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
-		 
-		 gp_current_process->m_state = RUN;
-		 __set_MSP((uint32_t) gp_current_process->mp_sp); //switch to the new proc's stack		
-	 } else {
-	     gp_current_process = p_pcb_old; // revert back to the old proc on error
-	     return -1;
-	 }	 	 
-	 return 0;
+	
+	p_pcb_old = gp_current_process;
+	
+	gp_current_process = get_process_pointer_from_id(pid);
+	
+	if(gp_current_process == NULL) {
+		assert((int)gp_current_process,"gp_current_process was null after calling get process pointer from id.");
+		return -1;
+	}
+	
+	state = gp_current_process->m_state;
+	
+	if (state == NEW) {
+		if (p_pcb_old->m_state != NEW) {
+			p_pcb_old->m_state = RDY;
+			// TODO: figure out what __get_MSP() does
+			p_pcb_old->mp_sp = (uint32_t *) __get_MSP();
+		}
+		gp_current_process->m_state = RUN;
+		__set_MSP((uint32_t) gp_current_process->mp_sp);
+		__rte();  // pop exception stack frame from the stack for new processes
+	} else if (state == RDY){     
+		p_pcb_old->m_state = RDY; 
+		p_pcb_old->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
+		
+		gp_current_process->m_state = RUN;
+		__set_MSP((uint32_t) gp_current_process->mp_sp); //switch to the new proc's stack		
+	} else {
+		gp_current_process = p_pcb_old; // revert back to the old proc on error
+		return -1;
+	}	 	 
+	return 0;
 }

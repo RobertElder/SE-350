@@ -16,7 +16,8 @@
 #endif // DEBUG_0
 #include "uart_polling.h"
 #include "rtx.h"
-#include "utils.h"
+#include "utils.h" 
+#include "usr_proc.h"
 
 extern int NUM_PROCESSES;
 extern void process_init(void);
@@ -32,7 +33,7 @@ void print_some_numbers(){
 	}
 
 	for(i = 0; i < 10; i++){
-		print_signed_integer((get_random() % 200) * -1);
+		print_signed_integer(((signed int)(get_random() % 200)) * -1);
 		uart0_put_string("\n\r");
 	}
 

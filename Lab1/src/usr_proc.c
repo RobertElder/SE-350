@@ -1,5 +1,6 @@
 #include "rtx.h"
 #include "uart_polling.h"
+#include "usr_proc.h"
 #include "utils.h"
 
 #ifdef DEBUG_0

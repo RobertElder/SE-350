@@ -147,12 +147,12 @@ int scheduler(void)
 	//int procIndex;
 	//pcb_t *proc;
 
-	if (gp_current_process == NULL) {
-	   gp_current_process = &process_array[1];
+	if (pCurrentProcessPCB == NULL) {
+	   pCurrentProcessPCB = &process_array[1];
 	   return 1;
 	}
 
-	current_pid = gp_current_process->m_pid;
+	current_pid = pCurrentProcessPCB->m_pid;
 	highest_priority = 4;	
 
 	//Select random process
@@ -164,7 +164,7 @@ int scheduler(void)
 		//}
 	//} 
 
-	return (gp_current_process->m_pid < (NUM_PROCESSES - 1)) ? gp_current_process->m_pid + 1 : 0;	
+	return (pCurrentProcessPCB->m_pid < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->m_pid + 1 : 0;	
 }
 /**
  * @brief release_processor(). 
@@ -177,39 +177,43 @@ int k_release_processor(void){
 	ProcessControlBlock * p_pcb_old = NULL;
 	
 	pid = scheduler();
-	if (gp_current_process == NULL) {
-		assert((int)gp_current_process,"gp_current_process was null.");// error occured (scheduler should null-check)
+	if (pCurrentProcessPCB == NULL) {
+		assert((int)pCurrentProcessPCB,"gp_current_process was null.");// error occured (scheduler should null-check)
 		return -1;  
 	}
 	
-	p_pcb_old = gp_current_process;
+	p_pcb_old = pCurrentProcessPCB;
 	
-	gp_current_process = get_process_pointer_from_id(pid);
+	pCurrentProcessPCB = get_process_pointer_from_id(pid);
 	
-	if(gp_current_process == NULL) {
-		assert((int)gp_current_process,"gp_current_process was null after calling get process pointer from id.");
+	if(pCurrentProcessPCB == NULL) {
+		assert((int)pCurrentProcessPCB,"gp_current_process was null after calling get process pointer from id.");
 		return -1;
 	}
 	
-	state = gp_current_process->m_state;
+	state = pCurrentProcessPCB->m_state;
 	
+	/*
+	__set_MSP() and __get_MSP() are special arm functions that are documented here
+	http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0552a/CIHCAEJD.html
+	*/
+
 	if (state == NEW) {
 		if (p_pcb_old->m_state != NEW) {
 			p_pcb_old->m_state = RDY;
-			// TODO: figure out what __get_MSP() does
 			p_pcb_old->mp_sp = (uint32_t *) __get_MSP();
 		}
-		gp_current_process->m_state = RUN;
-		__set_MSP((uint32_t) gp_current_process->mp_sp);
+		pCurrentProcessPCB->m_state = RUN;
+		__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp);
 		__rte();  // pop exception stack frame from the stack for new processes
 	} else if (state == RDY){     
 		p_pcb_old->m_state = RDY; 
 		p_pcb_old->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
 		
-		gp_current_process->m_state = RUN;
-		__set_MSP((uint32_t) gp_current_process->mp_sp); //switch to the new proc's stack		
+		pCurrentProcessPCB->m_state = RUN;
+		__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp); //switch to the new proc's stack		
 	} else {
-		gp_current_process = p_pcb_old; // revert back to the old proc on error
+		pCurrentProcessPCB = p_pcb_old; // revert back to the old proc on error
 		return -1;
 	}	 	 
 	return 0;

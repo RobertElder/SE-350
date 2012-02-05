@@ -56,7 +56,7 @@ uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
 //       If the system supports dynamica process creation/deletion,
 //       then pcb data structure should use dynamically allocated memory
 
-ProcessControlBlock * gp_current_process = NULL;  // always point to the current process
+ProcessControlBlock * pCurrentProcessPCB = NULL;  // always point to the current process
 
 extern ProcessControlBlock * get_process_pointer_from_id(int);
 extern int set_process_priority (int, int);

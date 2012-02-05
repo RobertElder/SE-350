@@ -110,6 +110,9 @@ int k_release_memory_block (void * MemoryBlock){
 }
 
 void init_memory_allocation_table(){
+
+	assert(MAX_ALLOWED_MEMORY_BLOCKS * MEMORY_BLOCK_SIZE < 0x100 * 0x60,"You set the values for memory sizes too big, You might be overwritting someones data.");
+
 	pMaxNumberOfMemoryBlocksEverAllocated	= (int *)START_OF_MEMORY_ALLOCATION_TABLE;
 	*pMaxNumberOfMemoryBlocksEverAllocated = 0;
 }

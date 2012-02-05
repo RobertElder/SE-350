@@ -58,6 +58,7 @@ void proc2(void)
 
 void run_memory_tests(void){
 	while(1) {
+		int i = 0;
 		int testCases = 100;
 		int currentTestCase = 0;
 		int tmpCounter = 0;
@@ -112,7 +113,33 @@ void run_memory_tests(void){
 				*pointerToCurrentMemoryBlockPointer = 0;
 			}
 		}
-	
+
+		//  At this point there are possible still pointers in the block that have memory allocated
+
+		for(i = 0; i < numberOfPointersYouCanPutInOneBlockOfMemory; i++){
+			// Look at every pointer in the block
+			int currentMemoryBlockIndex = i;
+			//  Treat the int at that location as a pointer to memory somewhere
+			int ** pointerToCurrentMemoryBlockPointer = (int**)&(pTestPointer1[currentMemoryBlockIndex]);
+			//  If that address points to something delete it
+			if(!(*pointerToCurrentMemoryBlockPointer == (int *)0)){		
+				//  This block does point to something, verify that the data there is in the expected format, then delete it
+				for(tmpCounter = 0; tmpCounter < numberOfPointersYouCanPutInOneBlockOfMemory; tmpCounter++){
+					// Is what we put there still the same?
+					assert((*pointerToCurrentMemoryBlockPointer)[tmpCounter] == ((int)(*pointerToCurrentMemoryBlockPointer)) + tmpCounter,"Memory test failure: block failed sanity check.");
+				}
+				//  Delete this block
+				//uart0_put_string("Test case ");print_unsigned_integer(currentTestCase);	uart0_put_string(" of "); print_unsigned_integer(testCases);uart0_put_string(": ");
+				//uart0_put_string("Memory block ");print_unsigned_integer((int)(*pointerToCurrentMemoryBlockPointer));uart0_put_string(" looks OK, releasing.\n\r");
+				release_memory_block(*pointerToCurrentMemoryBlockPointer);
+				*pointerToCurrentMemoryBlockPointer = 0;
+			}
+		}
+
+		release_memory_block(pTestPointer2);
+		release_memory_block(pTestPointer1);
+
+		//  Everything should be in the same state as when we entered this function
 		uart0_put_string("\n\rMemory test passed. \n\r");
 	
 		release_processor();

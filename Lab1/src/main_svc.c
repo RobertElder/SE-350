@@ -64,6 +64,7 @@ int main()
 	//  Set up memory
 	init_memory_allocation_table();
 
+
 	run_memory_tests();
     print_some_numbers();
 

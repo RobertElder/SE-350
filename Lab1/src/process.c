@@ -62,15 +62,16 @@ void process_init()
 	uint32_t * sp;
 	int procIndex;
 
-	//Init all the processes
+	//  For all the processes
 	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
 		ProcessControlBlock process;
 
+		//  Set up the process control block
 		process.processId = procIndex;
 		process.currentState = NEW;
 		process.processPriority = (procIndex == 0) ? 4 : (procIndex - 1);
 
-
+		//  Set up the process stacks based on the index of the process
 		switch(procIndex) {
 		 	case 0:
 				sp  = stack0 + USR_SZ_STACK;
@@ -144,8 +145,6 @@ int scheduler(void)
     volatile int current_pid;
 	volatile int pid_to_select;
 	volatile int highest_priority;
-	//int procIndex;
-	//pcb_t *proc;
 
 	if (pCurrentProcessPCB == NULL) {
 	   pCurrentProcessPCB = &process_array[1];
@@ -155,21 +154,13 @@ int scheduler(void)
 	current_pid = pCurrentProcessPCB->processId;
 	highest_priority = 4;	
 
-	//Select random process
-	//for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
-		//proc = &process_array[(get_random() % NUM_PROCESSES) - 1];
-		//if(proc->m_pid != current_pid && proc->m_priority < highest_priority) {
-		// 	highest_priority = proc->m_priority;
-		//pid_to_select = proc->m_pid;
-		//}
-	//} 
-
+	//  This will cycle through the list of processes then repeat
 	return (pCurrentProcessPCB->processId < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->processId + 1 : 0;	
 }
 /**
  * @brief release_processor(). 
  * @return -1 on error and zero on success
- * POST: gp_current_process gets updated
+ * POST: pCurrentProcessPCB gets updated
  */
 int k_release_processor(void){
 	volatile int idOfNextProcessToRun;

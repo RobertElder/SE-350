@@ -60,6 +60,10 @@ int main()
 	// transit to unprivileged level, default MSP is used
 	__set_CONTROL(__get_CONTROL() | BIT(0));  
 
+	//  Set up memory
+	init_memory_allocation_table();
+
+	run_memory_tests();
     print_some_numbers();
 
 	ret_val = release_processor();

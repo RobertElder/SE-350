@@ -22,7 +22,7 @@
 #endif // DEBUG_0
 
 int set_process_priority (int process_ID, int priority) {	
-	pcb_t * process = get_process_pointer_from_id(process_ID);
+	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(process != NULL, "Invalid process ID in set process priority.");
 
@@ -35,14 +35,14 @@ int set_process_priority (int process_ID, int priority) {
 }
 
 int get_process_priority (int process_ID) {
-	pcb_t * process = get_process_pointer_from_id(process_ID);
+	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(process != NULL, "Invalid process ID in get process priority.");
 
 	return process->m_priority;
 }
 
-pcb_t * get_process_pointer_from_id(int process_ID) {
+ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 	return (process_ID > NUM_PROCESSES - 1) ? NULL : &process_array[process_ID];
 }
 
@@ -64,7 +64,7 @@ void process_init()
 
 	//Init all the processes
 	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
-		pcb_t process;
+		ProcessControlBlock process;
 
 		process.m_pid = procIndex;
 		process.m_state = NEW;
@@ -174,7 +174,7 @@ int scheduler(void)
 int k_release_processor(void){
 	volatile int pid;
 	volatile proc_state_t state;
-	pcb_t* p_pcb_old = NULL;
+	ProcessControlBlock * p_pcb_old = NULL;
 	
 	pid = scheduler();
 	if (gp_current_process == NULL) {

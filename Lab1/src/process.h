@@ -28,16 +28,16 @@ typedef struct pcb {
   
   //Note you may want to add your own member variables
   //in order to finish P1 and the entire project 
-  //struct pcb *mp_next;  // next pcb, not used in this example, RTX project most likely will need it, keep here for reference
+  //struct ProcessControlBlock *mp_next;  // next ProcessControlBlock, not used in this example, RTX project most likely will need it, keep here for reference
   
-  uint32_t *mp_sp;      // stack pointer of the process
+  uint32_t * mp_sp;      // stack pointer of the process
   uint32_t m_pid;		// process id
   proc_state_t m_state; // state of the process  
   uint32_t m_priority; //Priority of the process     
 
-} pcb_t;
+} ProcessControlBlock;
 
-pcb_t process_array[NUM_PROCESSES];
+ProcessControlBlock process_array[NUM_PROCESSES];
 
 // NOTE the example code uses compile time memory for stack allocation
 // This makes the image size quite large. 
@@ -56,9 +56,9 @@ uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
 //       If the system supports dynamica process creation/deletion,
 //       then pcb data structure should use dynamically allocated memory
 
-pcb_t *gp_current_process = NULL;  // always point to the current process
+ProcessControlBlock * gp_current_process = NULL;  // always point to the current process
 
-extern pcb_t * get_process_pointer_from_id(int);
+extern ProcessControlBlock * get_process_pointer_from_id(int);
 extern int set_process_priority (int, int);
 extern int get_process_priority (int);
 										

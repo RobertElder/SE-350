@@ -12,7 +12,7 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
-extern int NUM_PROCESSES;
+
 extern int get_process_priority(int);
 extern int set_process_priority(int, int);
 

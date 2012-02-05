@@ -7,7 +7,7 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
-extern int NUM_PROCESSES;
+
 extern int get_process_priority(int);
 extern int set_process_priority(int, int);
 
@@ -38,8 +38,7 @@ void proc1(void)
 
 }
 
-void proc2(void)
-{
+void proc2(void){
     volatile int i =0;		  
 	volatile int ret_val = 20;
     while ( 1) {

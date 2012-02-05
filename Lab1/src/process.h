@@ -20,9 +20,9 @@
 
 #include <stdint.h>
 
-extern int const NUM_PROCESSES = 5;
+#define NUM_PROCESSES 5
 
-typedef enum {NEW = 0, RDY, RUN} proc_state_t;  // process states, note we only assume three states in this example
+typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;  // process states, note we only assume three states in this example
 
 typedef struct pcb {
   
@@ -37,7 +37,7 @@ typedef struct pcb {
 
 } ProcessControlBlock;
 
-ProcessControlBlock process_array[NUM_PROCESSES];
+extern ProcessControlBlock process_array[NUM_PROCESSES];
 
 // NOTE the example code uses compile time memory for stack allocation
 // This makes the image size quite large. 
@@ -45,18 +45,18 @@ ProcessControlBlock process_array[NUM_PROCESSES];
 // stack operation. The focus of the example code is for context switching,
 // so we use statically allocated stack to simplify the code.
 
-// TODO: fix this
-uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
-uint32_t stack1[USR_SZ_STACK];      // stack for proc1
-uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
-uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
-uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
+/* Variable declarations */
+extern uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
+extern uint32_t stack1[USR_SZ_STACK];      // stack for proc1
+extern uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
+extern uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
+extern uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
 
 // NOTE: The example code uses compile time memory for pcb storage.
 //       If the system supports dynamica process creation/deletion,
 //       then pcb data structure should use dynamically allocated memory
 
-ProcessControlBlock * pCurrentProcessPCB = NULL;  // always point to the current process
+extern ProcessControlBlock * pCurrentProcessPCB;  // always point to the current process
 
 extern ProcessControlBlock * get_process_pointer_from_id(int);
 extern int set_process_priority (int, int);

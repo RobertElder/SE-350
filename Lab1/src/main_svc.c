@@ -19,7 +19,7 @@
 #include "utils.h" 
 #include "usr_proc.h"
 
-extern int NUM_PROCESSES;
+
 extern void process_init(void);
 extern int get_process_priority(int);
 extern int set_process_priority(int, int);
@@ -63,10 +63,6 @@ int main()
 
 	//  Set up memory
 	init_memory_allocation_table();
-
-
-	run_memory_tests();
-    print_some_numbers();
 
 	ret_val = release_processor();
 	uart0_put_string("\nShould never reach here!!!\n\r");

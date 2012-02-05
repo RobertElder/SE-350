@@ -21,6 +21,17 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
+/* Variable definitions */
+ProcessControlBlock * pCurrentProcessPCB  = NULL;
+
+uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
+uint32_t stack1[USR_SZ_STACK];      // stack for proc1
+uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
+uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
+uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
+
+ProcessControlBlock process_array[NUM_PROCESSES];
+
 int set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
@@ -44,6 +55,23 @@ int get_process_priority (int process_ID) {
 
 ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 	return (process_ID > NUM_PROCESSES - 1) ? NULL : &process_array[process_ID];
+}
+
+int is_process_blocked(int processId){
+	//  Right now this is the only blocking state
+	return (process_array[processId].currentState == BLOCKED_ON_MEMORY);
+}
+
+int is_deadlocked(){
+	int i;
+	//  We don't need to check the null process, pid 0
+	for(i = 1; i < NUM_PROCESSES; i++){
+		if(!(is_process_blocked(i))){
+			return 0;
+		}
+	}
+	//  Everything must have been blocked
+	return 1;
 }
 
 /**
@@ -131,7 +159,12 @@ void process_init()
 		process.processStackPointer = sp;
 
 		process_array[procIndex] = process;
+
+
 	}
+
+	//  To start off, set the current process to the null process
+	pCurrentProcessPCB = &process_array[0];
 }
 
 /*@brief: scheduler, pick the pid of the next to run process
@@ -146,10 +179,7 @@ int scheduler(void)
 	volatile int pid_to_select;
 	volatile int highest_priority;
 
-	if (pCurrentProcessPCB == NULL) {
-	   pCurrentProcessPCB = &process_array[1];
-	   return 1;
-	}
+	assert((int)pCurrentProcessPCB,"There was no current process set in the scheduler.");
 
 	current_pid = pCurrentProcessPCB->processId;
 	highest_priority = 4;	
@@ -175,9 +205,16 @@ int k_release_processor(void){
 		return -1;  
 	}
 	
+	//  Screw this process, we are getting a newer BETTER process
 	pOldProcessPCB = pCurrentProcessPCB;
-	
-	pCurrentProcessPCB = get_process_pointer_from_id(idOfNextProcessToRun);
+
+	//  Make sure we are not deadlocked
+	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");	
+
+	//  Attempt to get a process that is not blocked
+	do{
+		pCurrentProcessPCB = get_process_pointer_from_id(idOfNextProcessToRun);
+	}while(is_process_blocked(pCurrentProcessPCB->processId));
 	
 	if(pCurrentProcessPCB == NULL) {
 		assert((int)pCurrentProcessPCB,"pCurrentProcessPCB was null after calling get process pointer from id.");
@@ -201,7 +238,7 @@ int k_release_processor(void){
 			pCurrentProcessPCB->currentState = RUN;
 			//  Update the stack pointer for the new current process
 			__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-			// pop exception stack frame from the stack for new processes
+			// pop exception stack frame from the stack for new processes (assembly function in hal.c)
 			__rte();
 			break;
 		}

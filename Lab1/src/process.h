@@ -32,7 +32,7 @@ typedef struct pcb {
   
   uint32_t * mp_sp;      // stack pointer of the process
   uint32_t m_pid;		// process id
-  proc_state_t m_state; // state of the process  
+  proc_state_t currentState; // state of the process  
   uint32_t m_priority; //Priority of the process     
 
 } ProcessControlBlock;

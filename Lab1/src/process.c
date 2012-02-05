@@ -67,7 +67,7 @@ void process_init()
 		ProcessControlBlock process;
 
 		process.m_pid = procIndex;
-		process.m_state = NEW;
+		process.currentState = NEW;
 		process.m_priority = (procIndex == 0) ? 4 : (procIndex - 1);
 
 
@@ -196,22 +196,22 @@ int k_release_processor(void){
 	http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0552a/CIHCAEJD.html
 	*/
 
-	switch(pCurrentProcessPCB->m_state) {
+	switch(pCurrentProcessPCB->currentState) {
 		case NEW:{
-			if (pOldProcessPCB->m_state != NEW) {
-				pOldProcessPCB->m_state = RDY;
+			if (pOldProcessPCB->currentState != NEW) {
+				pOldProcessPCB->currentState = RDY;
 				pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP();
 			}
-			pCurrentProcessPCB->m_state = RUN;
+			pCurrentProcessPCB->currentState = RUN;
 			__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp);
 			__rte();  // pop exception stack frame from the stack for new processes
 			break;
 		}
 		case RDY: {     
-			pOldProcessPCB->m_state = RDY; 
+			pOldProcessPCB->currentState = RDY; 
 			pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
 			
-			pCurrentProcessPCB->m_state = RUN;
+			pCurrentProcessPCB->currentState = RUN;
 			__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp); //switch to the new proc's stack
 			break;
 		}		

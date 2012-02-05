@@ -191,31 +191,35 @@ int k_release_processor(void){
 		return -1;
 	}
 	
-	state = pCurrentProcessPCB->m_state;
-	
 	/*
 	__set_MSP() and __get_MSP() are special arm functions that are documented here
 	http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0552a/CIHCAEJD.html
 	*/
 
-	if (state == NEW) {
-		if (pOldProcessPCB->m_state != NEW) {
-			pOldProcessPCB->m_state = RDY;
-			pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP();
+	switch(pCurrentProcessPCB->m_state) {
+		case NEW:{
+			if (pOldProcessPCB->m_state != NEW) {
+				pOldProcessPCB->m_state = RDY;
+				pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP();
+			}
+			pCurrentProcessPCB->m_state = RUN;
+			__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp);
+			__rte();  // pop exception stack frame from the stack for new processes
+			break;
 		}
-		pCurrentProcessPCB->m_state = RUN;
-		__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp);
-		__rte();  // pop exception stack frame from the stack for new processes
-	} else if (state == RDY){     
-		pOldProcessPCB->m_state = RDY; 
-		pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
-		
-		pCurrentProcessPCB->m_state = RUN;
-		__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp); //switch to the new proc's stack		
-	} else {
-		pCurrentProcessPCB = pOldProcessPCB; // revert back to the old proc on error
-		assert(0,"Reverting back to old process, no state matched.");
-		return -1;
+		case RDY: {     
+			pOldProcessPCB->m_state = RDY; 
+			pOldProcessPCB->mp_sp = (uint32_t *) __get_MSP(); // save the old process's sp
+			
+			pCurrentProcessPCB->m_state = RUN;
+			__set_MSP((uint32_t) pCurrentProcessPCB->mp_sp); //switch to the new proc's stack
+			break;
+		}		
+		default: {
+			pCurrentProcessPCB = pOldProcessPCB; // revert back to the old proc on error
+			assert(0,"Reverting back to old process, no state matched.");
+			return -1;
+		}
 	}	 	 
 	return 0;
 }

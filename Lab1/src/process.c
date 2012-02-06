@@ -183,11 +183,13 @@ int scheduler(void)
 
 	assert((int)pCurrentProcessPCB,"There was no current process set in the scheduler.");
 
+
 	current_pid = pCurrentProcessPCB->processId;
 	highest_priority = 4;	
 
 	//  This will cycle through the list of processes then repeat
 	return (pCurrentProcessPCB->processId < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->processId + 1 : 0;	
+
 }
 /**
  * @brief release_processor(). 

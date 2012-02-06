@@ -24,6 +24,7 @@
 
 typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;  // process states, note we only assume three states in this example
 
+
 typedef struct pcb {
   
   //Note you may want to add your own member variables
@@ -39,7 +40,7 @@ typedef struct pcb {
 
 extern ProcessControlBlock process_array[NUM_PROCESSES];
 
-// NOTE the example code uses compile time memory for stack allocation
+// TODO the example code uses compile time memory for stack allocation
 // This makes the image size quite large. 
 // The project requires you to use dynamically allocated memory for
 // stack operation. The focus of the example code is for context switching,

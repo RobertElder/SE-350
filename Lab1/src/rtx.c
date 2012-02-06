@@ -100,6 +100,7 @@ int k_release_memory_block (void * MemoryBlock){
 	int startOfAllocatableMemory = START_OF_ALLOCATABLE_MEMORY;
 	int memoryBlockOffset = ((unsigned int)MemoryBlock) - startOfAllocatableMemory;
 	int memoryBlockIndex = 0;
+			int j;
 	char * pAllocationStatusByte = (char *)0;
 
 	// Make sure it is a valid pointer
@@ -119,6 +120,22 @@ int k_release_memory_block (void * MemoryBlock){
 	pAllocationStatusByte = get_address_of_memory_block_allocation_status_at_index(memoryBlockIndex);
 	// Set the status of this block to unallocated (0)
 	*pAllocationStatusByte = 0;
+
+	//  unblock if blocked
+	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
+		uart0_put_string("unblocking all processes\r\n");
+
+		// Unblock everything
+		for(j = 0; j < NUM_PROCESSES; j++){
+			if(process_array[j].currentState == BLOCKED_ON_MEMORY)
+				process_array[j].currentState = RDY;
+		}
+		//  Switch to another process.  That process will resume after returning from this function
+		numberOfMemoryBlocksCurrentlyAllocated--;
+		k_release_processor();
+		return 0;
+	}
+
 
 	numberOfMemoryBlocksCurrentlyAllocated--;
 

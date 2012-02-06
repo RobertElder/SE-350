@@ -148,7 +148,7 @@ void process_init()
 				*(--sp)  = (uint32_t) run_priority_tests;
 				break;						
 			default:
-				assert(false, "ProcIndex case not handled in process_init";
+				assert(0, "ProcIndex case not handled in process_init");
 				break;
 		}
 

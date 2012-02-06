@@ -213,6 +213,7 @@ int k_release_processor(void){
 
 	//  Attempt to get a process that is not blocked
 	do{
+		idOfNextProcessToRun = scheduler();
 		pCurrentProcessPCB = get_process_pointer_from_id(idOfNextProcessToRun);
 	}while(is_process_blocked(pCurrentProcessPCB->processId));
 	
@@ -228,8 +229,8 @@ int k_release_processor(void){
 
 	switch(pCurrentProcessPCB->currentState) {
 		case NEW:{
-			if (pOldProcessPCB->currentState != NEW) {
-				//  I don't completely understand why this is done, but I'll trust whoever wrote it
+			if (pOldProcessPCB->currentState != NEW && pOldProcessPCB->currentState != BLOCKED_ON_MEMORY) {
+				//  It was in the new state, but now it is fine to run again
 				pOldProcessPCB->currentState = RDY;
 				//  Save the stack pointer for the old process
 				pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
@@ -243,8 +244,9 @@ int k_release_processor(void){
 			break;
 		}
 		case RDY: {
-			//  Again, I don't completely understand why this is done, but I'll trust whoever wrote it     
-			pOldProcessPCB->currentState = RDY;
+			if(pOldProcessPCB->currentState != BLOCKED_ON_MEMORY)    
+				pOldProcessPCB->currentState = RDY;
+
 			//  Save the stack pointer for the old process 
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP(); // save the old process's sp
 			

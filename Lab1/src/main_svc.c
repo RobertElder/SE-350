@@ -40,8 +40,7 @@ void print_some_numbers(){
 	uart0_put_string("\n\rPrint stuff test passed. \n\r");
 }
 
-int main() 
-{
+int main(){
 	 
 	volatile unsigned int ret_val = 1234;
 	

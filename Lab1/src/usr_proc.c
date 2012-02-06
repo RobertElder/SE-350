@@ -150,7 +150,7 @@ void run_memory_tests(void){
 			}
 		}
 
-		release_memory_block(pTestPointer2);
+		//release_memory_block(pTestPointer2);
 		release_memory_block(pTestPointer1);
 		//  Everything should be in the same state as when we entered this function
 		

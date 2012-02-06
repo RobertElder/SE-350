@@ -22,6 +22,10 @@
 
 #define NUM_PROCESSES 5
 
+extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
+                                                 // refer to RVCT Linker User Guide
+extern unsigned int free_mem;
+
 typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;  // process states, note we only assume three states in this example
 
 typedef struct pcb {
@@ -36,23 +40,20 @@ typedef struct pcb {
   uint32_t processPriority; //Priority of the process     
 
 } ProcessControlBlock;
+ 
+typedef struct processEntry {
+  uint32_t pid;				// process id
+  uint32_t priority; 		//Priority of the process   
+  uint32_t stack_size;  
+  uint32_t start_sp;      // stack pointer to the start of the process stack?
+  //need another variable for i-process (indicates if this is an i-process or not)  
+} init_t;
 
+extern void* k_init_processes_to_create(void);
 
 
 extern ProcessControlBlock pcb_array[NUM_PROCESSES];
 
-// NOTE the example code uses compile time memory for stack allocation
-// This makes the image size quite large. 
-// The project requires you to use dynamically allocated memory for
-// stack operation. The focus of the example code is for context switching,
-// so we use statically allocated stack to simplify the code.
-
-/* Variable declarations */
-extern uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
-extern uint32_t stack1[USR_SZ_STACK];      // stack for proc1
-extern uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
-extern uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
-extern uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
 
 // NOTE: The example code uses compile time memory for pcb storage.
 //       If the system supports dynamica process creation/deletion,

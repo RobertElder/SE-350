@@ -46,12 +46,7 @@ void proc2(void){
 }
 
 void run_memory_tests(void){
-	while(1) {
-		release_processor();
-		uart0_put_char('E');
-		uart0_put_string("\n\r");
-	}
-/*
+
 	while(1) {
 		int i = 0;
 		int testCases = 6;
@@ -161,16 +156,11 @@ void run_memory_tests(void){
 		}
 
 		release_processor();
-	}	*/
+	}
 }
 
 void run_priority_tests(void) {
-	while(1) {
-		release_processor();
-		uart0_put_char('E');
-		uart0_put_string("\n\r");
-	}
-/*
+
 	while(1) {
 		int procIndex;
 		int testsPassed = 0;
@@ -245,7 +235,7 @@ void run_priority_tests(void) {
 		uart0_put_string("G015_priority_test: END\n\r");
 	
 		release_processor();
-	}	   */
+	}	   
 }
 
 void run_block_memory_test() {

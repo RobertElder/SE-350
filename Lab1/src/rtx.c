@@ -24,7 +24,7 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
 
 int maxNumberOfMemoryBlocksEverAllocatedAtOnce = 0;
-int numberOfMemoryBlocksCurrentlyAllocated = 0;
+extern int numberOfMemoryBlocksCurrentlyAllocated = 0;
 
 
 void * get_address_of_memory_block_at_index(int memoryBlockIndex){
@@ -60,7 +60,6 @@ void * k_request_memory_block (){
 
 	//  If there are no more memory blocks, block the calling process (which is the current process)
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
-			uart0_put_string("blocking this process\r\n");
 		//  Block the process
 		pCurrentProcessPCB->currentState = BLOCKED_ON_MEMORY;
 		pCurrentProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
@@ -74,6 +73,7 @@ void * k_request_memory_block (){
 	 	pIsMemoryInUse = get_address_of_memory_block_allocation_status_at_index(i);
 		//	Does this byte indicate that the memory at block i is already in use?
 		if(*pIsMemoryInUse == 0)	{
+			numberOfMemoryBlocksCurrentlyAllocated++;
 			return allocate_memory_block_at_index(i);
 		}
 	}

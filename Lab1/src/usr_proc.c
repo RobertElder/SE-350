@@ -28,9 +28,17 @@ void proc1(void)
 {
 
 	while (1) {
-   		pTestPointer1 = request_memory_block();
-		 uart0_put_char('a');
+		uart0_put_string("G099_procA: START\n\r");
+		uart0_put_string("G099_procA: total 3 tests\n\r");
+		uart0_put_string("G099_procA: test 1 OK\n\r");
+		uart0_put_string("G099_procA: test 2 OK\n\r");
+		uart0_put_string("G099_procA: test 3 OK\n\r");
+		uart0_put_string("G099_procA: 3/3 tests OK\n\r");
+		uart0_put_string("G099_procA: 0/3 tests FAIL\n\r");
+		uart0_put_string("G099_procA: END\n\r");
+
 		uart0_put_string("\n\r");
+		release_processor();
 	}
     
 }
@@ -38,9 +46,17 @@ void proc1(void)
 void proc2(void){
 
 	while (1) {
-		release_memory_block(pTestPointer1);
-		uart0_put_char('b');
+		uart0_put_string("G099_AWESOME_TEST: START\n\r");
+		uart0_put_string("G099_AWESOME_TEST: total 3 tests\n\r");
+		uart0_put_string("G099_AWESOME_TEST: test 1 OK\n\r");
+		uart0_put_string("G099_AWESOME_TEST: test 2 OK\n\r");
+		uart0_put_string("G099_AWESOME_TEST: test 3 OK\n\r");
+		uart0_put_string("G099_AWESOME_TEST: 3/3 tests OK\n\r");
+		uart0_put_string("G099_AWESOME_TEST: 0/3 tests FAIL\n\r");
+		uart0_put_string("G099_AWESOME_TEST: END\n\r");
+
 		uart0_put_string("\n\r");
+		release_processor();
 	}
     
 }

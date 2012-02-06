@@ -179,10 +179,10 @@ void process_init()
 				*(--sp)  = (uint32_t) nullProc;
 				break;
 			case 1:
-				*(--sp)  = (uint32_t) run_memory_tests;
+				*(--sp)  = (uint32_t) proc1;
 				break;
 			case 2:
-				*(--sp)  = (uint32_t) run_priority_tests;
+				*(--sp)  = (uint32_t) proc2;
 				break;	
 			case 3:
 				*(--sp)  = (uint32_t) run_memory_tests;

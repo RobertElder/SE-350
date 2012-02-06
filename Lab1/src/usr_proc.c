@@ -12,6 +12,8 @@ extern int get_process_priority(int);
 extern int set_process_priority(int, int);
 
 int num_blocks_to_request = 0;
+int mem_request_attempt_made = 0;
+int  * last_block_allocated;
 
 void nullProc() {
 	while(1) {
@@ -254,9 +256,20 @@ void run_priority_tests(void) {
 
 void run_block_memory_test() {
 	while(1) {
-		ProcessControlBlock * mem_request_proc = get_process_pointer_from_id(3);
-		
-		num_blocks_to_request = 2;
+		int * block;
+		ProcessControlBlock * mem_request_proc;
+
+		num_blocks_to_request = MAX_ALLOWED_MEMORY_BLOCKS - numberOfMemoryBlocksCurrentlyAllocated;
+
+		block = (int *)request_memory_block();		
+
+		release_processor();
+
+		while(!mem_request_attempt_made) {
+		 	 release_processor();
+		}
+
+		mem_request_proc = get_process_pointer_from_id(4);
 
 		if(mem_request_proc->currentState != BLOCKED_ON_MEMORY) {
 			uart0_put_string("OH NOES ---");
@@ -267,6 +280,8 @@ void run_block_memory_test() {
 			print_unsigned_integer(mem_request_proc->currentState);
 			uart0_put_string("\n\r");
 		}
+
+		release_memory_block(block);
 
 		release_processor();
 	}	
@@ -279,6 +294,8 @@ void memory_request_process() {
 		if(num_blocks_to_request > 0) {
 		 	int ** blocks;
 
+			mem_request_attempt_made = 1;
+
 			for(i = 0; i < num_blocks_to_request; ++i) {
 				blocks[i] = (int *)request_memory_block(); 	
 			}
@@ -288,6 +305,7 @@ void memory_request_process() {
 			}
 
 			num_blocks_to_request = 0;
+			mem_request_attempt_made = 0;
 		}		
 		
 		release_processor();

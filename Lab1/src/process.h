@@ -24,7 +24,6 @@
 
 typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;  // process states, note we only assume three states in this example
 
-
 typedef struct pcb {
   
   //Note you may want to add your own member variables

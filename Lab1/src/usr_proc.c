@@ -279,8 +279,6 @@ void run_block_memory_test() {
 		}
 
 		release_memory_block(block);
-
-		release_processor();
 	}	
 }
 

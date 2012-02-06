@@ -262,6 +262,8 @@ void run_block_memory_test() {
 
 		block = (int *)request_memory_block();		
 
+		mem_request_attempt_made = 0;
+
 		release_processor();
 
 		while(!mem_request_attempt_made) {
@@ -306,7 +308,7 @@ void memory_request_process() {
 			}
 
 			num_blocks_to_request = 0;
-			mem_request_attempt_made = 0;
+			
 		}		
 		
 		release_processor();

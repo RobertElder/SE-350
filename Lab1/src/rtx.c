@@ -127,10 +127,12 @@ int k_release_memory_block (void * MemoryBlock){
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
 		uart0_put_string("unblocking all processes\r\n");
 
-		// Unblock everything
+		// Unblock a process
 		for(j = 0; j < NUM_PROCESSES; j++){
-			if(process_array[j].currentState == BLOCKED_ON_MEMORY)
+			if(process_array[j].currentState == BLOCKED_ON_MEMORY) {
 				process_array[j].currentState = RDY;
+				break;
+			}
 		}
 		//  Switch to another process.  That process will resume after returning from this function
 		numberOfMemoryBlocksCurrentlyAllocated--;

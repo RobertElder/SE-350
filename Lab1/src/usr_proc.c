@@ -256,7 +256,7 @@ void run_block_memory_test() {
 	while(1) {
 		ProcessControlBlock * mem_request_proc = get_process_pointer_from_id(3);
 		
-		num_blocks_to_request = 1;
+		num_blocks_to_request = 2;
 
 		if(mem_request_proc->currentState != BLOCKED_ON_MEMORY) {
 			uart0_put_string("OH NOES ---");
@@ -284,7 +284,7 @@ void memory_request_process() {
 			}
 
 			for(i = 0; i < num_blocks_to_request; ++i) {
-				release_memory_block((blocks + (i*sizeof(int)))); 	
+				release_memory_block(blocks[i]); 	
 			}
 
 			num_blocks_to_request = 0;

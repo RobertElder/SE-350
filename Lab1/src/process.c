@@ -41,7 +41,7 @@ int set_process_priority (int process_ID, int priority) {
 		process->processPriority = priority;
 		return 0;
 	} else {
-	 	return -1;
+	 	assert(process != NULL, "Invalid priority in 'set_process_priority'");
 	}
 }
 
@@ -136,10 +136,10 @@ void process_init()
 				*(--sp)  = (uint32_t) nullProc;
 				break;
 			case 1:
-				*(--sp)  = (uint32_t) proc1;
+				*(--sp)  = (uint32_t) run_memory_tests;
 				break;
 			case 2:
-				*(--sp)  = (uint32_t) proc2;
+				*(--sp)  = (uint32_t) run_priority_tests;
 				break;	
 			case 3:
 				*(--sp)  = (uint32_t) run_memory_tests;
@@ -148,7 +148,7 @@ void process_init()
 				*(--sp)  = (uint32_t) run_priority_tests;
 				break;						
 			default:
-				*(--sp)  = (uint32_t) nullProc;
+				assert(false, "ProcIndex case not handled in process_init";
 				break;
 		}
 

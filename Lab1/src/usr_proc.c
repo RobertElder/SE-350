@@ -260,8 +260,6 @@ void run_block_memory_test() {
 
 		mem_request_attempt_made = 0;
 
-		release_processor();
-
 		while(!mem_request_attempt_made) {
 		 	 release_processor();
 		}
@@ -269,16 +267,14 @@ void run_block_memory_test() {
 		mem_request_proc = get_process_pointer_from_id(4);
 
 		if(mem_request_proc->currentState != BLOCKED_ON_MEMORY) {
-			uart0_put_string("OH NOES ---");
-			print_unsigned_integer(mem_request_proc->currentState);
-			uart0_put_string("\n\r");
+			uart0_put_string("Blocking did not occur. Test failed.\n\r");
 		} else {
-			uart0_put_string("OH YEAH ---");
-			print_unsigned_integer(mem_request_proc->currentState);
-			uart0_put_string("\n\r");
+			uart0_put_string("Blocking occurred. Test passed.\n\r");
 		}
 
 		release_memory_block(block);
+
+		release_processor();
 	}	
 }
 

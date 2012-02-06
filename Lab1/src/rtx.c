@@ -63,7 +63,7 @@ void * k_request_memory_block (){
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
 		//  Block the process
 		pCurrentProcessPCB->currentState = BLOCKED_ON_MEMORY;
-		pCurrentProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		//pCurrentProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		//  Switch to another process.  That process will resume after returning from this function
 		k_release_processor();
 		//assert(0,"not implemented");

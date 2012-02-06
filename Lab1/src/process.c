@@ -152,16 +152,16 @@ void process_init()
 				*(--sp)  = (uint32_t) nullProc;
 				break;
 			case 1:
-				*(--sp)  = (uint32_t) proc1;
-				break;
-			case 2:
-				*(--sp)  = (uint32_t) proc2;
-				break;	
-			case 3:
 				*(--sp)  = (uint32_t) run_memory_tests;
 				break;
-			case 4:
+			case 2:
 				*(--sp)  = (uint32_t) run_priority_tests;
+				break;	
+			case 3:
+				*(--sp)  = (uint32_t) run_block_memory_test;
+				break;
+			case 4:
+				*(--sp)  = (uint32_t) memory_request_process;
 				break;						
 			default:
 				*(--sp)  = (uint32_t) nullProc;
@@ -219,10 +219,14 @@ int scheduler(void)
 		isMemBlockJustReleased = 0;
 
 		return highest_priority_process;
+	} else {
+		j =  pCurrentProcessPCB->processId;
+	 	do {
+			j = (j < (NUM_PROCESSES - 1)) ? j + 1 : 0;
+		} while(is_process_blocked(j));
 	}
-
 	//  This will cycle through the list of processes then repeat
-	return (pCurrentProcessPCB->processId < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->processId + 1 : 0;	
+	return j;	
 }
 
 

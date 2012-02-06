@@ -4,6 +4,15 @@
  * NOTE this file contains embedded assembly.
  */
 
+__asm void pre_mem_request (void) {
+
+   IMPORT k_release_processor;  the a_c_routine is a regular c function defined somewhere else
+   PUSH {r4-r11,lr} ; push registers onto the stack, lr is pushed for popping to pc later
+   BL k_release_processor ;  go to the c routine to do some work
+   POP {r4-r11, pc}; pop regisers off the stack
+
+}
+
 // pop off exception stack frame from the stack
 __asm void __rte(void)
 {

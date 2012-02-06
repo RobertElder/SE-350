@@ -73,6 +73,8 @@ int has_blocked_processes(void); // check if there are blocked processes
 
 extern void proc1(void);			// user process 1
 extern void proc2(void);			// user process 2
+extern void run_block_memory_test(void);			// user process 1
+extern void memory_request_process(void);			// user process 2
 extern void nullProc(void);				// null process
 extern void run_priority_tests(void);
 extern void run_memory_tests(void);

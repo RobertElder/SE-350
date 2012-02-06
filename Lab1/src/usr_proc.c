@@ -13,7 +13,6 @@ extern int set_process_priority(int, int);
 
 int num_blocks_to_request = 0;
 int mem_request_attempt_made = 0;
-int  * last_block_allocated;
 
 void nullProc() {
 	while(1) {
@@ -290,14 +289,16 @@ void run_block_memory_test() {
 void memory_request_process() {
  	while(1) {
 		int i;
+		int * p;
 		
 		if(num_blocks_to_request > 0) {
-		 	int ** blocks;
+		 	int * blocks[MAX_ALLOWED_MEMORY_BLOCKS];
 
 			mem_request_attempt_made = 1;
 
 			for(i = 0; i < num_blocks_to_request; ++i) {
-				blocks[i] = (int *)request_memory_block(); 	
+				p = (int *)request_memory_block();
+				blocks[i] = p; 	
 			}
 
 			for(i = 0; i < num_blocks_to_request; ++i) {

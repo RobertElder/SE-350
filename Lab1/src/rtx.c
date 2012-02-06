@@ -57,6 +57,7 @@ void * k_request_memory_block (){
 	char * pIsMemoryInUse = (char *)0;
 	void * rtn = (void *)0;
 	int i = 0;
+	void *p;
 
 	//  If there are no more memory blocks, block the calling process (which is the current process)
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
@@ -74,7 +75,8 @@ void * k_request_memory_block (){
 		//	Does this byte indicate that the memory at block i is already in use?
 		if(*pIsMemoryInUse == 0)	{
 			numberOfMemoryBlocksCurrentlyAllocated++;
-			return allocate_memory_block_at_index(i);
+			p = allocate_memory_block_at_index(i);
+			return p	;
 		}
 	}
 

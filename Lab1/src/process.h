@@ -68,6 +68,7 @@ extern int get_process_priority (int);
 extern void process_init(void);	    // initialize all procs in the system
 int scheduler(void);				// pick the pid of the next to run process
 int k_release_process(void);		// kernel release_process API
+int has_blocked_processes(void); // check if there are blocked processes
 
 extern void proc1(void);			// user process 1
 extern void proc2(void);			// user process 2

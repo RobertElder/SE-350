@@ -45,7 +45,7 @@ void * allocate_memory_block_at_index(int memoryBlockIndex){
 }
 
 void * k_request_memory_block (){
-	/*  TODO: THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
+	/*  THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
 	The primitive returns a pointer to a memory block to the calling process. If no memory block is available, the calling process
 	is blocked until a memory block becomes available. If several processes are waiting for a memory block and a block
 	becomes available, the highest priority waiting process will get it.
@@ -91,7 +91,7 @@ void * k_request_memory_block (){
 }
 
 int k_release_memory_block (void * MemoryBlock){
-	/*  TODO: THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
+	/*  THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
 	This primitive returns the memory block to the RTX. If there are processes waiting for a block, the block is given to the
 	highest priority process, which is then unblocked. The caller of this primitive never blocks, but could be preempted. Thus,
 	it may affect the currently executing process.
@@ -102,7 +102,6 @@ int k_release_memory_block (void * MemoryBlock){
 	int startOfAllocatableMemory = START_OF_ALLOCATABLE_MEMORY;
 	int memoryBlockOffset = ((unsigned int)MemoryBlock) - startOfAllocatableMemory;
 	int memoryBlockIndex = 0;
-			int j;
 	char * pAllocationStatusByte = (char *)0;
 
 	// Make sure it is a valid pointer
@@ -123,17 +122,10 @@ int k_release_memory_block (void * MemoryBlock){
 	// Set the status of this block to unallocated (0)
 	*pAllocationStatusByte = 0;
 
-	//  unblock if blocked
-	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
-		uart0_put_string("unblocking all processes\r\n");
-
-		// Unblock a process
-		for(j = 0; j < NUM_PROCESSES; j++){
-			if(process_array[j].currentState == BLOCKED_ON_MEMORY) {
-				process_array[j].currentState = RDY;
-				break;
-			}
-		}
+	//  unblock if blocked}
+	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS && has_blocked_processes()){
+		uart0_put_string("unblocking\r\n");
+		isMemBlockJustReleased = 1;
 		//  Switch to another process.  That process will resume after returning from this function
 		numberOfMemoryBlocksCurrentlyAllocated--;
 		k_release_processor();

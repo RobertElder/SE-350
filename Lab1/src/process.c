@@ -43,6 +43,8 @@ int set_process_priority (int process_ID, int priority) {
 	} else {
 	 	assert(process != NULL, "Invalid priority in 'set_process_priority'");
 	}
+
+	return -1;
 }
 
 int get_process_priority (int process_ID) {
@@ -142,10 +144,10 @@ void process_init()
 				*(--sp)  = (uint32_t) run_priority_tests;
 				break;	
 			case 3:
-				*(--sp)  = (uint32_t) run_memory_tests;
+				*(--sp)  = (uint32_t) run_block_memory_test;
 				break;
 			case 4:
-				*(--sp)  = (uint32_t) run_priority_tests;
+				*(--sp)  = (uint32_t) memory_request_process;
 				break;						
 			default:
 				assert(0, "ProcIndex case not handled in process_init");

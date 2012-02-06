@@ -11,6 +11,8 @@
 extern int get_process_priority(int);
 extern int set_process_priority(int, int);
 
+int num_blocks_to_request = 0;
+
 void nullProc() {
 	while(1) {
 		release_processor();
@@ -246,6 +248,48 @@ void run_priority_tests(void) {
 
 		uart0_put_string("G015_priority_test: END\n\r");
 	
+		release_processor();
+	}
+}
+
+void run_block_memory_test() {
+	while(1) {
+		ProcessControlBlock * mem_request_proc = get_process_pointer_from_id(3);
+		
+		num_blocks_to_request = 1;
+
+		if(mem_request_proc->currentState != BLOCKED_ON_MEMORY) {
+			uart0_put_string("OH NOES ---");
+			print_unsigned_integer(mem_request_proc->currentState);
+			uart0_put_string("\n\r");
+		} else {
+			uart0_put_string("OH YEAH ---");
+			print_unsigned_integer(mem_request_proc->currentState);
+			uart0_put_string("\n\r");
+		}
+
+		release_processor();
+	}	
+}
+
+void memory_request_process() {
+ 	while(1) {
+		int i;
+		
+		if(num_blocks_to_request > 0) {
+		 	int ** blocks;
+
+			for(i = 0; i < num_blocks_to_request; ++i) {
+				blocks[i] = (int *)request_memory_block(); 	
+			}
+
+			for(i = 0; i < num_blocks_to_request; ++i) {
+				release_memory_block((blocks + (i*sizeof(int)))); 	
+			}
+
+			num_blocks_to_request = 0;
+		}		
+		
 		release_processor();
 	}
 }

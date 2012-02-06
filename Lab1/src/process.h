@@ -66,8 +66,8 @@ extern void process_init(void);	    // initialize all procs in the system
 int scheduler(void);				// pick the pid of the next to run process
 int k_release_process(void);		// kernel release_process API
 
-extern void proc1(void);			// user process 1
-extern void proc2(void);			// user process 2
+extern void memory_request_process(void);			//
+extern void run_block_memory_test(void);			//
 extern void nullProc(void);				// null process
 extern void run_priority_tests(void);
 extern void run_memory_tests(void);

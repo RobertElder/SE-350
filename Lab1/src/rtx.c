@@ -45,7 +45,7 @@ void * allocate_memory_block_at_index(int memoryBlockIndex){
 }
 
 void * k_request_memory_block (){
-	/*  TODO: THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
+	/*  THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
 	The primitive returns a pointer to a memory block to the calling process. If no memory block is available, the calling process
 	is blocked until a memory block becomes available. If several processes are waiting for a memory block and a block
 	becomes available, the highest priority waiting process will get it.
@@ -89,7 +89,7 @@ void * k_request_memory_block (){
 }
 
 int k_release_memory_block (void * MemoryBlock){
-	/*  TODO: THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
+	/*  THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
 	This primitive returns the memory block to the RTX. If there are processes waiting for a block, the block is given to the
 	highest priority process, which is then unblocked. The caller of this primitive never blocks, but could be preempted. Thus,
 	it may affect the currently executing process.
@@ -125,11 +125,13 @@ int k_release_memory_block (void * MemoryBlock){
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
 		uart0_put_string("unblocking all processes\r\n");
 
-		// Unblock everything
+		// TODO unblock only 1 process
 		for(j = 0; j < NUM_PROCESSES; j++){
-			if(process_array[j].currentState == BLOCKED_ON_MEMORY)
-				process_array[j].currentState = RDY;
+			if(pcb_array[j].currentState == BLOCKED_ON_MEMORY)
+				pcb_array[j].currentState = RDY;
 		}
+		isMemBlockJustReleased = 1;
+
 		//  Switch to another process.  That process will resume after returning from this function
 		numberOfMemoryBlocksCurrentlyAllocated--;
 		k_release_processor();

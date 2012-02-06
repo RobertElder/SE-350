@@ -23,6 +23,7 @@
 
 /* Variable definitions */
 ProcessControlBlock * pCurrentProcessPCB  = NULL;
+int isMemBlockJustReleased = 0;
 
 uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
 uint32_t stack1[USR_SZ_STACK];      // stack for proc1
@@ -30,7 +31,9 @@ uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
 uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
 uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
 
-ProcessControlBlock process_array[NUM_PROCESSES];
+ProcessControlBlock pcb_array[NUM_PROCESSES];
+
+
 
 int set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
@@ -41,10 +44,8 @@ int set_process_priority (int process_ID, int priority) {
 		process->processPriority = priority;
 		return 0;
 	} else {
-	 	assert(process != NULL, "Invalid priority in 'set_process_priority'");
+	 	return -1;
 	}
-
-	return -1;
 }
 
 int get_process_priority (int process_ID) {
@@ -56,12 +57,12 @@ int get_process_priority (int process_ID) {
 }
 
 ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
-	return (process_ID > NUM_PROCESSES - 1) ? NULL : &process_array[process_ID];
+	return (process_ID > NUM_PROCESSES - 1) ? NULL : &pcb_array[process_ID];
 }
 
 int is_process_blocked(int processId){
 	//  Right now this is the only blocking state
-	return (process_array[processId].currentState == BLOCKED_ON_MEMORY);
+	return (pcb_array[processId].currentState == BLOCKED_ON_MEMORY);
 }
 
 int is_deadlocked(){
@@ -130,7 +131,7 @@ void process_init()
 		    --sp; 
 		}
 
-		*(--sp)  = INITIAL_xPSR;      // user process initial xPSR  
+		*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
 
 		// Set the entry point of the process
 		switch(procIndex) {
@@ -138,19 +139,19 @@ void process_init()
 				*(--sp)  = (uint32_t) nullProc;
 				break;
 			case 1:
-				*(--sp)  = (uint32_t) run_memory_tests;
+				*(--sp)  = (uint32_t) proc1;
 				break;
 			case 2:
-				*(--sp)  = (uint32_t) run_priority_tests;
+				*(--sp)  = (uint32_t) proc2;
 				break;	
 			case 3:
-				*(--sp)  = (uint32_t) run_block_memory_test;
+				*(--sp)  = (uint32_t) run_memory_tests;
 				break;
 			case 4:
-				*(--sp)  = (uint32_t) memory_request_process;
+				*(--sp)  = (uint32_t) run_priority_tests;
 				break;						
 			default:
-				assert(0, "ProcIndex case not handled in process_init");
+				*(--sp)  = (uint32_t) nullProc;
 				break;
 		}
 
@@ -160,13 +161,13 @@ void process_init()
 
 		process.processStackPointer = sp;
 
-		process_array[procIndex] = process;
+		pcb_array[procIndex] = process;
 
 
 	}
 
 	//  To start off, set the current process to the null process
-	pCurrentProcessPCB = &process_array[0];
+	pCurrentProcessPCB = &pcb_array[0];
 }
 
 /*@brief: scheduler, pick the pid of the next to run process
@@ -181,16 +182,22 @@ int scheduler(void)
 	volatile int pid_to_select;
 	volatile int highest_priority;
 
-	assert((int)pCurrentProcessPCB,"There was no current process set in the scheduler.");
-
+	assert((int)pCurrentProcessPCB, "There was no current process set in the scheduler.");
 
 	current_pid = pCurrentProcessPCB->processId;
 	highest_priority = 4;	
 
+	if (isMemBlockJustReleased) {
+
+		isMemBlockJustReleased = 0;
+	}
+
 	//  This will cycle through the list of processes then repeat
 	return (pCurrentProcessPCB->processId < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->processId + 1 : 0;	
-
 }
+
+
+
 /**
  * @brief release_processor(). 
  * @return -1 on error and zero on success
@@ -219,7 +226,7 @@ int k_release_processor(void){
 	do{
 		idOfNextProcessToRun = scheduler();
 		pCurrentProcessPCB = get_process_pointer_from_id(idOfNextProcessToRun);
-	}while(is_process_blocked(pCurrentProcessPCB->processId));
+	} while (is_process_blocked(pCurrentProcessPCB->processId));
 	
 	if(pCurrentProcessPCB == NULL) {
 		assert((int)pCurrentProcessPCB,"pCurrentProcessPCB was null after calling get process pointer from id.");

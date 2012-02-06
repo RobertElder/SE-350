@@ -14,6 +14,7 @@ extern int set_process_priority(int, int);
 int num_blocks_to_request = 0;
 int mem_request_attempt_made = 0;
 int  * last_block_allocated;
+int * pTestPointer1 = 0;
 
 void nullProc() {
 	while(1) {
@@ -24,42 +25,31 @@ void nullProc() {
 void proc1(void)
 {
 
-    volatile int i =0;
-	volatile int ret_val = 10;
-	
-    while ( 1) {
-        if (i != 0 && i % 5 == 0 ) {
-            ret_val = release_processor();
-#ifdef DEBUG_0
-		    printf("\n\rproc1: ret_val=%d. ", ret_val);
-#else
-		  	uart0_put_string("\n\r");
-#endif // DEBUG_0
-        }
-        uart0_put_char('A' + i % 26);
-        i++;
-    }
-
+	while (1) {
+   		pTestPointer1 = request_memory_block();
+		 uart0_put_char('a');
+		uart0_put_string("\n\r");
+	}
+    
 }
 
 void proc2(void){
-    volatile int i =0;		  
-	volatile int ret_val = 20;
-    while ( 1) {
-        if (i != 0 && i % 5 == 0 ) {
-            ret_val = release_processor();
-#ifdef DEBUG_0
-	    	printf("\n\rproc2: ret_val=%d. ", ret_val);
-#else
-			uart0_put_string("\n\r");
-#endif // DEBUG_0
-        }
-        uart0_put_char('a' + i%26);
-        i++;
-    }
+
+	while (1) {
+		release_memory_block(pTestPointer1);
+		uart0_put_char('b');
+		uart0_put_string("\n\r");
+	}
+    
 }
 
 void run_memory_tests(void){
+	while(1) {
+		release_processor();
+		uart0_put_char('E');
+		uart0_put_string("\n\r");
+	}
+/*
 	while(1) {
 		int i = 0;
 		int testCases = 6;
@@ -173,10 +163,16 @@ void run_memory_tests(void){
 		uart0_put_string("G015_memory_test: END\n\r");
 
 		release_processor();
-	}
+	}	*/
 }
 
 void run_priority_tests(void) {
+	while(1) {
+		release_processor();
+		uart0_put_char('E');
+		uart0_put_string("\n\r");
+	}
+/*
 	while(1) {
 		int procIndex;
 		int testsPassed = 0;
@@ -251,7 +247,7 @@ void run_priority_tests(void) {
 		uart0_put_string("G015_priority_test: END\n\r");
 	
 		release_processor();
-	}
+	}	   */
 }
 
 void run_block_memory_test() {

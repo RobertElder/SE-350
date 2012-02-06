@@ -6,7 +6,7 @@
  *       it is OK if you only use the C library for debugging purpose 
  *       during the development/prototyping phase
  */
-#define DEBUG_0 1
+
 #include <LPC17xx.h>
 #include <system_LPC17xx.h>
 #ifdef DEBUG_0

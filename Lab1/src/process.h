@@ -39,7 +39,7 @@ typedef struct pcb {
 
 extern ProcessControlBlock process_array[NUM_PROCESSES];
 
-// NOTE the example code uses compile time memory for stack allocation
+// TODO the example code uses compile time memory for stack allocation
 // This makes the image size quite large. 
 // The project requires you to use dynamically allocated memory for
 // stack operation. The focus of the example code is for context switching,
@@ -66,8 +66,8 @@ extern void process_init(void);	    // initialize all procs in the system
 int scheduler(void);				// pick the pid of the next to run process
 int k_release_process(void);		// kernel release_process API
 
-extern void proc1(void);			// user process 1
-extern void proc2(void);			// user process 2
+extern void memory_request_process(void);			//
+extern void run_block_memory_test(void);			//
 extern void nullProc(void);				// null process
 extern void run_priority_tests(void);
 extern void run_memory_tests(void);

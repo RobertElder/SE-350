@@ -41,8 +41,10 @@ int set_process_priority (int process_ID, int priority) {
 		process->processPriority = priority;
 		return 0;
 	} else {
-	 	return -1;
+	 	assert(process != NULL, "Invalid priority in 'set_process_priority'");
 	}
+
+	return -1;
 }
 
 int get_process_priority (int process_ID) {
@@ -136,19 +138,19 @@ void process_init()
 				*(--sp)  = (uint32_t) nullProc;
 				break;
 			case 1:
-				*(--sp)  = (uint32_t) proc1;
-				break;
-			case 2:
-				*(--sp)  = (uint32_t) proc2;
-				break;	
-			case 3:
 				*(--sp)  = (uint32_t) run_memory_tests;
 				break;
-			case 4:
+			case 2:
 				*(--sp)  = (uint32_t) run_priority_tests;
+				break;	
+			case 3:
+				*(--sp)  = (uint32_t) run_block_memory_test;
+				break;
+			case 4:
+				*(--sp)  = (uint32_t) memory_request_process;
 				break;						
 			default:
-				*(--sp)  = (uint32_t) nullProc;
+				assert(0, "ProcIndex case not handled in process_init");
 				break;
 		}
 
@@ -181,11 +183,13 @@ int scheduler(void)
 
 	assert((int)pCurrentProcessPCB,"There was no current process set in the scheduler.");
 
+
 	current_pid = pCurrentProcessPCB->processId;
 	highest_priority = 4;	
 
 	//  This will cycle through the list of processes then repeat
 	return (pCurrentProcessPCB->processId < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->processId + 1 : 0;	
+
 }
 /**
  * @brief release_processor(). 

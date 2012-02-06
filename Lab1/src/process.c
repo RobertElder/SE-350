@@ -117,6 +117,13 @@ void* k_init_processes_to_create() {
  *       points of each process so that this code does not have to hard code
  *       proc1 and proc2 symbols. We leave all these imperfections as excercies to the reader 
  */
+
+uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
+uint32_t stack1[USR_SZ_STACK];      // stack for proc1
+uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
+uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
+uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
+
 void process_init() 
 {
     volatile int i;
@@ -136,6 +143,26 @@ void process_init()
 		process.processPriority =  proc_init_table[procIndex].priority;
 		
 		sp  = (uint32_t*)proc_init_table[procIndex].start_sp;
+		switch(procIndex) {
+		 	case 0:
+				sp  = stack0 + USR_SZ_STACK;
+				break;
+			case 1:
+				sp  = stack1 + USR_SZ_STACK;
+				break;
+			case 2:
+				sp  = stack2 + USR_SZ_STACK;
+				break;	
+			case 3:
+				sp  = stack3 + USR_SZ_STACK;
+				break;				
+			case 4:
+				sp  = stack4 + USR_SZ_STACK;
+				break;
+			default:
+				sp  = stack0 + USR_SZ_STACK;
+				break;
+		}
 
 		// 8 bytes alignement adjustment to exception stack frame
 		// TODO: figure out why we want sp to have 4 right-aligned non-zero bits before 
@@ -189,8 +216,10 @@ void process_init()
  *POST: if pCurrentProcessPCB was NULL, then it gets set to &pcb1.
  *      No other effect on other global variables.
  */
+
 int scheduler(void)
 {
+
     volatile int current_pid;
 	volatile int pid_to_select;
 	volatile int highest_priority_process = 0;
@@ -226,7 +255,10 @@ int scheduler(void)
 		} while(is_process_blocked(j));
 	}
 	//  This will cycle through the list of processes then repeat
-	return j;	
+
+
+	return j;
+	
 }
 
 

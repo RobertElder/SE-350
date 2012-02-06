@@ -3,8 +3,9 @@
  * @date: 2012/01/08
  */
 
-#include "utils.h"
+
 #include "rtx.h"
+
 
 #ifdef DEBUG_0
 #include <stdio.h>
@@ -22,7 +23,8 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
 
 
-int * pMaxNumberOfMemoryBlocksEverAllocated;
+int maxNumberOfMemoryBlocksEverAllocatedAtOnce = 0;
+int numberOfMemoryBlocksCurrentlyAllocated = 0;
 
 
 void * get_address_of_memory_block_at_index(int memoryBlockIndex){
@@ -54,9 +56,19 @@ void * k_request_memory_block (){
 	// 1 if there is a block allocated there
 	char * pIsMemoryInUse = (char *)0;
 	void * rtn = (void *)0;
-
 	int i = 0;
-	for(i = 0; i < *pMaxNumberOfMemoryBlocksEverAllocated; i++){
+
+	//  If there are no more memory blocks, block the calling process (which is the current process)
+	if(maxNumberOfMemoryBlocksEverAllocatedAtOnce == MAX_ALLOWED_MEMORY_BLOCKS){
+		//  Block the process
+		pCurrentProcessPCB->currentState = BLOCKED_ON_MEMORY;
+		pCurrentProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		//  Switch to another process.  That process will resume after returning from this function
+		k_release_processor();
+		//assert(0,"not implemented");
+	}
+
+	for(i = 0; i < maxNumberOfMemoryBlocksEverAllocatedAtOnce; i++){
 		//  Check the bit at the start of the memory allocation table plus the number of bytes
 	 	pIsMemoryInUse = get_address_of_memory_block_allocation_status_at_index(i);
 		//	Does this byte indicate that the memory at block i is already in use?
@@ -65,11 +77,12 @@ void * k_request_memory_block (){
 		}
 	}
 
-	assert(*pMaxNumberOfMemoryBlocksEverAllocated < MAX_ALLOWED_MEMORY_BLOCKS,"Too many memory blocks allocated");
+	assert(maxNumberOfMemoryBlocksEverAllocatedAtOnce < MAX_ALLOWED_MEMORY_BLOCKS,"Too many memory blocks allocated");
 	// There are no free blocks that we can use, allocate a new one
-	rtn = allocate_memory_block_at_index(*pMaxNumberOfMemoryBlocksEverAllocated);
+	rtn = allocate_memory_block_at_index(maxNumberOfMemoryBlocksEverAllocatedAtOnce);
 	// There is now one more block allocated
-	(*pMaxNumberOfMemoryBlocksEverAllocated)++;
+	maxNumberOfMemoryBlocksEverAllocatedAtOnce++;
+	numberOfMemoryBlocksCurrentlyAllocated++;
 	//return the pointer
 	return rtn;
 }
@@ -81,7 +94,7 @@ int k_release_memory_block (void * MemoryBlock){
 	it may affect the currently executing process.
 	*/
 
-	// Whatever value we are given it should be inside the range of possible allocated blocks
+	//  Whatever value we are given it should be inside the range of possible allocated blocks
 	//  I don't know why you can't just subtract the constant, but for some reason, when you do it will add 0x4000 to the result: WTF?
 	int startOfAllocatableMemory = START_OF_ALLOCATABLE_MEMORY;
 	int memoryBlockOffset = ((unsigned int)MemoryBlock) - startOfAllocatableMemory;
@@ -96,7 +109,7 @@ int k_release_memory_block (void * MemoryBlock){
 
 	memoryBlockIndex = memoryBlockOffset / MEMORY_BLOCK_SIZE;
 
-	if(memoryBlockIndex > *pMaxNumberOfMemoryBlocksEverAllocated || memoryBlockIndex < 0){
+	if(memoryBlockIndex > maxNumberOfMemoryBlocksEverAllocatedAtOnce || memoryBlockIndex < 0){
 		assert(0,"Invalid memory address to release, outside range\n");
 		return 1;
 	}
@@ -106,10 +119,11 @@ int k_release_memory_block (void * MemoryBlock){
 	// Set the status of this block to unallocated (0)
 	*pAllocationStatusByte = 0;
 
+	numberOfMemoryBlocksCurrentlyAllocated--;
+
 	return 0;
 }
 
 void init_memory_allocation_table(){
-	pMaxNumberOfMemoryBlocksEverAllocated	= (int *)START_OF_MEMORY_ALLOCATION_TABLE;
-	*pMaxNumberOfMemoryBlocksEverAllocated = 0;
+	assert(MAX_ALLOWED_MEMORY_BLOCKS * MEMORY_BLOCK_SIZE < 0x100 * 0x60,"You set the values for memory sizes too big, You might be overwritting someones data.");
 }

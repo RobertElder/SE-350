@@ -5,6 +5,12 @@
 #ifndef _RTX_H
 #define _RTX_H
 
+#include <LPC17xx.h>
+#include <system_LPC17xx.h>
+#include "utils.h"
+#include "process.h"
+
+
 typedef unsigned int U32;
 
 #define __SVC_0  __svc_indirect(0)
@@ -23,12 +29,12 @@ extern int k_release_memory_block(void *);
 #define release_memory_block(p_mem_blk) _release_memory_block((U32)k_release_memory_block, p_mem_blk)
 extern int _release_memory_block(U32 p_func, void * p_mem_blk) __SVC_0;
 
-
+void init_memory_allocation_table(void);
 
 #define START_OF_MEMORY_ALLOCATION_TABLE free_mem
 #define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0x00002000
-#define MEMORY_BLOCK_SIZE 0x100
+#define MEMORY_BLOCK_SIZE 0x10
 
-#define MAX_ALLOWED_MEMORY_BLOCKS 0x100
+#define MAX_ALLOWED_MEMORY_BLOCKS 2
 
 #endif

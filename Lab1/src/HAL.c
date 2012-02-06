@@ -30,6 +30,8 @@ __asm void SVC_Handler (void)
 	                 
 	BNE  SVC_EXIT       ; if SVC Number !=0, exit
 
+;LDM(IA) instructions load the registers in reglist with word values from memory addresses based on Rn.
+;IA: Increment address After each access. This is the default.
 	LDM  R0, {R0-R3, R12}; Read R0-R3, R12 from stack. NOTE R0 contains the sp before this instruction
 ;  From the manual
 ;The BL and BLX instructions write the address of the next instruction to LR (the link register, R14).
@@ -43,7 +45,9 @@ __asm void SVC_Handler (void)
 	MRS  R12, MSP        ; Read MSP
 	STR  R0, [R12]       ; store C kernel function return value in R0
 	                     ; to R0 on the exception stack frame  
-SVC_EXIT	
+SVC_EXIT
+	;The MVN(S)(Cond) Rd, Operand2 instruction takes the value of Operand2, performs a bitwise logical NOT operation	on the value, and places the result into Rd.	
 	MVN  LR, #:NOT:0xFFFFFFF9  ; set EXC_RETURN value, Thread mode, MSP
+	;BX is branch indirect (register).
 	BX   LR
 }

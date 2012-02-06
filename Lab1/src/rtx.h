@@ -31,12 +31,14 @@ extern int _release_memory_block(U32 p_func, void * p_mem_blk) __SVC_0;
 
 void init_memory_allocation_table(void);
 
+
 #define START_OF_MEMORY_ALLOCATION_TABLE free_mem
 #define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0x00002000
 #define MEMORY_BLOCK_SIZE 0x10
 
-#define MAX_ALLOWED_MEMORY_BLOCKS 0x1
+#define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
 
 extern int numberOfMemoryBlocksCurrentlyAllocated;
+
 
 #endif

@@ -14,12 +14,7 @@
 // To better strcture your code, you may want to split these functions
 // into different files. For example, memory related kernel APIs in one file
 // and process related API(s) in another file.
-extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
-                                                 // refer to RVCT Linker User Guide
 
-
-extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;
-unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
 
 
@@ -139,3 +134,4 @@ int k_release_memory_block (void * MemoryBlock){
 void init_memory_allocation_table(){
 	assert(MAX_ALLOWED_MEMORY_BLOCKS * MEMORY_BLOCK_SIZE < 0x100 * 0x60,"You set the values for memory sizes too big, You might be overwritting someones data.");
 }
+

@@ -21,19 +21,16 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
+
 /* Variable definitions */
 ProcessControlBlock * pCurrentProcessPCB  = NULL;
 int isMemBlockJustReleased = 0;
 
-uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
-uint32_t stack1[USR_SZ_STACK];      // stack for proc1
-uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
-uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
-uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
-
 ProcessControlBlock pcb_array[NUM_PROCESSES];
 
+extern unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
+init_t proc_init_table[NUM_PROCESSES];
 
 int set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
@@ -89,6 +86,27 @@ int has_blocked_processes(){
 	return 0;
 }
 
+	 // We will have 5 priorities --> 0,1,2,3  are for normal processes; 4 is for the NULL process
+void* k_init_processes_to_create() {
+	unsigned int sp = free_mem;
+   	int i;
+
+	for( i = 0; i < 6; i++ ){
+		init_t proc;
+
+		proc.pid = i;
+		proc.priority = (i == 0) ? 4 : (i - 1) % 4;
+		proc.stack_size = USR_SZ_STACK;
+		sp += USR_SZ_STACK;
+		proc.start_sp = sp;
+		
+
+		proc_init_table[i] = proc;
+	}
+	 return 0;
+}
+
+
 /**
  * @brief: initialize all processes in the system
 
@@ -105,37 +123,19 @@ void process_init()
 	uint32_t * sp;
 	int procIndex;
 
+	k_init_processes_to_create();
+
 	//  For all the processes
-	for(procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
+	for (procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
 		ProcessControlBlock process;
 
 		//  Set up the process control block
-		process.processId = procIndex;
+		process.processId = proc_init_table[procIndex].pid;
 		process.currentState = NEW;
 		// must mod 4 so that the priorities don't go over 3 (only null process can be level 4)
-		process.processPriority = (procIndex == 0) ? 4 : (procIndex - 1) % 4;
-
-		//  Set up the process stacks based on the index of the process
-		switch(procIndex) {
-		 	case 0:
-				sp  = stack0 + USR_SZ_STACK;
-				break;
-			case 1:
-				sp  = stack1 + USR_SZ_STACK;
-				break;
-			case 2:
-				sp  = stack2 + USR_SZ_STACK;
-				break;	
-			case 3:
-				sp  = stack3 + USR_SZ_STACK;
-				break;				
-			case 4:
-				sp  = stack4 + USR_SZ_STACK;
-				break;
-			default:
-				sp  = stack0 + USR_SZ_STACK;
-				break;
-		}
+		process.processPriority =  proc_init_table[procIndex].priority;
+		
+		sp  = (uint32_t*)proc_init_table[procIndex].start_sp;
 
 		// 8 bytes alignement adjustment to exception stack frame
 		// TODO: figure out why we want sp to have 4 right-aligned non-zero bits before 
@@ -239,13 +239,14 @@ int k_release_processor(void){
 	//  Screw this process, we are getting a newer BETTER process
 	pOldProcessPCB = pCurrentProcessPCB;
 
-	//  Make sure we are not deadlocked
-	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");	
+	
 
 	//  Attempt to get a process that is not blocked
 	idOfNextProcessToRun = scheduler();
 	pCurrentProcessPCB = get_process_pointer_from_id(idOfNextProcessToRun);
 	
+	//  Make sure we are not deadlocked
+	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");
 	
 	if(pCurrentProcessPCB == NULL) {
 		assert((int)pCurrentProcessPCB, "pCurrentProcessPCB was null after calling get process pointer from id.");

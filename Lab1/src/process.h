@@ -20,22 +20,42 @@ extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatte
                                                  // refer to RVCT Linker User Guide
 extern unsigned int free_mem;
 
+//---------------------------------------------------------------
+//
+//             MEMORY MAP
+//       tread lightly, here be dragons	
+//
+//----------------------------------------------------------------
+							
 // dynamic memory allocation space for the kernel
 #define START_KERNEL_HEAP free_mem
+#define KERNAL_HEAP_BLOCK_SIZE 0x10
 #define KERNEL_HEAP_SIZE 0x200
 
 // user process stack size 512 = 0x80 *4 bytes	 (128 4-byte words)
 #define START_STACKS START_KERNEL_HEAP + KERNEL_HEAP_SIZE
 #define STACKS_SIZE 0x080
-
 #define NUM_PROCESSES 5
+
+// dynamic heap for user processes
+#define START_OF_MEMORY_ALLOCATION_TABLE START_STACKS + NUM_PROCESSES * STACKS_SIZE
+#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0xA
+#define MEMORY_BLOCK_SIZE 0x10
+#define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
+
+// ---------------------------------------------------------------
+
+
+						  
+
 
 
 // --------------------------------------------------------
 // Data structures
 // --------------------------------------------------------
 
-typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;  // process states, note we only assume three states in this example
+// process states
+typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;
 
 typedef struct pcb {
   
@@ -43,23 +63,37 @@ typedef struct pcb {
   //in order to finish P1 and the entire project 
   //struct ProcessControlBlock *mp_next;  // next ProcessControlBlock, not used in this example, RTX project most likely will need it, keep here for reference
   
-  uint32_t * processStackPointer;      // stack pointer of the process
-  uint32_t processId;		// process id
-  proc_state_t currentState; // state of the process  
-  uint32_t processPriority; //Priority of the process     
+  // stack pointer of the process
+  uint32_t* processStackPointer;
+
+  // process id      
+  uint32_t processId;
+
+  // state of the process 		
+  proc_state_t currentState;
+
+  //Priority of the process  
+  uint32_t processPriority;      
 
 } ProcessControlBlock;
  
 typedef struct processEntry {
-  uint32_t pid;				// process id
-  uint32_t priority; 		//Priority of the process   
-  uint32_t stack_size;  
-  uint32_t start_sp;      // stack pointer to the start of the process stack?
+// process id
+  uint32_t pid;	
+  
+  //Priority of the process 			
+  uint32_t priority;
+  
+  // Size of the process stack 		  
+  uint32_t stack_size;
+  
+  // stack pointer to the start(top) of the process stack  
+  uint32_t start_sp;
+        
   //need another variable for i-process (indicates if this is an i-process or not)  
 } init_t;
 
 extern void* k_init_processes_to_create(void);
-
 
 extern ProcessControlBlock pcb_array[NUM_PROCESSES];
 

@@ -4,22 +4,22 @@
 
 #define newEmptyList(implementation)                      _newEmptyList()       
 #define insertPtrAtBeginningOfList(ptr,theList)           _insertPtrAtBeginningOfList(ptr, theList)         
-#define insertPtrIntoListAtIndex(ptr,theList,idx)         _insertPtrIntoListAtIndex(ptr, theList, idx  )         
-#define addPtrToEndOfList(ptr,theList)                    _addPtrToEndOfList( ptr,      theList       )         
-#define getPtrAtIndexInList(idx,theList)                  _getPtrAtIndexInList(                                       idx, theList       )         
-#define removeAndReturnPtrAtIndexFromList(idx,theList)    _removeAndReturnPtrAtIndexFromList(                         idx, theList       )         
+#define insertPtrIntoListAtIndex(ptr,theList,idx)         _insertPtrIntoListAtIndex(ptr, theList, idx)         
+#define addPtrToEndOfList(ptr,theList)                    _addPtrToEndOfList(ptr, theList)         
+#define getPtrAtIndexInList(idx,theList)                  _getPtrAtIndexInList(idx, theList)         
+#define removeAndReturnPtrAtIndexFromList(idx,theList)    _removeAndReturnPtrAtIndexFromList(idx, theList)         
         
-#define isListEmpty(theList)                              _isListEmpty(                                                   theList       )         
-#define makeListEmpty(theList,fcn )                       _makeListEmpty(                                            theList, fcn  )               
-#define destroyList(theList,fcn )                         _destroyList(                                                  theList, fcn  )  
+#define isListEmpty(theList)                              _isListEmpty(theList)         
+#define makeListEmpty(theList,fcn )                       _makeListEmpty(theList, fcn)               
+#define destroyList(theList,fcn )                         _destroyList(theList, fcn)  
        
-#define lengthOfList(theList)                             _lengthOfList(                                                theList       )         
+#define lengthOfList(theList)                             _lengthOfList(theList)         
                              
-#define newForwardListIterator(theList)                   _newForwardListIterator(                                        theList       )         
-#define newBackwardListIterator(theList)                  _newBackwardListIterator(                                      theList       )         
-#define nextListElement(theIterator)                      _nextListElement(                                               theIterator   )         
-#define listHasNextElement(theIterator)                   _listHasNextElement(                                            theIterator   )         
-#define destroyIterator(theIterator)                      _destroyIterator(                                                theIterator   )
+#define newForwardListIterator(theList)                   _newForwardListIterator(theList)         
+#define newBackwardListIterator(theList)                  _newBackwardListIterator(theList)         
+#define nextListElement(theIterator)                      _nextListElement(theIterator)         
+#define listHasNextElement(theIterator)                   _listHasNextElement(theIterator)         
+#define destroyIterator(theIterator)                      _destroyIterator(theIterator)
 
 #endif    // SE350_LIST
 
@@ -28,8 +28,6 @@
 // even if directly or indirectly #included more than once.
 #ifndef SE350_LIST_MODULE
 #define SE350_LIST_MODULE
-
-#include <stdbool.h>	//TODO NO BOOL
 
 // ListStruct_ will be *defined* in the implementation - ie in ListLinked.c.
 // The compiler's happy with our use here of ListPointer because it knows how large a pointer is;
@@ -195,10 +193,10 @@ int _lengthOfList(  ListPointer theList );
 // ListIteratorStruct is defined by the implementation.
 typedef struct ListIteratorStruct_ * ListIteratorPtr;
 
-ListIteratorPtr _newForwardListIterator( ListPointer     theList     );
-ListIteratorPtr _newBackwardListIterator( ListPointer     theList     );
-void *          _nextListElement(         ListIteratorPtr theIterator );
-bool            _listHasNextElement(     ListIteratorPtr theIterator );
-void            _destroyIterator(        ListIteratorPtr theIterator );
+ListIteratorPtr _newForwardListIterator(ListPointer theList);
+ListIteratorPtr _newBackwardListIterator(ListPointer theList);
+void *          _nextListElement(ListIteratorPtr theIterator);
+bool            _listHasNextElement(ListIteratorPtr theIterator);
+void            _destroyIterator(ListIteratorPtr theIterator);
 
 #endif // of SE350_LIST_MODULE

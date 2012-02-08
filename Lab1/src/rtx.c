@@ -28,7 +28,7 @@ void * get_address_of_memory_block_at_index(int memoryBlockIndex){
 }
 
 char * get_address_of_memory_block_allocation_status_at_index(int memoryBlockIndex){
-	return (char *)(START_OF_MEMORY_ALLOCATION_TABLE + sizeof(int) + (sizeof(char) * memoryBlockIndex));
+	return (char *)(START_OF_MEMORY_ALLOCATION_TABLE + (sizeof(char) * memoryBlockIndex));
 }
 
 void * allocate_memory_block_at_index(int memoryBlockIndex){
@@ -75,7 +75,7 @@ void * k_request_memory_block (){
 		}
 	}
 
-	assert(maxNumberOfMemoryBlocksEverAllocatedAtOnce < MAX_ALLOWED_MEMORY_BLOCKS,"Too many memory blocks allocated");
+	assert(maxNumberOfMemoryBlocksEverAllocatedAtOnce < MAX_ALLOWED_MEMORY_BLOCKS, "Too many memory blocks allocated");
 	// There are no free blocks that we can use, allocate a new one
 	rtn = allocate_memory_block_at_index(maxNumberOfMemoryBlocksEverAllocatedAtOnce);
 	// There is now one more block allocated

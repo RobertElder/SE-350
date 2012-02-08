@@ -54,7 +54,7 @@ typedef struct ListStruct_ ListStruct, * ListPointer, * ListPtr;
 **             of implementation must be either UseUseDefaultList or match the implementation available.
 */
 
-ListPointer _newEmptyList( ListImplementation implementation );
+ListPointer _newEmptyList(void);
 
 
 // -----------------------------------------------------------------------------------------------------------------------------

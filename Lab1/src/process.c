@@ -96,8 +96,8 @@ void* k_init_processes_to_create() {
 
 		proc.pid = i;
 		proc.priority = (i == 0) ? 4 : (i - 1) % 4;
-		proc.stack_size = USR_SZ_STACK;
-		sp += USR_SZ_STACK;
+		proc.stack_size = STACKS_SIZE;
+		sp += STACKS_SIZE;
 		proc.start_sp = sp;
 		
 
@@ -118,11 +118,11 @@ void* k_init_processes_to_create() {
  *       proc1 and proc2 symbols. We leave all these imperfections as excercies to the reader 
  */
 
-uint32_t stack0[USR_SZ_STACK];      // stack for nullProc
-uint32_t stack1[USR_SZ_STACK];      // stack for proc1
-uint32_t stack2[USR_SZ_STACK];	    // stack for proc2
-uint32_t stack3[USR_SZ_STACK];      // stack for run_priority_tests
-uint32_t stack4[USR_SZ_STACK];      // stack for run_memory_tests
+uint32_t stack0[STACKS_SIZE];      // stack for nullProc
+uint32_t stack1[STACKS_SIZE];      // stack for proc1
+uint32_t stack2[STACKS_SIZE];	    // stack for proc2
+uint32_t stack3[STACKS_SIZE];      // stack for run_priority_tests
+uint32_t stack4[STACKS_SIZE];      // stack for run_memory_tests
 
 void process_init() 
 {
@@ -145,22 +145,22 @@ void process_init()
 		sp  = (uint32_t*)proc_init_table[procIndex].start_sp;
 		switch(procIndex) {
 		 	case 0:
-				sp  = stack0 + USR_SZ_STACK;
+				sp  = stack0 + STACKS_SIZE;
 				break;
 			case 1:
-				sp  = stack1 + USR_SZ_STACK;
+				sp  = stack1 + STACKS_SIZE;
 				break;
 			case 2:
-				sp  = stack2 + USR_SZ_STACK;
+				sp  = stack2 + STACKS_SIZE;
 				break;	
 			case 3:
-				sp  = stack3 + USR_SZ_STACK;
+				sp  = stack3 + STACKS_SIZE;
 				break;				
 			case 4:
-				sp  = stack4 + USR_SZ_STACK;
+				sp  = stack4 + STACKS_SIZE;
 				break;
 			default:
-				sp  = stack0 + USR_SZ_STACK;
+				sp  = stack0 + STACKS_SIZE;
 				break;
 		}
 

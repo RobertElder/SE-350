@@ -24,10 +24,7 @@ struct ListStruct_ {
 
 typedef enum { LLI_FORWARD, LLI_REVERSE } LLI_Direction;
 
-static LL_Cookie ll_Iter_cookieValue = { .strVal = { 'L', 'L', '_', 'I', 't', 'e', 'r', 'C' } };    // "LL_IterC"
-
 struct ListIteratorStruct_ {
-    LL_Cookie            cookie;       // For verifying that ListIterator routines have actually been passed an initialized ListIteratorStruct.
     LLI_Direction        direction;
     struct ListStruct_ * list;
     struct NodeStruct_ * currentNode;

@@ -29,7 +29,7 @@ uint32_t stack3[STACKS_SIZE];      // stack for run_priority_tests
 uint32_t stack4[STACKS_SIZE];      // stack for 
 
 /* Variable definitions */
-ProcessControlBlock * pCurrentProcessPCB  = NULL;
+ProcessControlBlock* pCurrentProcessPCB  = NULL;
 int isMemBlockJustReleased = 0;
 
 init_t proc_init_table[NUM_PROCESSES];
@@ -271,6 +271,21 @@ void process_init()
 
 // --------------------------------------------------------------------------------------
 
+// TODO: REPLACE OLD SCHEDULER WITH THIS ONE WHEN TESTING IS DONE
+ProcessControllBlock* scheduler_NEW(void) {
+	int ProcessControlBlock* chosen;
+	int i;
+	// Look for highest priority ready process.
+	for (i = 0; i < NUM_PRIORITIES; ++i) {
+	 	if (ready_queue[i].head != NULL) {
+			// dequeue followed by enqueue punts the node to the back of the line
+			chosen = dequeue(&(ready_queue[i]));
+			enqueue(&(ready_queue[i]), chosen);
+			return chosen;	
+		}
+	}
+}
+
 /*@brief: scheduler, pick the pid of the next to run process
  *@return: pid of the next to run process
  *         selects null process by default
@@ -340,11 +355,10 @@ int k_release_processor(void){
 	//  Screw this process, we are getting a newer BETTER process
 	pOldProcessPCB = pCurrentProcessPCB;
 
-	
-
 	//  Attempt to get a process that is not blocked
-	idOfNextProcessToRun = scheduler();
-	pCurrentProcessPCB = get_process_pointer_from_id(idOfNextProcessToRun);
+	pCurrentProcessPCB = scheduler_NEW();
+	// idOfNextProcessToRun = scheduer();
+	//pCurrentProcessPCB = get_process_pointer_from_id(idOfNextProcessToRun);
 	
 	//  Make sure we are not deadlocked
 	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");

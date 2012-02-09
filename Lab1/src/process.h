@@ -61,14 +61,11 @@ extern unsigned int free_mem;
 typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;
 
 
-typedef struct queue_head {
-	ProcessControlBlock* head;
-	ProcessControlBlock* tail;
-} QueueHead
+
 
 typedef struct pcb {
   
-  ProcessControlBlock* next;
+  struct pcb* next;
   
   // stack pointer of the process
   uint32_t* processStackPointer;
@@ -95,14 +92,22 @@ typedef struct processEntry {
   uint32_t stack_size;
   
   // stack pointer to the start(top) of the process stack  
-  uint32_t start_sp;
+  uint32_t* start_sp;
+
+  // Where process begins
+  uint32_t* process;
         
   //need another variable for i-process (indicates if this is an i-process or not)  
-} init_t;
+} ProcessEntry;
 
-extern void* k_init_processes_to_create(void);
+extern void init_processe_table(void);
 
-extern ProcessControlBlock pcb_array[NUM_PROCESSES];
+//extern ProcessControlBlock pcb_array[NUM_PROCESSES];
+
+typedef struct queue_head {
+	ProcessControlBlock* head;
+	ProcessControlBlock* tail;
+} QueueHead;
 
 
 // NOTE: The example code uses compile time memory for pcb storage.

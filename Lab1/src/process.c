@@ -32,7 +32,7 @@ uint32_t stack4[STACKS_SIZE];      // stack for
 ProcessControlBlock* pCurrentProcessPCB  = NULL;
 int isMemBlockJustReleased = 0;
 
-init_t proc_init_table[NUM_PROCESSES];
+ProcessEntry proc_init_table[NUM_PROCESSES];
 ProcessControlBlock pcb_array[NUM_PROCESSES];
 QueueHead ready_queue[NUM_PRIORITIES];
 
@@ -102,8 +102,8 @@ int has_blocked_processes(){
 //           Helpers
 // -------------------------------------------------------------------------
 
-void enqueue(QueueHead* qHead, ProcessControllBlock* pcb) {
-	ProcessControllBlock* oldTail = (*qHead).tail;
+void enqueue(QueueHead* qHead, ProcessControlBlock* pcb) {
+	ProcessControlBlock* oldTail = (*qHead).tail;
 	(*qHead).tail = pcb;
 	(*pcb).next = NULL;
 
@@ -116,15 +116,14 @@ void enqueue(QueueHead* qHead, ProcessControllBlock* pcb) {
 	}
 }
 
-ProcessControllBlock* dequeue(QueueHead* qHead) {
-	if ((*qHead).head == NULL) return NULL;
-
-	ProcessControllBlock* firstIn = (*qHead).head;
+ProcessControlBlock* dequeue(QueueHead* qHead) {
+	ProcessControlBlock* firstIn = (*qHead).head;
+	if (firstIn == NULL) return NULL;
 	
 	(*qHead).head = (*firstIn).next;
 	(*firstIn).next = NULL;
 
-	if ((*qHead) == NULL) {
+	if ((*qHead).head == NULL) {
 	 	(*qHead).tail = NULL;
 	}
 
@@ -141,25 +140,45 @@ ProcessControllBlock* dequeue(QueueHead* qHead) {
 // --------------------------------------------------------------------------------------
 
 	 // We will have 5 priorities --> 0,1,2,3  are for normal processes; 4 is for the NULL process
-void* k_init_processes_to_create() {
+void init_processe_table() {
 	unsigned int sp = free_mem;
    	int i;
 
-	for( i = 0; i < 6; i++ ){
-		init_t proc;
+	for( i = 0; i < NUM_PROCESSES; i++ ){
+		ProcessEntry proc;
 
 		proc.pid = i;
-		proc.priority = (i == 0) ? 4 : (i - 1) % 4;
+		proc.priority = (i == 0) ? 3 : (i - 1) % 3;
 		proc.stack_size = STACKS_SIZE;
 		sp += STACKS_SIZE;
-		proc.start_sp = sp;
-		
+		proc.start_sp = (uint32_t*)sp;
+		switch(i) {
+		 	case 0:
+				proc.process  = (uint32_t*) nullProc;
+				break;
+			case 1:
+				proc.process  = (uint32_t*) proc1;
+				break;
+			case 2:
+				proc.process  = (uint32_t*) proc2;
+				break;	
+			case 3:
+				proc.process  = (uint32_t*) run_memory_tests;
+				break;
+			case 4:
+				proc.process  = (uint32_t*) run_priority_tests;
+				break;						
+			default:
+				proc.process  = (uint32_t*) nullProc;
+				break;
+		}
 
 		proc_init_table[i] = proc;
 	}
-	 return 0;
+
 }
 
+// zero-initialization (just in case)
 void init_ready_queue() {
 	int i;
 	for (i = 0; i < NUM_PRIORITIES; ++i) {
@@ -182,7 +201,7 @@ void process_init()
 	int procIndex;
 	int priority;
 
-	k_init_processes_to_create();
+	init_processe_table();
 	init_ready_queue();
 
 	//  For all the processes
@@ -195,28 +214,8 @@ void process_init()
 		// must mod 4 so that the priorities don't go over 3 (only null process can be level 4)
 		process.processPriority =  proc_init_table[procIndex].priority;
 		
-		sp  = (uint32_t*)proc_init_table[procIndex].start_sp;
-		switch(procIndex) {
-		 	case 0:
-				sp  = stack0 + STACKS_SIZE;
-				break;
-			case 1:
-				sp  = stack1 + STACKS_SIZE;
-				break;
-			case 2:
-				sp  = stack2 + STACKS_SIZE;
-				break;	
-			case 3:
-				sp  = stack3 + STACKS_SIZE;
-				break;				
-			case 4:
-				sp  = stack4 + STACKS_SIZE;
-				break;
-			default:
-				sp  = stack0 + STACKS_SIZE;
-				break;
-		}
-
+		sp  = proc_init_table[procIndex].start_sp;
+		
 		// 8 bytes alignement adjustment to exception stack frame
 		// TODO: figure out why we want sp to have 4 right-aligned non-zero bits before 
 		// decrementing it.
@@ -227,27 +226,8 @@ void process_init()
 		*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
 
 		// Set the entry point of the process
-		switch(procIndex) {
-		 	case 0:
-				*(--sp)  = (uint32_t) nullProc;
-				break;
-			case 1:
-				*(--sp)  = (uint32_t) proc1;
-				break;
-			case 2:
-				*(--sp)  = (uint32_t) proc2;
-				break;	
-			case 3:
-				*(--sp)  = (uint32_t) run_memory_tests;
-				break;
-			case 4:
-				*(--sp)  = (uint32_t) run_priority_tests;
-				break;						
-			default:
-				*(--sp)  = (uint32_t) nullProc;
-				break;
-		}
-
+		*(--sp) = (uint32_t) proc_init_table[procIndex].process;
+		
 		for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
 			*(--sp) = 0x0;
 		}
@@ -255,14 +235,13 @@ void process_init()
 		process.processStackPointer = sp;
 
 		pcb_array[procIndex] = process;
-
-
 	}
 
+	// queue up all processes as ready
  	for (i = 0; i < NUM_PROCESSES; ++i) {
 		priority = pcb_array[i].processPriority;
 		// Pass the priority's head node and the pcb
-	 	enqueue(&(ready_queue[priority]), &(pcb_array[i]))
+	 	enqueue(&(ready_queue[priority]), &(pcb_array[i]));
 	}
 
 	//  To start off, set the current process to the null process
@@ -272,8 +251,8 @@ void process_init()
 // --------------------------------------------------------------------------------------
 
 // TODO: REPLACE OLD SCHEDULER WITH THIS ONE WHEN TESTING IS DONE
-ProcessControllBlock* scheduler_NEW(void) {
-	int ProcessControlBlock* chosen;
+ProcessControlBlock* scheduler_NEW(void) {
+	ProcessControlBlock* chosen;
 	int i;
 	// Look for highest priority ready process.
 	for (i = 0; i < NUM_PRIORITIES; ++i) {
@@ -284,6 +263,9 @@ ProcessControllBlock* scheduler_NEW(void) {
 			return chosen;	
 		}
 	}
+	// return null process.. null process should have been ready, so assert
+	assert(0, "ERROR: null process was not in ready queue");
+	return &pcb_array[0];
 }
 
 /*@brief: scheduler, pick the pid of the next to run process

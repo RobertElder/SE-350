@@ -134,10 +134,10 @@ void * _removeAndReturnPtrAtIndexFromList( int idx, ListPointer theList );
 ** 
 **      Pre:  theList != NULL.
 ** 
-**      Post: Returns true or false (as defined in <stdbool.h>, depending on whether theList is or is not empty
+**      Post: Returns 1 or 0 depending on whether theList is or is not empty
 */
 
-bool _isListEmpty(ListPointer theList );
+int _isListEmpty(ListPointer theList );
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -191,12 +191,12 @@ int _lengthOfList(  ListPointer theList );
 // -----------------------------------------------------------------------------------------------------------------------------
 
 // ListIteratorStruct is defined by the implementation.
-typedef struct ListIteratorStruct_ * ListIteratorPtr;
+typedef struct ListIteratorStruct_* ListIteratorPtr;
 
 ListIteratorPtr _newForwardListIterator(ListPointer theList);
 ListIteratorPtr _newBackwardListIterator(ListPointer theList);
-void *          _nextListElement(ListIteratorPtr theIterator);
-bool            _listHasNextElement(ListIteratorPtr theIterator);
+void*           _nextListElement(ListIteratorPtr theIterator);
+int             _listHasNextElement(ListIteratorPtr theIterator);
 void            _destroyIterator(ListIteratorPtr theIterator);
 
 #endif // of SE350_LIST_MODULE

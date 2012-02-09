@@ -29,8 +29,9 @@ extern unsigned int free_mem;
 							
 // dynamic memory allocation space for the kernel
 #define START_KERNEL_HEAP free_mem
-#define KERNAL_HEAP_BLOCK_SIZE 0x10
 #define KERNEL_HEAP_SIZE 0x200
+#define KERNEL_HEAP_BLOCK_COUNT 0xA
+#define KERNAL_HEAP_BLOCK_SIZE KERNEL_HEAP_SIZE * KERNEL_HEAP_BLOCK_COUNT
 
 // user process stack size 512 = 0x80 *4 bytes	 (128 4-byte words)
 #define START_STACKS START_KERNEL_HEAP + KERNEL_HEAP_SIZE
@@ -54,14 +55,20 @@ extern unsigned int free_mem;
 // Data structures
 // --------------------------------------------------------
 
+#define NUM_PRIORITIES 4
+
 // process states
 typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;
 
+
+typedef struct queue_head {
+	ProcessControlBlock* head;
+	ProcessControlBlock* tail;
+} QueueHead
+
 typedef struct pcb {
   
-  //Note you may want to add your own member variables
-  //in order to finish P1 and the entire project 
-  //struct ProcessControlBlock *mp_next;  // next ProcessControlBlock, not used in this example, RTX project most likely will need it, keep here for reference
+  ProcessControlBlock* next;
   
   // stack pointer of the process
   uint32_t* processStackPointer;

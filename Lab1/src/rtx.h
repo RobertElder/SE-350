@@ -33,9 +33,7 @@ void init_memory_allocation_table(void);
 
 
 
-#define MEMORY_BLOCK_SIZE 0x10
 
-#define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
 
 extern int numberOfMemoryBlocksCurrentlyAllocated;
 

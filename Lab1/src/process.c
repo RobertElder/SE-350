@@ -22,15 +22,25 @@
 #endif // DEBUG_0
 
 
+uint32_t stack0[STACKS_SIZE];      // stack for nullProc
+uint32_t stack1[STACKS_SIZE];      // stack for proc1
+uint32_t stack2[STACKS_SIZE];	    // stack for proc2
+uint32_t stack3[STACKS_SIZE];      // stack for run_priority_tests
+uint32_t stack4[STACKS_SIZE];      // stack for 
+
 /* Variable definitions */
 ProcessControlBlock * pCurrentProcessPCB  = NULL;
 int isMemBlockJustReleased = 0;
 
+init_t proc_init_table[NUM_PROCESSES];
 ProcessControlBlock pcb_array[NUM_PROCESSES];
+QueueHead ready_queue[NUM_PRIORITIES];
 
 extern unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
-init_t proc_init_table[NUM_PROCESSES];
+// --------------------------------------------------------------------------
+//                  Priority API
+// --------------------------------------------------------------------------
 
 int set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
@@ -52,6 +62,8 @@ int get_process_priority (int process_ID) {
 
 	return process->processPriority;
 }
+
+// -----------------------------------------------------------------------------------
 
 ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 	return (process_ID > NUM_PROCESSES - 1) ? NULL : &pcb_array[process_ID];
@@ -86,6 +98,48 @@ int has_blocked_processes(){
 	return 0;
 }
 
+// -------------------------------------------------------------------------
+//           Helpers
+// -------------------------------------------------------------------------
+
+void enqueue(QueueHead* qHead, ProcessControllBlock* pcb) {
+	ProcessControllBlock* oldTail = (*qHead).tail;
+	(*qHead).tail = pcb;
+	(*pcb).next = NULL;
+
+	if (oldTail != NULL) {
+		(*oldTail).next = pcb;
+	}
+
+	if ((*qHead).head == NULL) {
+	 	(*qHead).head = pcb;
+	}
+}
+
+ProcessControllBlock* dequeue(QueueHead* qHead) {
+	if ((*qHead).head == NULL) return NULL;
+
+	ProcessControllBlock* firstIn = (*qHead).head;
+	
+	(*qHead).head = (*firstIn).next;
+	(*firstIn).next = NULL;
+
+	if ((*qHead) == NULL) {
+	 	(*qHead).tail = NULL;
+	}
+
+	return firstIn;
+}
+
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------------------
+//
+//                       Initialize process management
+//
+// --------------------------------------------------------------------------------------
+
 	 // We will have 5 priorities --> 0,1,2,3  are for normal processes; 4 is for the NULL process
 void* k_init_processes_to_create() {
 	unsigned int sp = free_mem;
@@ -106,31 +160,30 @@ void* k_init_processes_to_create() {
 	 return 0;
 }
 
+void init_ready_queue() {
+	int i;
+	for (i = 0; i < NUM_PRIORITIES; ++i) {
+	 	ready_queue[i].head = NULL;
+		ready_queue[i].tail = NULL;
+	}
+}
 
 /**
  * @brief: initialize all processes in the system
-
- *       TODO: We should have used an array or linked list pcbs so the repetive coding
- *       can be eliminated.
 
  *       TODO: We should have also used an initialization table which contains the entry
  *       points of each process so that this code does not have to hard code
  *       proc1 and proc2 symbols. We leave all these imperfections as excercies to the reader 
  */
-
-uint32_t stack0[STACKS_SIZE];      // stack for nullProc
-uint32_t stack1[STACKS_SIZE];      // stack for proc1
-uint32_t stack2[STACKS_SIZE];	    // stack for proc2
-uint32_t stack3[STACKS_SIZE];      // stack for run_priority_tests
-uint32_t stack4[STACKS_SIZE];      // stack for run_memory_tests
-
 void process_init() 
 {
     volatile int i;
 	uint32_t * sp;
 	int procIndex;
+	int priority;
 
 	k_init_processes_to_create();
+	init_ready_queue();
 
 	//  For all the processes
 	for (procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
@@ -206,9 +259,17 @@ void process_init()
 
 	}
 
+ 	for (i = 0; i < NUM_PROCESSES; ++i) {
+		priority = pcb_array[i].processPriority;
+		// Pass the priority's head node and the pcb
+	 	enqueue(&(ready_queue[priority]), &(pcb_array[i]))
+	}
+
 	//  To start off, set the current process to the null process
 	pCurrentProcessPCB = &pcb_array[0];
 }
+
+// --------------------------------------------------------------------------------------
 
 /*@brief: scheduler, pick the pid of the next to run process
  *@return: pid of the next to run process
@@ -261,6 +322,10 @@ int scheduler(void)
 	
 }
 
+
+// -------------------------------------------------------------------------
+//                 Release process API
+// -------------------------------------------------------------------------
 
 /**
  * @brief release_processor(). 
@@ -329,3 +394,5 @@ int k_release_processor(void){
 	}	 	 
 	return 0;
 }
+
+// ------------------------------------------------------------------------

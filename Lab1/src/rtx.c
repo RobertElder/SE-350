@@ -28,7 +28,7 @@ void * get_address_of_memory_block_at_index(int memoryBlockIndex){
 }
 
 char * get_address_of_memory_block_allocation_status_at_index(int memoryBlockIndex){
-	return (char *)(START_OF_MEMORY_ALLOCATION_TABLE + sizeof(int) + (sizeof(char) * memoryBlockIndex));
+	return (char *)(START_OF_MEMORY_ALLOCATION_TABLE + (sizeof(char) * memoryBlockIndex));
 }
 
 void * allocate_memory_block_at_index(int memoryBlockIndex){
@@ -52,6 +52,7 @@ void * k_request_memory_block (){
 	char * pIsMemoryInUse = (char *)0;
 	void * rtn = (void *)0;
 	int i = 0;
+	void *p;
 
 	//  If there are no more memory blocks, block the calling process (which is the current process)
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
@@ -69,11 +70,12 @@ void * k_request_memory_block (){
 		//	Does this byte indicate that the memory at block i is already in use?
 		if(*pIsMemoryInUse == 0)	{
 			numberOfMemoryBlocksCurrentlyAllocated++;
-			return allocate_memory_block_at_index(i);
+			p = allocate_memory_block_at_index(i);
+			return p	;
 		}
 	}
 
-	assert(maxNumberOfMemoryBlocksEverAllocatedAtOnce < MAX_ALLOWED_MEMORY_BLOCKS,"Too many memory blocks allocated");
+	assert(maxNumberOfMemoryBlocksEverAllocatedAtOnce < MAX_ALLOWED_MEMORY_BLOCKS, "Too many memory blocks allocated");
 	// There are no free blocks that we can use, allocate a new one
 	rtn = allocate_memory_block_at_index(maxNumberOfMemoryBlocksEverAllocatedAtOnce);
 	// There is now one more block allocated
@@ -115,7 +117,7 @@ int k_release_memory_block (void * MemoryBlock){
 	// Set the status of this block to unallocated (0)
 	*pAllocationStatusByte = 0;
 
-	//  unblock if blocked
+	//  unblock if blocked}
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS && has_blocked_processes()){
 		uart0_put_string("unblocking\r\n");
 		isMemBlockJustReleased = 1;

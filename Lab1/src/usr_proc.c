@@ -20,6 +20,35 @@ int * pTestPointer1 = 0;
 
 void nullProc() {
 	while(1) {
+		uart0_put_string("p0\n\r");
+		release_processor();
+	}
+}
+
+void p1() {
+  	while(1) {
+		uart0_put_string("p1\n\r");
+		release_processor();
+	}
+}
+
+void p2() {
+   while(1) {
+   		uart0_put_string("p2\n\r");
+		release_processor();
+	}
+}
+
+void p3() {
+  while(1) {
+  		uart0_put_string("p3\n\r");
+		release_processor();
+	}
+}
+
+void p4() {
+   while(1) {
+   		uart0_put_string("p4\n\r");
 		release_processor();
 	}
 }

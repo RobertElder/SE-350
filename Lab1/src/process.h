@@ -133,7 +133,10 @@ int has_blocked_processes(void); // check if there are blocked processes
 // ------------------------------------------------------
 // External routines
 // ------------------------------------------------------
-
+extern void p1(void);
+extern void p2(void);
+extern void p3(void);
+extern void p4(void);
 extern void proc1(void);			// user process 1
 extern void proc2(void);			// user process 2
 extern void run_block_memory_test(void);			// user process 1

@@ -337,6 +337,7 @@ void context_switch_helper(ProcessControlBlock* pNewPCB) {
 
 void context_switch(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
 	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Tried to context switch NULL");
+	assert((pNewPCB->currentState != BLOCKED_ON_MEMORY), "Error: Attempted to switch to a blocked process.");
 
  	/*
 	__set_MSP() and __get_MSP() are special arm functions that are documented here
@@ -346,7 +347,7 @@ void context_switch(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) 
 	// If the old process is in RUN, it might be ready to run again
 	if (pOldPCB->currentState == RUN) {
 		// Only switch if the new process has higher priority and is not blocked
-		if (pNewPCB->processPriority > pOldPCB->processPriority || pNewPCB->currentState == BLOCKED_ON_MEMORY) {
+		if (pNewPCB->processPriority > pOldPCB->processPriority) {
 	   		pCurrentProcessPCB = pOldPCB;
 		} else {
 			pOldPCB->currentState = RDY;
@@ -389,7 +390,9 @@ int k_release_processor(void){
 	
 	// Get next ready process
 	ProcessControlBlock* pNewProcessPCB = scheduler();
-	
+	assert((pNewProcessPCB->currentState == RDY || pNewProcessPCB->currentState == NEW),
+	 "Error: Scheduler returned a process that is not in a Ready state.");
+
 	//  Make sure we are not deadlocked
 	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");
 

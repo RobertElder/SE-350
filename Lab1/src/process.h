@@ -11,10 +11,18 @@
 
 #define NULL 0
 #define INITIAL_xPSR 0x01000000  // user process initial xPSR value
+#define MAX_PRIORITY 3
 
 #include <stdint.h>
 
+  typedef unsigned int U32;
 
+#define __SVC_0  __svc_indirect(0)
+
+extern int k_release_processor(void);
+#define release_processor() _release_processor((U32)k_release_processor)
+//extern int __SVC_0 _release_processor(U32 p_func);
+int __SVC_0 _release_processor(U32 p_func);
 
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
                                                  // refer to RVCT Linker User Guide
@@ -27,14 +35,9 @@ extern unsigned int free_mem;
 //
 //----------------------------------------------------------------
 							
-// dynamic memory allocation space for the kernel
-#define START_KERNEL_HEAP free_mem
-#define KERNEL_HEAP_SIZE 0x200
-#define KERNEL_HEAP_BLOCK_COUNT 0xA
-#define KERNAL_HEAP_BLOCK_SIZE KERNEL_HEAP_SIZE * KERNEL_HEAP_BLOCK_COUNT
 
 // user process stack size 512 = 0x80 *4 bytes	 (128 4-byte words)
-#define START_STACKS START_KERNEL_HEAP + KERNEL_HEAP_SIZE
+#define START_STACKS free_mem
 #define STACKS_SIZE 0x080
 #define NUM_PROCESSES 5
 
@@ -126,8 +129,8 @@ extern int set_process_priority (int, int);
 extern int get_process_priority (int);
 										
 extern void process_init(void);	    // initialize all procs in the system
-int scheduler(void);				// pick the pid of the next to run process
-int k_release_process(void);		// kernel release_process API
+ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				// pick the pid of the next to run process
+int k_release_processor(void);		// kernel release_process API
 int has_blocked_processes(void); // check if there are blocked processes
 
 // ------------------------------------------------------

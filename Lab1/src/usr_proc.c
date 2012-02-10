@@ -29,6 +29,9 @@ void p1() {
   	while(1) {
 		uart0_put_string("p1\n\r");
 		release_processor();
+		uart0_put_string("p1_return_from_release\n\r");
+		set_process_priority(1, 1);
+		uart0_put_string("p1_lower_priority\n\r");
 	}
 }
 

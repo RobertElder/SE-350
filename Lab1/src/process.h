@@ -11,6 +11,7 @@
 
 #define NULL 0
 #define INITIAL_xPSR 0x01000000  // user process initial xPSR value
+#define MAX_PRIORITY 3
 
 #include <stdint.h>
 
@@ -122,7 +123,7 @@ extern int get_process_priority (int);
 										
 extern void process_init(void);	    // initialize all procs in the system
 ProcessControlBlock* scheduler(void);				// pick the pid of the next to run process
-int k_release_process(void);		// kernel release_process API
+int k_release_processor(void);		// kernel release_process API
 int has_blocked_processes(void); // check if there are blocked processes
 
 // ------------------------------------------------------

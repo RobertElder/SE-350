@@ -41,12 +41,14 @@ int set_process_priority (int process_ID, int priority) {
 
 	assert(process != NULL, "Invalid process ID in set process priority.");
 
-   	if(priority >= 0 && priority < 4) {
+   	if(priority >= 0 && priority <= MAX_PRIORITY) {	
 		process->processPriority = priority;
+		k_release_processor();
 		return 0;
 	} else {
-	 	return -1;
+	 	assert(0, "Error: the set priority is invalid.");
 	}
+	return -1;
 }
 
 int get_process_priority (int process_ID) {
@@ -133,7 +135,7 @@ ProcessControlBlock* dequeue(QueueHead* qHead) {
 //
 // --------------------------------------------------------------------------------------
 
-	 // We will have 5 priorities --> 0,1,2,3  are for normal processes; 4 is for the NULL process
+	 // We will have 4 priorities --> 0,1,2  are for normal processes; 3 is for the NULL process
 void init_processe_table() {
 	unsigned int sp = free_mem;
    	int i;
@@ -142,7 +144,7 @@ void init_processe_table() {
 		ProcessEntry proc;
 
 		proc.pid = i;
-		proc.priority = (i == 0) ? 3 : (i) % 3;
+		proc.priority = (i == 0) ? MAX_PRIORITY : (i - 1) % MAX_PRIORITY;
 		proc.stack_size = STACKS_SIZE;
 		sp += STACKS_SIZE;
 		proc.start_sp = (uint32_t*)sp;
@@ -355,7 +357,20 @@ void context_switch(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) 
 			// Put old process back in his appropriate priority queue
 		    enqueue(&(ready_queue[pOldPCB->processPriority]), pOldPCB);
 
-			context_switch_helper(pNewPCB);
+		//	context_switch_helper(pNewPCB);
+			// Perform the switch
+			pCurrentProcessPCB = dequeue(&(ready_queue[pNewPCB->processPriority]));
+			assert(pCurrentProcessPCB == pNewPCB, "ERROR: ready queue and process priorities not in sync");
+			__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+		
+			if (pCurrentProcessPCB->currentState == NEW) {
+				pCurrentProcessPCB->currentState = RUN;
+				// pop exception stack frame from the stack for new processes (assembly function in hal.c)
+				// This call will exit the function, so we must duplicate the RUN assignment on the
+				// current PCB
+				__rte();
+			}
+			pCurrentProcessPCB->currentState = RUN;
 		}
 
 	// Otherwise, we need the new one to be ready
@@ -365,13 +380,27 @@ void context_switch(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) 
 		assert(pOldPCB->currentState == BLOCKED_ON_MEMORY || pOldPCB->currentState == NEW,
 		 "ERROR: Context switcher detected an unexpected state of the current process");    
 		
-		// Save the SP, so it can resume properly later
-		pOldPCB->processStackPointer = (uint32_t *) __get_MSP();
+		// Save the SP if the process wasn't new, so it can resume properly later
+		if (pOldPCB->currentState != NEW) {
+			pOldPCB->processStackPointer = (uint32_t *) __get_MSP();
+		}
 		
 		// NOTE: At this point, we are not enqueuing the old process in the ready queue,
 		// because it is not ready. (If it is NEW, then it should be in the ready queue already.)
 
-		context_switch_helper(pNewPCB);
+		//context_switch_helper(pNewPCB);
+			// Perform the switch
+			pCurrentProcessPCB = dequeue(&(ready_queue[pNewPCB->processPriority]));
+			assert(pCurrentProcessPCB == pNewPCB, "ERROR: ready queue and process priorities not in sync");
+			__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+		
+			if (pCurrentProcessPCB->currentState == NEW) {
+				pCurrentProcessPCB->currentState = RUN;
+				// pop exception stack frame from the stack for new processes (assembly function in hal.c)
+				// This call will exit the function, so we must duplicate the RUN assignment on the
+				// current PCB
+				__rte();
+			}
 	} else {
 	 	assert(0, "ERROR: Context switch was unable to find a process to run");
 	} 	 

@@ -52,7 +52,7 @@ int k_set_process_priority (int process_ID, int priority) {
 	return -1;
 }
 
-int get_process_priority (int process_ID) {
+int k_get_process_priority (int process_ID) {
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(process != NULL, "Invalid process ID in get process priority.");

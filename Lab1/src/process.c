@@ -355,11 +355,11 @@ int k_release_processor(void){
 	// Get next ready process
 	ProcessControlBlock* pNewProcessPCB = getNextReadyProcess();
 
+	assert((pNewProcessPCB->currentState == RDY || pNewProcessPCB->currentState == NEW),
+ 	"Error: We have a process that is not in a ready or new state in the ready queue.");
+
 	// Decide what should run next
 	pCurrentProcessPCB = scheduler(pOldProcessPCB, pNewProcessPCB);
-
-	assert((pCurrentProcessPCB->currentState == RDY || pCurrentProcessPCB->currentState == NEW),
-	 	"Error: Scheduler returned a process that is not in a ready or new state.");
 
 	//  Make sure we are not deadlocked
 	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");

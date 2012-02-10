@@ -43,7 +43,7 @@ int set_process_priority (int process_ID, int priority) {
 
    	if(priority >= 0 && priority <= MAX_PRIORITY) {	
 		process->processPriority = priority;
-		k_release_processor();
+		release_processor();
 		return 0;
 	} else {
 	 	assert(0, "Error: the set priority is invalid.");
@@ -305,7 +305,7 @@ int scheduler(void)
 // -------------------------------------------------------------------------
 
 // TODO: REPLACE OLD SCHEDULER WITH THIS ONE WHEN TESTING IS DONE
-ProcessControlBlock* scheduler(void) {
+ProcessControlBlock* getNextReadyProcess(void) {
 	int i;
 	// Look for highest priority ready process.
 	for (i = 0; i < NUM_PRIORITIES; i++) {
@@ -335,6 +335,27 @@ void context_switch_helper(ProcessControlBlock* pNewPCB) {
 		__rte();
 	}
 	pCurrentProcessPCB->currentState = RUN;
+}
+
+ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
+	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Attempted to schedule NULL");
+
+	assert(pNewPCB->currentState == RDY || pNewPCB->currentState == NEW,
+		"ERROR: Scheduler attempted to schedule a non-ready or non-new process.");
+
+	assert(pOldPCB->currentState != RDY,
+		"ERROR: Scheduler encountered an unexpected state for the old (current) process.");
+
+ 	if (pNewPCB->processPriority <= pOldPCB->processPriority) {
+		return pNewPCB;
+	} else {
+		if (pOldPCB->currentState == RUN || pOldPCB->currentState == NEW) {
+		 	return pOldPCB;	
+		} else {
+			return pNewPCB;
+		}
+	}
+
 }
 
 void context_switch(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
@@ -418,15 +439,55 @@ int k_release_processor(void){
 	ProcessControlBlock* pOldProcessPCB = pCurrentProcessPCB;
 	
 	// Get next ready process
-	ProcessControlBlock* pNewProcessPCB = scheduler();
-	assert((pNewProcessPCB->currentState == RDY || pNewProcessPCB->currentState == NEW),
-	 "Error: Scheduler returned a process that is not in a Ready state.");
+	ProcessControlBlock* pNewProcessPCB = getNextReadyProcess();
+
+	// Decide what should run next
+	pCurrentProcessPCB = scheduler(pOldProcessPCB, pNewProcessPCB);
+
+
+//	assert((pNewProcessPCB->currentState == RDY || pNewProcessPCB->currentState == NEW),
+//	 "Error: Scheduler returned a process that is not in a Ready state.");
 
 	//  Make sure we are not deadlocked
-	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");
+//	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");
 
-	context_switch(pOldProcessPCB, pNewProcessPCB);
-	
+
+	if (pCurrentProcessPCB == pOldProcessPCB) {
+		if (pCurrentProcessPCB->currentState == NEW) {
+			pCurrentProcessPCB->currentState = RUN;
+			__rte(); 	
+		}
+	} else {
+
+		// -- Updating old process --
+		if (pOldProcessPCB->currentState == RUN) {
+			pOldProcessPCB->currentState = RDY;
+			// Put old process back in his appropriate priority queue
+			enqueue(&(ready_queue[pOldProcessPCB->processPriority]), pOldProcessPCB);
+		}
+
+		if (pOldProcessPCB->currentState != NEW) {
+			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		}
+		
+
+		// -- Updating new process --
+		pNewProcessPCB = dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]));
+		assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");
+
+		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+		
+		if (pCurrentProcessPCB->currentState == NEW) {
+			pCurrentProcessPCB->currentState = RUN;
+			// pop exception stack frame from the stack for new processes (assembly function in hal.c)
+			// This call will exit the function, so we must duplicate the RUN assignment on the
+			// current PCB
+			__rte();
+		}
+		pCurrentProcessPCB->currentState = RUN;
+	    
+	}
+
 	return 0;
 }
 

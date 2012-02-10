@@ -11,14 +11,7 @@
 #include "process.h"
 
 
-typedef unsigned int U32;
 
-#define __SVC_0  __svc_indirect(0)
-
-extern int k_release_processor(void);
-#define release_processor() _release_processor((U32)k_release_processor)
-//extern int __SVC_0 _release_processor(U32 p_func);
-int __SVC_0 _release_processor(U32 p_func);
 
 extern void* k_request_memory_block(void);
 #define request_memory_block() _request_memory_block((U32)k_request_memory_block)

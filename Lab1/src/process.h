@@ -15,7 +15,14 @@
 
 #include <stdint.h>
 
+  typedef unsigned int U32;
 
+#define __SVC_0  __svc_indirect(0)
+
+extern int k_release_processor(void);
+#define release_processor() _release_processor((U32)k_release_processor)
+//extern int __SVC_0 _release_processor(U32 p_func);
+int __SVC_0 _release_processor(U32 p_func);
 
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
                                                  // refer to RVCT Linker User Guide
@@ -122,7 +129,7 @@ extern int set_process_priority (int, int);
 extern int get_process_priority (int);
 										
 extern void process_init(void);	    // initialize all procs in the system
-ProcessControlBlock* scheduler(void);				// pick the pid of the next to run process
+ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				// pick the pid of the next to run process
 int k_release_processor(void);		// kernel release_process API
 int has_blocked_processes(void); // check if there are blocked processes
 

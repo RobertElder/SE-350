@@ -37,14 +37,14 @@ extern unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 //                  Priority API
 // --------------------------------------------------------------------------
 
-int set_process_priority (int process_ID, int priority) {	
+int k_set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(process != NULL, "Invalid process ID in set process priority.");
 
    	if(priority >= 0 && priority < NUM_PRIORITIES) {	
 		process->processPriority = priority;
-		release_processor();
+		k_release_processor();
 		return 0;
 	} else {
 	 	assert(0, "Error: the set priority is invalid.");

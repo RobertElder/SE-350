@@ -22,7 +22,7 @@
 
 extern void process_init(void);
 extern int get_process_priority(int);
-extern int set_process_priority(int, int);
+//extern int set_process_priority(int, int);
 
 void print_some_numbers(){
 	int i;

@@ -9,7 +9,7 @@
 
 
 extern int get_process_priority(int);
-extern int set_process_priority(int, int);
+//extern int set_process_priority(int, int);
 
 int num_blocks_to_request = 0;
 int mem_request_attempt_made = 0;

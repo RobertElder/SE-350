@@ -24,6 +24,10 @@ extern int k_release_processor(void);
 //extern int __SVC_0 _release_processor(U32 p_func);
 int __SVC_0 _release_processor(U32 p_func);
 
+extern int k_set_process_priority(int, int);
+#define set_process_priority(process_ID, priority) _set_process_priority((U32)k_set_process_priority, process_ID, priority)
+int __SVC_0 _set_process_priority(U32 p_func, int process_ID, int priority);
+
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
                                                  // refer to RVCT Linker User Guide
 extern unsigned int free_mem;
@@ -125,7 +129,7 @@ extern int isMemBlockJustReleased;
 // -----------------------------------------------------
 
 extern ProcessControlBlock * get_process_pointer_from_id(int);
-extern int set_process_priority (int, int);
+//extern int set_process_priority (int, int);
 extern int get_process_priority (int);
 										
 extern void process_init(void);	    // initialize all procs in the system

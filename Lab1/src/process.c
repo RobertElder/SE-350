@@ -29,6 +29,7 @@ int isMemBlockJustReleased = 0;
 ProcessEntry proc_init_table[NUM_PROCESSES];
 ProcessControlBlock pcb_array[NUM_PROCESSES];
 QueueHead ready_queue[NUM_PRIORITIES];
+QueueHead blocked_queue[NUM_PRIORITIES];
 
 extern unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
@@ -41,7 +42,7 @@ int set_process_priority (int process_ID, int priority) {
 
 	assert(process != NULL, "Invalid process ID in set process priority.");
 
-   	if(priority >= 0 && priority <= MAX_PRIORITY) {	
+   	if(priority >= 0 && priority < NUM_PRIORITIES) {	
 		process->processPriority = priority;
 		release_processor();
 		return 0;
@@ -144,7 +145,7 @@ void init_processe_table() {
 		ProcessEntry proc;
 
 		proc.pid = i;
-		proc.priority = (i == 0) ? MAX_PRIORITY : (i - 1) % MAX_PRIORITY;
+		proc.priority = (i == 0) ? NUM_PRIORITIES - 1 : (i - 1) % (NUM_PRIORITIES - 1);
 		proc.stack_size = STACKS_SIZE;
 		sp += STACKS_SIZE;
 		proc.start_sp = (uint32_t*)sp;

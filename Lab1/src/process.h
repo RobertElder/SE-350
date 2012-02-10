@@ -11,7 +11,7 @@
 
 #define NULL 0
 #define INITIAL_xPSR 0x01000000  // user process initial xPSR value
-#define MAX_PRIORITY 3
+
 
 #include <stdint.h>
 

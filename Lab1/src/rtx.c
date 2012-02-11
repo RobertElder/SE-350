@@ -39,6 +39,17 @@ void * allocate_memory_block_at_index(int memoryBlockIndex){
 	return get_address_of_memory_block_at_index(memoryBlockIndex);
 }
 
+void request_mem_block_helper() {
+	if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY) {
+		ProcessControlBlock* pNewProcessPCB = dequeue(&(blocked_queue[pCurrentProcessPCB->processPriority]));
+		assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: blocked queue and process priorities not in sync.");	
+
+		pCurrentProcessPCB->currentState = RDY;
+		enqueue(&(ready_queue[pCurrentProcessPCB->processPriority]), pCurrentProcessPCB);
+		context_switch(pCurrentProcessPCB, getRunningProcess());
+	}
+}
+
 void * k_request_memory_block (){
 	/*  THIS FUNCTION REQUIRES FURTHER FEATURES IN A FUTURE DELIVERABLE
 	The primitive returns a pointer to a memory block to the calling process. If no memory block is available, the calling process
@@ -52,26 +63,25 @@ void * k_request_memory_block (){
 	char * pIsMemoryInUse = (char *)0;
 	void * rtn = (void *)0;
 	int i = 0;
-	void *p;
+	
 
 	//  If there are no more memory blocks, block the calling process (which is the current process)
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS){
-		//  Block the process
-		pCurrentProcessPCB->currentState = BLOCKED_ON_MEMORY;
-	//	pCurrentProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-		//  Switch to another process.  That process will resume after returning from this function
+		//  Block and switch to another process.
+		block_current_process();
 		k_release_processor();
-		//assert(0,"not implemented");
 	}
 
 	for(i = 0; i < maxNumberOfMemoryBlocksEverAllocatedAtOnce; i++){
 		//  Check the bit at the start of the memory allocation table plus the number of bytes
 	 	pIsMemoryInUse = get_address_of_memory_block_allocation_status_at_index(i);
 		//	Does this byte indicate that the memory at block i is already in use?
-		if(*pIsMemoryInUse == 0)	{
+		if (*pIsMemoryInUse == 0) {
+			void *p;
 			numberOfMemoryBlocksCurrentlyAllocated++;
 			p = allocate_memory_block_at_index(i);
-			return p	;
+			request_mem_block_helper();
+			return p;
 		}
 	}
 
@@ -81,6 +91,7 @@ void * k_request_memory_block (){
 	// There is now one more block allocated
 	maxNumberOfMemoryBlocksEverAllocatedAtOnce++;
 	numberOfMemoryBlocksCurrentlyAllocated++;
+	request_mem_block_helper();
 	//return the pointer
 	return rtn;
 }
@@ -119,11 +130,16 @@ int k_release_memory_block (void * MemoryBlock){
 
 	//  unblock if blocked}
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS && has_blocked_processes()){
+		ProcessControlBlock* blockedProcessPCB;
 		uart0_put_string("unblocking\r\n");
-		isMemBlockJustReleased = 1;
 		//  Switch to another process.  That process will resume after returning from this function
 		numberOfMemoryBlocksCurrentlyAllocated--;
-		k_release_processor();
+		
+		//get highest pririty blocked process
+		blockedProcessPCB = getBlockedProcess();
+		//context switch from running process to blocked process
+		context_switch(pCurrentProcessPCB, blockedProcessPCB);
+		
 		return 0;
 	}
 

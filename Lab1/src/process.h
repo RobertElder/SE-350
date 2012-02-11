@@ -53,7 +53,7 @@ extern unsigned int free_mem;
 #define START_OF_MEMORY_ALLOCATION_TABLE START_STACKS + NUM_PROCESSES * STACKS_SIZE
 #define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0xA
 #define MEMORY_BLOCK_SIZE 0x10
-#define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
+#define MAX_ALLOWED_MEMORY_BLOCKS 0x1
 
 // ---------------------------------------------------------------
 
@@ -126,7 +126,9 @@ typedef struct queue_head {
 //       then pcb data structure should use dynamically allocated memory
 
 extern ProcessControlBlock * pCurrentProcessPCB;  // always point to the current process
-extern int isMemBlockJustReleased;
+
+extern QueueHead ready_queue[NUM_PRIORITIES];
+extern QueueHead blocked_queue[NUM_PRIORITIES];
 
 // -----------------------------------------------------
 // Public routines
@@ -134,11 +136,16 @@ extern int isMemBlockJustReleased;
 
 extern ProcessControlBlock * get_process_pointer_from_id(int);
 
-										
+void enqueue(QueueHead*, ProcessControlBlock*);
+ProcessControlBlock* dequeue(QueueHead* );										
 extern void process_init(void);	    // initialize all procs in the system
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				// pick the pid of the next to run process
 int k_release_processor(void);		// kernel release_process API
 int has_blocked_processes(void); // check if there are blocked processes
+void block_current_process(void); // Put current process in a blocking state, as well as enqueue in the blocked queue
+void context_switch(ProcessControlBlock*, ProcessControlBlock*); // Switch contexts from the passed-in PCB to the pCurrentPCB
+ProcessControlBlock* getBlockedProcess(void); //Gets the highest priority blocked process
+ProcessControlBlock* getRunningProcess(void); //Gets a running process from all processes array
 
 // ------------------------------------------------------
 // External routines
@@ -147,6 +154,8 @@ extern void p1(void);
 extern void p2(void);
 extern void p3(void);
 extern void p4(void);
+extern void pp1(void);
+extern void pp2(void);
 extern void proc1(void);			// user process 1
 extern void proc2(void);			// user process 2
 extern void run_block_memory_test(void);			// user process 1

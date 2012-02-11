@@ -22,6 +22,31 @@ void nullProc() {
 	}
 }
 
+void pp1() {
+  while(1) {
+  		void* block;
+  		uart0_put_string("pp1\n\r");
+		block = request_memory_block();
+		uart0_put_string("pp1_block_request_returned\n\r");
+		release_processor();
+		uart0_put_string("pp1_run1\n\r");
+		release_memory_block(block);
+		uart0_put_string("pp1_release_continue_run\n\r");
+		release_processor();
+	}
+}
+
+void pp2() {
+  while(1) {
+
+  		uart0_put_string("pp2\n\r");
+		request_memory_block();
+		uart0_put_string("pp2_block_requested\n\r");
+		release_processor();
+	}
+}
+
+
 void p1() {
   	while(1) {
 		uart0_put_string("p1\n\r");

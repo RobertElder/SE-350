@@ -41,12 +41,21 @@ void * allocate_memory_block_at_index(int memoryBlockIndex){
 
 void request_mem_block_helper() {
 	if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY) {
+		ProcessControlBlock* runningProcess = getRunningProcess();
+
 		ProcessControlBlock* pNewProcessPCB = dequeue(&(blocked_queue[pCurrentProcessPCB->processPriority]));
 		assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: blocked queue and process priorities not in sync.");	
 
-		pCurrentProcessPCB->currentState = RDY;
-		enqueue(&(ready_queue[pCurrentProcessPCB->processPriority]), pCurrentProcessPCB);
-		context_switch(pCurrentProcessPCB, getRunningProcess());
+		if (runningProcess->processPriority < pCurrentProcessPCB->processPriority) {
+		 	pCurrentProcessPCB->currentState = RDY;
+			enqueue(&(ready_queue[pCurrentProcessPCB->processPriority]), pCurrentProcessPCB);
+			context_switch(pCurrentProcessPCB, runningProcess);
+		} else {
+			runningProcess->currentState = RDY;
+			enqueue(&(ready_queue[runningProcess->processPriority]), runningProcess);
+			pCurrentProcessPCB->currentState = RUN;	
+		}
+
 	}
 }
 

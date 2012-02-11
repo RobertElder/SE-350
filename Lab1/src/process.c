@@ -42,8 +42,9 @@ int k_set_process_priority (int process_ID, int priority) {
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(process != NULL, "Invalid process ID in set process priority.");
+	assert(process_ID != 0, "Error: cannot change the priority of the NULL process.");
 
-   	if(priority >= 0 && priority < NUM_PRIORITIES) {	
+   	if(priority >= 0 && priority < NUM_PRIORITIES - 1) {	
 		process->processPriority = priority;
 		k_release_processor();
 		return 0;
@@ -155,16 +156,22 @@ void init_processe_table() {
 				proc.process  = (uint32_t*) nullProc;
 				break;
 			case 1:
-				proc.process  = (uint32_t*) pp1;
+				proc.process  = (uint32_t*) test_process_1;
 				break;
 			case 2:
-				proc.process  = (uint32_t*) p2;
+				proc.process  = (uint32_t*) test_process_2;
 				break;	
 			case 3:
-				proc.process  = (uint32_t*) p3;
+				proc.process  = (uint32_t*) test_process_3;
 				break;
 			case 4:
-				proc.process  = (uint32_t*) pp2;
+				proc.process  = (uint32_t*) test_process_4;
+				break;
+			case 5:
+				proc.process  = (uint32_t*) test_process_5;
+				break;
+			case 6:
+				proc.process  = (uint32_t*) test_process_6;
 				break;						
 			default:
 				proc.process  = (uint32_t*) nullProc;

@@ -14,12 +14,83 @@ int mem_request_attempt_made = 0;
 int  * last_block_allocated;
 int * pTestPointer1 = 0;
 
+const int ORDER_LENGTH = 6;
+int expected_run_order[] = {1,5,1,5,1,5};
+int actual_run_order[ORDER_LENGTH];
+int cur_index = 0;
+
+int order_checker() {
+	int i;
+	for (i = 0; i < ORDER_LENGTH; i++) {
+	 	if (actual_run_order[i] != expected_run_order[i]) {
+			return 0;
+		}
+	}
+	return 1;
+}
 
 void nullProc() {
 	while(1) {
 		uart0_put_string("p0\n\r");
 		release_processor();
 	}
+}
+
+void test_process_1() {
+	while(1) {
+		uart0_put_string("G015_test: START\n\r");
+		actual_run_order[cur_index] = 1;
+		cur_index++;
+		release_processor();
+
+		actual_run_order[cur_index] = 1;
+		cur_index++;
+		release_processor();
+
+		actual_run_order[cur_index] = 1;
+		cur_index++;
+		release_processor();
+
+		//Compare our actual running sequence to expected running sequence
+		if(order_checker()){
+			uart0_put_string("G015_test: test 1 OK\n\r");
+		} else {
+			uart0_put_string("G015_test: test 1 FAIL\n\r");
+		}
+		cur_index = 0;
+	}
+}
+
+void test_process_2() {
+	
+}
+
+void test_process_3() {
+
+}
+
+void test_process_4() {
+
+}
+
+void test_process_5() {
+	while(1) {
+		actual_run_order[cur_index] = 5;
+		cur_index++;
+		release_processor();
+
+		actual_run_order[cur_index] = 5;
+		cur_index++;
+		release_processor();
+
+		actual_run_order[cur_index] = 5;
+		cur_index++;
+		release_processor();
+	}
+}
+
+void test_process_6() {
+
 }
 
 void pp1() {

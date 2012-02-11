@@ -47,7 +47,7 @@ extern unsigned int free_mem;
 // user process stack size 512 = 0x80 *4 bytes	 (128 4-byte words)
 #define START_STACKS free_mem
 #define STACKS_SIZE 0x080
-#define NUM_PROCESSES 5
+#define NUM_PROCESSES 6
 
 // dynamic heap for user processes
 #define START_OF_MEMORY_ALLOCATION_TABLE START_STACKS + NUM_PROCESSES * STACKS_SIZE
@@ -66,7 +66,7 @@ extern unsigned int free_mem;
 // Data structures
 // --------------------------------------------------------
 
-#define NUM_PRIORITIES 4
+#define NUM_PRIORITIES 5
 
 // process states
 typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;
@@ -150,6 +150,15 @@ ProcessControlBlock* getRunningProcess(void); //Gets a running process from all 
 // ------------------------------------------------------
 // External routines
 // ------------------------------------------------------
+
+// User Processes
+extern void test_process_1 (void);
+extern void test_process_2 (void);
+extern void test_process_3 (void);
+extern void test_process_4 (void);
+extern void test_process_5 (void);
+extern void test_process_6 (void);
+
 extern void p1(void);
 extern void p2(void);
 extern void p3(void);

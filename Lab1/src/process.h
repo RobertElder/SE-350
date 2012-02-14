@@ -11,7 +11,7 @@
 
 #define NULL 0
 #define INITIAL_xPSR 0x01000000  // user process initial xPSR value
-#define MAX_PRIORITY 3
+
 
 #include <stdint.h>
 
@@ -23,6 +23,14 @@ extern int k_release_processor(void);
 #define release_processor() _release_processor((U32)k_release_processor)
 //extern int __SVC_0 _release_processor(U32 p_func);
 int __SVC_0 _release_processor(U32 p_func);
+
+extern int k_set_process_priority(int, int);
+#define set_process_priority(process_ID, priority) _set_process_priority((U32)k_set_process_priority, process_ID, priority)
+int __SVC_0 _set_process_priority(U32 p_func, int process_ID, int priority);
+
+extern int k_get_process_priority(int);
+#define get_process_priority(process_ID) _get_process_priority((U32)k_set_process_priority, process_ID)
+int __SVC_0 _get_process_priority(U32 p_func, int process_ID);
 
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
                                                  // refer to RVCT Linker User Guide
@@ -39,13 +47,13 @@ extern unsigned int free_mem;
 // user process stack size 512 = 0x80 *4 bytes	 (128 4-byte words)
 #define START_STACKS free_mem
 #define STACKS_SIZE 0x080
-#define NUM_PROCESSES 5
+#define NUM_PROCESSES 6
 
 // dynamic heap for user processes
 #define START_OF_MEMORY_ALLOCATION_TABLE START_STACKS + NUM_PROCESSES * STACKS_SIZE
 #define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0xA
 #define MEMORY_BLOCK_SIZE 0x10
-#define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
+#define MAX_ALLOWED_MEMORY_BLOCKS 0x1
 
 // ---------------------------------------------------------------
 
@@ -58,7 +66,7 @@ extern unsigned int free_mem;
 // Data structures
 // --------------------------------------------------------
 
-#define NUM_PRIORITIES 4
+#define NUM_PRIORITIES 5
 
 // process states
 typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;
@@ -118,28 +126,45 @@ typedef struct queue_head {
 //       then pcb data structure should use dynamically allocated memory
 
 extern ProcessControlBlock * pCurrentProcessPCB;  // always point to the current process
-extern int isMemBlockJustReleased;
+
+extern QueueHead ready_queue[NUM_PRIORITIES];
+extern QueueHead blocked_queue[NUM_PRIORITIES];
 
 // -----------------------------------------------------
 // Public routines
 // -----------------------------------------------------
 
 extern ProcessControlBlock * get_process_pointer_from_id(int);
-extern int set_process_priority (int, int);
-extern int get_process_priority (int);
-										
+
+void enqueue(QueueHead*, ProcessControlBlock*);
+ProcessControlBlock* dequeue(QueueHead* );										
 extern void process_init(void);	    // initialize all procs in the system
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				// pick the pid of the next to run process
 int k_release_processor(void);		// kernel release_process API
 int has_blocked_processes(void); // check if there are blocked processes
+void block_current_process(void); // Put current process in a blocking state, as well as enqueue in the blocked queue
+void context_switch(ProcessControlBlock*, ProcessControlBlock*); // Switch contexts from the passed-in PCB to the pCurrentPCB
+ProcessControlBlock* getBlockedProcess(void); //Gets the highest priority blocked process
+ProcessControlBlock* getRunningProcess(void); //Gets a running process from all processes array
 
 // ------------------------------------------------------
 // External routines
 // ------------------------------------------------------
+
+// User Processes
+extern void test_process_1 (void);
+extern void test_process_2 (void);
+extern void test_process_3 (void);
+extern void test_process_4 (void);
+extern void test_process_5 (void);
+extern void test_process_6 (void);
+
 extern void p1(void);
 extern void p2(void);
 extern void p3(void);
 extern void p4(void);
+extern void pp1(void);
+extern void pp2(void);
 extern void proc1(void);			// user process 1
 extern void proc2(void);			// user process 2
 extern void run_block_memory_test(void);			// user process 1

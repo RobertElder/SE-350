@@ -24,11 +24,13 @@
 
 /* Variable definitions */
 ProcessControlBlock* pCurrentProcessPCB  = NULL;
-int isMemBlockJustReleased = 0;
 
 ProcessEntry proc_init_table[NUM_PROCESSES];
 ProcessControlBlock pcb_array[NUM_PROCESSES];
+
 QueueHead ready_queue[NUM_PRIORITIES];
+QueueHead blocked_queue[NUM_PRIORITIES];
+
 
 extern unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
@@ -36,14 +38,15 @@ extern unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 //                  Priority API
 // --------------------------------------------------------------------------
 
-int set_process_priority (int process_ID, int priority) {	
+int k_set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(process != NULL, "Invalid process ID in set process priority.");
+	assert(process_ID != 0, "Error: cannot change the priority of the NULL process.");
 
-   	if(priority >= 0 && priority <= MAX_PRIORITY) {	
+   	if(priority >= 0 && priority < NUM_PRIORITIES - 1) {	
 		process->processPriority = priority;
-		release_processor();
+		k_release_processor();
 		return 0;
 	} else {
 	 	assert(0, "Error: the set priority is invalid.");
@@ -51,7 +54,7 @@ int set_process_priority (int process_ID, int priority) {
 	return -1;
 }
 
-int get_process_priority (int process_ID) {
+int k_get_process_priority (int process_ID) {
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(process != NULL, "Invalid process ID in get process priority.");
@@ -144,7 +147,7 @@ void init_processe_table() {
 		ProcessEntry proc;
 
 		proc.pid = i;
-		proc.priority = (i == 0) ? MAX_PRIORITY : (i - 1) % MAX_PRIORITY;
+		proc.priority = (i == 0) ? NUM_PRIORITIES - 1 : (i - 1) % (NUM_PRIORITIES - 1);
 		proc.stack_size = STACKS_SIZE;
 		sp += STACKS_SIZE;
 		proc.start_sp = (uint32_t*)sp;
@@ -153,16 +156,22 @@ void init_processe_table() {
 				proc.process  = (uint32_t*) nullProc;
 				break;
 			case 1:
-				proc.process  = (uint32_t*) p1;
+				proc.process  = (uint32_t*) test_process_1;
 				break;
 			case 2:
-				proc.process  = (uint32_t*) p2;
+				proc.process  = (uint32_t*) test_process_2;
 				break;	
 			case 3:
-				proc.process  = (uint32_t*) p3;
+				proc.process  = (uint32_t*) test_process_3;
 				break;
 			case 4:
-				proc.process  = (uint32_t*) p4;
+				proc.process  = (uint32_t*) test_process_4;
+				break;
+			case 5:
+				proc.process  = (uint32_t*) test_process_5;
+				break;
+			case 6:
+				proc.process  = (uint32_t*) test_process_6;
 				break;						
 			default:
 				proc.process  = (uint32_t*) nullProc;
@@ -248,63 +257,20 @@ void process_init()
 
 
 
-/*@brief: scheduler, pick the pid of the next to run process
- *@return: pid of the next to run process
- *         selects null process by default
- *POST: if pCurrentProcessPCB was NULL, then it gets set to &pcb1.
- *      No other effect on other global variables.
- */	 /*
-
-int scheduler(void)
-{
-
-    volatile int current_pid;
-	volatile int pid_to_select;
-	volatile int highest_priority_process = 0;
-	int j;
-
-	assert((int)pCurrentProcessPCB, "There was no current process set in the scheduler.");
-
-	current_pid = pCurrentProcessPCB->processId;
-		
-
-	if (isMemBlockJustReleased) {
-
-		// get next process
-		j = (pCurrentProcessPCB->processId < (NUM_PROCESSES - 1)) ? pCurrentProcessPCB->processId + 1 : 0;
-
-		// Find highest priority blocked process
-		while (pCurrentProcessPCB->processId != j) {
-			if(pcb_array[j].currentState == BLOCKED_ON_MEMORY && pcb_array[j].processPriority < pcb_array[highest_priority_process].processPriority ) {
-				highest_priority_process = j;
-			}
-			j = (j == NUM_PROCESSES - 1) ? 0 : j + 1;
-		}
-
-		pcb_array[highest_priority_process].currentState = RDY;
-
-		isMemBlockJustReleased = 0;
-
-		return highest_priority_process;
-	} else {
-		j =  pCurrentProcessPCB->processId;
-	 	do {
-			j = (j < (NUM_PROCESSES - 1)) ? j + 1 : 0;
-		} while(is_process_blocked(j));
-	}
-	//  This will cycle through the list of processes then repeat
-
-
-	return j;
-	
-}	  */
-
 
 // -------------------------------------------------------------------------
 //                 Release process and context switch
 // -------------------------------------------------------------------------
 
-// TODO: REPLACE OLD SCHEDULER WITH THIS ONE WHEN TESTING IS DONE
+
+void block_current_process() {
+ 	assert(pCurrentProcessPCB->currentState == RUN, "Error: Attempted to block a non-running process");
+
+    pCurrentProcessPCB->currentState = BLOCKED_ON_MEMORY;
+
+	enqueue(&blocked_queue[pCurrentProcessPCB->processPriority], pCurrentProcessPCB);
+}
+
 ProcessControlBlock* getNextReadyProcess(void) {
 	int i;
 	// Look for highest priority ready process.
@@ -318,6 +284,29 @@ ProcessControlBlock* getNextReadyProcess(void) {
 	return &pcb_array[0];
 }
 
+ProcessControlBlock* getBlockedProcess() {
+	int i;
+	// Look for highest priority ready process.
+	for (i = 0; i < NUM_PRIORITIES; i++) {
+	 	if (blocked_queue[i].head != NULL) {
+			return blocked_queue[i].head;	
+		}
+	}
+	return NULL; 	
+}
+
+ProcessControlBlock* getRunningProcess() {
+	int i;
+	ProcessControlBlock* runningProcess = NULL;
+	for (i = 0; i < NUM_PROCESSES; i++) {
+		if (pcb_array[i].currentState == RUN){
+			assert(runningProcess == NULL, "Error: multiple processes with state RUN.");
+			runningProcess = &pcb_array[i];	
+		}
+	}
+	assert(runningProcess != NULL, "Error: there are no running processes.");
+	return runningProcess;
+}
 
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
 	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Attempted to schedule NULL");
@@ -340,32 +329,8 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 
 }
 
-	
-/**
- * @brief release_processor(). 
- * @return -1 on error and zero on success
- * POST: pCurrentProcessPCB gets updated
- */
-int k_release_processor(void){
-	volatile int idOfNextProcessToRun;
-	volatile proc_state_t state;
-
-	ProcessControlBlock* pOldProcessPCB = pCurrentProcessPCB;
-	
-	// Get next ready process
-	ProcessControlBlock* pNewProcessPCB = getNextReadyProcess();
-
-	assert((pNewProcessPCB->currentState == RDY || pNewProcessPCB->currentState == NEW),
- 	"Error: We have a process that is not in a ready or new state in the ready queue.");
-
-	// Decide what should run next
-	pCurrentProcessPCB = scheduler(pOldProcessPCB, pNewProcessPCB);
-
-	//  Make sure we are not deadlocked
-	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");
-
-
-	// The Context Switch
+void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
+	pCurrentProcessPCB = pNewProcessPCB;
 
 	// If the scheduler decided to run the same process,
 	// set state to RUN if it's NEW
@@ -374,6 +339,13 @@ int k_release_processor(void){
 			pCurrentProcessPCB->currentState = RUN;
 			__rte(); 	
 		}
+
+	// Context switch due to release memory
+	} else if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY){
+		assert(pOldProcessPCB->currentState == RUN, "Error: The old process is not in a running state.");
+		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		// Set to MSP to the process' stack which is about to run.
+		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 
 	// Otherwise, we must switch from the old process to the new one
 	} else {
@@ -394,10 +366,11 @@ int k_release_processor(void){
 		
 
 		/* -- Updating new process -- */
-
-		// We remove running processes from the ready queue
-		pNewProcessPCB = dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]));
-		assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");
+		if (pCurrentProcessPCB->currentState == RDY || pCurrentProcessPCB->currentState == NEW) {
+		   // We remove running processes from the ready queue
+			pNewProcessPCB = dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]));
+			assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");
+		}
 
 		// Set to MSP to the process' stack which is about to run.
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
@@ -411,6 +384,34 @@ int k_release_processor(void){
 		pCurrentProcessPCB->currentState = RUN;
 	    
 	}
+}
+
+	
+/**
+ * @brief release_processor(). 
+ * @return -1 on error and zero on success
+ * POST: pCurrentProcessPCB gets updated
+ */
+int k_release_processor(void){
+	volatile int idOfNextProcessToRun;
+	volatile proc_state_t state;
+
+	ProcessControlBlock* pOldProcessPCB = pCurrentProcessPCB;
+	
+	// Get next ready process
+	ProcessControlBlock* pNewProcessPCB = getNextReadyProcess();
+
+	assert((pNewProcessPCB->currentState == RDY || pNewProcessPCB->currentState == NEW),
+ 	"Error: We have a process that is not in a ready or new state in the ready queue.");
+
+	// Decide what should run next
+	pNewProcessPCB = scheduler(pOldProcessPCB, pNewProcessPCB);
+
+	//  Make sure we are not deadlocked
+	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");
+
+	// The Context Switch
+	context_switch(pOldProcessPCB, pNewProcessPCB);
 
 	return 0;
 }

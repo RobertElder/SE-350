@@ -8,15 +8,26 @@
 #endif // DEBUG_0
 
 
-extern int get_process_priority(int);
-extern int set_process_priority(int, int);
-
 int num_blocks_to_request = 0;
 int mem_request_attempt_made = 0;
 
 int  * last_block_allocated;
 int * pTestPointer1 = 0;
 
+const int ORDER_LENGTH = 6;
+int expected_run_order[] = {1,5,1,5,1,5};
+int actual_run_order[ORDER_LENGTH];
+int cur_index = 0;
+
+int order_checker() {
+	int i;
+	for (i = 0; i < ORDER_LENGTH; i++) {
+	 	if (actual_run_order[i] != expected_run_order[i]) {
+			return 0;
+		}
+	}
+	return 1;
+}
 
 void nullProc() {
 	while(1) {
@@ -24,6 +35,88 @@ void nullProc() {
 		release_processor();
 	}
 }
+
+void test_process_1() {
+	while(1) {
+		uart0_put_string("G015_test: START\n\r");
+		actual_run_order[cur_index] = 1;
+		cur_index++;
+		release_processor();
+
+		actual_run_order[cur_index] = 1;
+		cur_index++;
+		release_processor();
+
+		actual_run_order[cur_index] = 1;
+		cur_index++;
+		release_processor();
+
+		//Compare our actual running sequence to expected running sequence
+		if(order_checker()){
+			uart0_put_string("G015_test: test 1 OK\n\r");
+		} else {
+			uart0_put_string("G015_test: test 1 FAIL\n\r");
+		}
+		cur_index = 0;
+	}
+}
+
+void test_process_2() {
+	
+}
+
+void test_process_3() {
+
+}
+
+void test_process_4() {
+
+}
+
+void test_process_5() {
+	while(1) {
+		actual_run_order[cur_index] = 5;
+		cur_index++;
+		release_processor();
+
+		actual_run_order[cur_index] = 5;
+		cur_index++;
+		release_processor();
+
+		actual_run_order[cur_index] = 5;
+		cur_index++;
+		release_processor();
+	}
+}
+
+void test_process_6() {
+
+}
+
+void pp1() {
+  while(1) {
+  		void* block;
+  		uart0_put_string("pp1\n\r");
+		block = request_memory_block();
+		uart0_put_string("pp1_block_request_returned\n\r");
+		release_processor();
+		uart0_put_string("pp1_run1\n\r");
+		release_memory_block(block);
+		uart0_put_string("pp1_release_continue_run\n\r");
+		release_processor();
+	}
+}
+
+void pp2() {
+  while(1) {
+
+  		uart0_put_string("pp2\n\r");
+		request_memory_block();
+		uart0_put_string("pp2_block_requested\n\r");
+		release_processor();
+	}
+}
+
 
 void p1() {
   	while(1) {

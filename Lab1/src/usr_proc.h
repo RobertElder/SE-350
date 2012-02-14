@@ -13,9 +13,6 @@
 #endif // DEBUG_0
 
 
-extern int get_process_priority(int);
-extern int set_process_priority(int, int);
-
 void nullProc(void);
 
 void proc1(void);

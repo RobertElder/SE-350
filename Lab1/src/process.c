@@ -38,6 +38,16 @@ extern unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 //                  Priority API
 // --------------------------------------------------------------------------
 
+int has_more_important_process(int priority) {
+	 int i = 0;
+	 for (; i < priority; i++) {
+	  	if (ready_queue[i].head != NULL) {
+		 	return 1;
+		}
+	 }
+	 return 0;
+}
+
 int k_set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
@@ -46,7 +56,9 @@ int k_set_process_priority (int process_ID, int priority) {
 
    	if(priority >= 0 && priority < NUM_PRIORITIES - 1) {	
 		process->processPriority = priority;
-		k_release_processor();
+		if (has_more_important_process(priority)) {
+			k_release_processor();
+		}
 		return 0;
 	} else {
 	 	assert(0, "Error: the set priority is invalid.");

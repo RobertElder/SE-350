@@ -14,14 +14,14 @@ int mem_request_attempt_made = 0;
 int  * last_block_allocated;
 int * pTestPointer1 = 0;
 
-const int ORDER_LENGTH = 6;
-int expected_run_order[] = {1,5,1,5,1,5};
+const int ORDER_LENGTH = 25;
+int expected_run_order[] = {1,5,1,5,1,5,1,5,5,5,2,2,2,6,1,5,2,6,6,6,5,1,2,6,5};
 int actual_run_order[ORDER_LENGTH];
 int cur_index = 0;
 
-int order_checker() {
+int order_checker(int order_length_sofar) {
 	int i;
-	for (i = 0; i < ORDER_LENGTH; i++) {
+	for (i = 0; i < order_length_sofar; i++) {
 	 	if (actual_run_order[i] != expected_run_order[i]) {
 			return 0;
 		}
@@ -37,32 +37,121 @@ void nullProc() {
 }
 
 void test_process_1() {
-	while(1) {
-		uart0_put_string("G015_test: START\n\r");
-		actual_run_order[cur_index] = 1;
-		cur_index++;
-		release_processor();
+	void* block;
+	void* block2;
 
-		actual_run_order[cur_index] = 1;
-		cur_index++;
-		release_processor();
+	uart0_put_string("G015_test: START\n\r");
+	actual_run_order[cur_index] = 1;
+	cur_index++;
+	release_processor();
 
-		actual_run_order[cur_index] = 1;
-		cur_index++;
-		release_processor();
+	actual_run_order[cur_index] = 1;
+	cur_index++;
+	release_processor();
 
-		//Compare our actual running sequence to expected running sequence
-		if(order_checker()){
-			uart0_put_string("G015_test: test 1 OK\n\r");
-		} else {
-			uart0_put_string("G015_test: test 1 FAIL\n\r");
-		}
-		cur_index = 0;
+	actual_run_order[cur_index] = 1;
+	cur_index++;
+	release_processor();
+
+	//Compare our actual running sequence to expected running sequence
+	if(order_checker(cur_index)){
+		uart0_put_string("G015_test: test 1 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 1 FAIL\n\r");
 	}
+	actual_run_order[cur_index] = 1;
+	cur_index++;
+	set_process_priority(1, 1);
+	// should get preempted by proc 5
+
+	actual_run_order[cur_index] = 1;
+	cur_index++;
+
+	//test_process_1 should get blocked - it requested block number 31 (we have max 30 blocks)
+	//test_process_5 should run next
+	block = request_memory_block();
+
+	//test_proc_1 got its mem block - but test_proc_6 had same priority and did not get preempted
+	//came here after test_proc_5 (higher priority) got blocked
+	actual_run_order[cur_index] = 1;
+	cur_index++;
+
+	//request mem block number 32 - will get blocked
+	block = request_memory_block();
 }
 
 void test_process_2() {
+	void* block;
+	int i = 0;
+	int alloc_bad = 0;
+
+	actual_run_order[cur_index] = 2;
+	cur_index++;
+
+	if(order_checker(cur_index)){
+		uart0_put_string("G015_test: test 5 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 5 FAIL\n\r");
+	}
 	
+	block = request_memory_block();
+
+	//should not be blocked - first to request the block
+	actual_run_order[cur_index] = 2;
+	cur_index++;
+
+	if(order_checker(cur_index)){
+		uart0_put_string("G015_test: test 6 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 6 FAIL\n\r");
+	}
+
+	for (; i < 16; i++) {
+		*block = i;
+		block++;
+	}
+	
+	block -=17;
+	for (i=0; i < 16; i++) {
+	 	if ( *block != i) {
+			alloc_bad += 1;
+		}
+		block++;	
+	}
+	
+	if (alloc_bad > 0) {
+		uart0_put_string("G015_test: test 7 FAIL\n\r");
+	} else {
+	 	uart0_put_string("G015_test: test 7 OK\n\r");
+	}
+	
+	release_memory_block(block);
+		
+	// no test_processes were blocked on memory, should not preempt
+	actual_run_order[cur_index] = 2;
+	cur_index++;
+
+	if(order_checker(cur_index)){
+		uart0_put_string("G015_test: test 8 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 8 FAIL\n\r");
+	}
+
+	release_processor();
+
+	//comes here after test_proc_5 is blocked on memory
+	actual_run_order[cur_index] = 2;
+	cur_index++
+
+	//should switch to test_proc_6
+	release_processor();
+
+	//comes here after test_proc_1 is blocked on memory
+	actual_run_order[cur_index] = 2;
+	cur_index++
+
+	//should switch to test_proc_6
+	release_processor();
 }
 
 void test_process_3() {
@@ -74,47 +163,153 @@ void test_process_4() {
 }
 
 void test_process_5() {
-	while(1) {
-		actual_run_order[cur_index] = 5;
-		cur_index++;
-		release_processor();
+	void* block;
+	void* block2;
 
-		actual_run_order[cur_index] = 5;
-		cur_index++;
-		release_processor();
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+	release_processor();
 
-		actual_run_order[cur_index] = 5;
-		cur_index++;
-		release_processor();
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+	release_processor();
+
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+	release_processor();
+
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+
+	//test the priority of test_proc_1
+	if (get_process_priority(1) == 1 && order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 2 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 2 FAIL\n\r");
+	}
+	
+	//should not preempt
+	release_processor();
+
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+
+	if (order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 3 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 3 FAIL\n\r");
+	}
+
+	set_process_priority(5, 1);
+	// shouldn't get preempted by test_proc_2
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+	
+	if (get_process_priority(5) == 1 && order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 4 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 4 FAIL\n\r");
+	}
+	release_processor();
+
+	//should come here after test_proc_1 is blocked on memory
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+
+	//requested block number 32 - will get blocked
+	//proc 2 will run next
+	block = request_memory_block();
+
+	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+
+	if (order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 11 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 11 FAIL\n\r");
+	}
+
+	//requested block number 31 - will get blocked
+	//proc 1 will run next
+	block2 = request_memory_block();
+
+	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
+	actual_run_order[cur_index] = 5;
+	cur_index++;
+
+	if (order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 12 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 12 FAIL\n\r");
 	}
 }
 
-void test_process_6() {
+void test_process_6() {	
+	int num_alloc_blocks = 30;
+	void* blocks[num_alloc_blocks];
+	void* block;
+	int i = 0;
 
+	actual_run_order[cur_index] = 6;
+	cur_index++;
+
+	//want to test allocating max number of blocks, blocking a process on a block request and releasing processes on block release
+	for (; i < num_alloc_blocks; i++) {
+	 	block = request_memory_block();
+		blocks[i] = block;
+	}
+
+	//process 1 should be the next to run
+	release_processor();
+
+	//gets here after test_proc_2 releases processor
+	//here test_proc_1 and test_proc_5 are blocked
+	actual_run_order[cur_index] = 6;
+	cur_index++;
+
+	//should not be preempted after release - test_proc_1 has the same priority
+	release_memory_block(blocks[i]);
+	i--;
+
+	actual_run_order[cur_index] = 6;
+	cur_index++;
+
+	if(order_checker(cur_index)){
+		uart0_put_string("G015_test: test 9 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 9 FAIL\n\r");
+	}
+
+	//test_proc_5 is now of highest priority - but it is blocked - should not preempt here
+	set_process_priority(5, 0);
+
+	actual_run_order[cur_index] = 6;
+	cur_index++;
+
+	if(order_checker(cur_index)){
+		uart0_put_string("G015_test: test 10 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 10 FAIL\n\r");
+	}
+
+	//should be preempted after release - test_proc_5 has a higher priority
+	release_memory_block(blocks[i]);
+	i--;
+
+	actual_run_order[cur_index] = 6;
+	cur_index++;
+
+	//test_proc_1 and test_proc_5 are blocked on memory
+	//after release, test_proc_5 should get block and preempt - it has higher proority
+	release_memory_block(blocks[i]);
+	i--;
 }
 
 void pp1() {
-  while(1) {
-  		void* block;
-  		uart0_put_string("pp1\n\r");
-		block = request_memory_block();
-		uart0_put_string("pp1_block_request_returned\n\r");
-		release_processor();
-		uart0_put_string("pp1_run1\n\r");
-		release_memory_block(block);
-		uart0_put_string("pp1_release_continue_run\n\r");
-		release_processor();
-	}
 }
 
 void pp2() {
-  while(1) {
-
-  		uart0_put_string("pp2\n\r");
-		request_memory_block();
-		uart0_put_string("pp2_block_requested\n\r");
-		release_processor();
-	}
 }
 
 

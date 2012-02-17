@@ -29,7 +29,7 @@ extern int k_set_process_priority(int, int);
 int __SVC_0 _set_process_priority(U32 p_func, int process_ID, int priority);
 
 extern int k_get_process_priority(int);
-#define get_process_priority(process_ID) _get_process_priority((U32)k_set_process_priority, process_ID)
+#define get_process_priority(process_ID) _get_process_priority((U32)k_get_process_priority, process_ID)
 int __SVC_0 _get_process_priority(U32 p_func, int process_ID);
 
 extern unsigned int Image$$RW_IRAM1$$ZI$$Limit;  // symbol defined in the scatter file
@@ -53,7 +53,7 @@ extern unsigned int free_mem;
 #define START_OF_MEMORY_ALLOCATION_TABLE START_STACKS + NUM_PROCESSES * STACKS_SIZE
 #define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0xA
 #define MEMORY_BLOCK_SIZE 0x10
-#define MAX_ALLOWED_MEMORY_BLOCKS 0x1
+#define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
 
 // ---------------------------------------------------------------
 

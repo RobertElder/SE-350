@@ -14,7 +14,7 @@
 #else
 #define NULL 0
 #endif // DEBUG_0
-#include "uart_polling.h"
+#include "uart.h"
 #include "rtx.h"
 #include "utils.h" 
 #include "usr_proc.h"

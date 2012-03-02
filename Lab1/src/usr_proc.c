@@ -37,6 +37,7 @@ void nullProc() {
 }
 
 void test_process_1() {
+/*
 	void* block;
 	void* block2;
 
@@ -69,7 +70,7 @@ void test_process_1() {
 
 	//test_process_1 should get blocked - it requested block number 31 (we have max 30 blocks)
 	//test_process_5 should run next
-	block = request_memory_block();
+	//block = request_memory_block();
 
 	//test_proc_1 got its mem block - but test_proc_6 had same priority and did not get preempted
 	//came here after test_proc_5 (higher priority) got blocked
@@ -77,10 +78,13 @@ void test_process_1() {
 	cur_index++;
 
 	//request mem block number 32 - will get blocked
-	block = request_memory_block();
+	//block = request_memory_block();
+	*/
+		release_processor();
 }
 
 void test_process_2() {
+/*
 	void* block;
 	int i = 0;
 	int alloc_bad = 0;
@@ -141,16 +145,17 @@ void test_process_2() {
 
 	//comes here after test_proc_5 is blocked on memory
 	actual_run_order[cur_index] = 2;
-	cur_index++
+	cur_index++;
 
 	//should switch to test_proc_6
 	release_processor();
 
 	//comes here after test_proc_1 is blocked on memory
 	actual_run_order[cur_index] = 2;
-	cur_index++
+	cur_index++;
 
 	//should switch to test_proc_6
+	*/
 	release_processor();
 }
 
@@ -163,6 +168,7 @@ void test_process_4() {
 }
 
 void test_process_5() {
+/*
 	void* block;
 	void* block2;
 
@@ -243,9 +249,12 @@ void test_process_5() {
 	} else {
 		uart0_put_string("G015_test: test 12 FAIL\n\r");
 	}
+		*/
+			release_processor();
 }
 
 void test_process_6() {	
+/*
 	int num_alloc_blocks = 30;
 	void* blocks[num_alloc_blocks];
 	void* block;
@@ -304,6 +313,9 @@ void test_process_6() {
 	//after release, test_proc_5 should get block and preempt - it has higher proority
 	release_memory_block(blocks[i]);
 	i--;
+	*/
+			release_processor();
+
 }
 
 void pp1() {

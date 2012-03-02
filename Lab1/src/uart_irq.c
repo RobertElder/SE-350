@@ -178,7 +178,8 @@ void uart_send_string( uint32_t n_uart, uint8_t *p_buffer, uint32_t len ){
 
     while ( len != 0 ) {
 	    // THRE status, contain valid data  
-	    while ( !(g_UART0_TX_empty & 0x01) );	
+	    while ( !(g_UART0_TX_empty & 0x01) );
+		//  Setting this value makes the interrupt fire at a later time	
 	    pUart->THR = *p_buffer;
 		g_UART0_TX_empty = 0;  // not empty in the THR until it shifts out
 	    p_buffer++;
@@ -218,7 +219,6 @@ void uart0_put_string(unsigned char * c){
 		lenSoFar += BUFSIZE;
 	}
 	LPC_UART0->IER = IER_THRE | IER_RLS | IER_RBR;	// Re-enable RBR
-
 }
 
 

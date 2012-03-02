@@ -168,22 +168,22 @@ void init_processe_table() {
 				proc.process  = (uint32_t*) nullProc;
 				break;
 			case 1:
-				proc.process  = (uint32_t*) test_process_1;
+				proc.process  = (uint32_t*) proc1;
 				break;
 			case 2:
-				proc.process  = (uint32_t*) test_process_2;
+				proc.process  = (uint32_t*) proc1;
 				break;	
 			case 3:
-				proc.process  = (uint32_t*) test_process_3;
+				proc.process  = (uint32_t*) proc1;
 				break;
 			case 4:
-				proc.process  = (uint32_t*) test_process_4;
+				proc.process  = (uint32_t*) proc1;
 				break;
 			case 5:
-				proc.process  = (uint32_t*) test_process_5;
+				proc.process  = (uint32_t*) proc1;
 				break;
 			case 6:
-				proc.process  = (uint32_t*) test_process_6;
+				proc.process  = (uint32_t*) proc1;
 				break;						
 			default:
 				proc.process  = (uint32_t*) nullProc;

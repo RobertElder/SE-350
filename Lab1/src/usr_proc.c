@@ -7,19 +7,6 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
-// NOTE: Keep this section up to date so we are all aware of what's is going on.
-/*            TEST CASES
-  Test 1:
-  Test 2:
-  Test 3:
-  Test 4:
-  Test 5:
-  Test 6:
-  Test 7:
-*/
-
-
-
   // TODO is this proper?
 #define MAX_ALLOWED_BLOCKS 0x1E
 
@@ -29,8 +16,21 @@ int mem_request_attempt_made = 0;
 int  * last_block_allocated;
 int * pTestPointer1 = 0;
 
+// NOTE: Keep this section up to date so we are all aware of what's is going on.
 const int ORDER_LENGTH = 25;
-int expected_run_order[] = {1,5,1,5,1,5,1,5,5,5,2,2,2,6,1,5,2,6,6,6,5,1,2,6,5};
+int expected_run_order[] = 
+// Test case 1:
+{1,5,1,5,1,5,
+// Test case 2:
+1,5,
+// Test case 3:
+5,
+// Test case 4:
+5,
+// Test case 5:
+2,
+// Test case 6:
+2,2,6,1,5,2,6,6,6,5,1,2,6,5};
 int actual_run_order[ORDER_LENGTH];
 int cur_index = 0;
 

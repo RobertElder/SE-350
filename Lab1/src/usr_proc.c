@@ -7,6 +7,21 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
+// NOTE: Keep this section up to date so we are all aware of what's is going on.
+/*            TEST CASES
+  Test 1:
+  Test 2:
+  Test 3:
+  Test 4:
+  Test 5:
+  Test 6:
+  Test 7:
+*/
+
+
+
+  // TODO is this proper?
+#define MAX_ALLOWED_BLOCKS 0x1E
 
 int num_blocks_to_request = 0;
 int mem_request_attempt_made = 0;
@@ -37,7 +52,7 @@ void nullProc() {
 }
 
 void test_process_1() {
-/*
+
 	void* block;
 	void* block2;
 
@@ -70,7 +85,7 @@ void test_process_1() {
 
 	//test_process_1 should get blocked - it requested block number 31 (we have max 30 blocks)
 	//test_process_5 should run next
-	//block = request_memory_block();
+	block = request_memory_block();
 
 	//test_proc_1 got its mem block - but test_proc_6 had same priority and did not get preempted
 	//came here after test_proc_5 (higher priority) got blocked
@@ -78,14 +93,13 @@ void test_process_1() {
 	cur_index++;
 
 	//request mem block number 32 - will get blocked
-	//block = request_memory_block();
-	*/
-		release_processor();
+	block = request_memory_block();
+	
 }
 
 void test_process_2() {
-/*
-	void* block;
+
+	int* block;
 	int i = 0;
 	int alloc_bad = 0;
 
@@ -110,13 +124,13 @@ void test_process_2() {
 		uart0_put_string("G015_test: test 6 FAIL\n\r");
 	}
 
-	for (; i < 16; i++) {
+	for (i = 0; i < 16; i++) {
 		*block = i;
 		block++;
 	}
 	
-	block -=17;
-	for (i=0; i < 16; i++) {
+	block -= 16;
+	for (i = 0; i < 16; i++) {
 	 	if ( *block != i) {
 			alloc_bad += 1;
 		}
@@ -155,7 +169,6 @@ void test_process_2() {
 	cur_index++;
 
 	//should switch to test_proc_6
-	*/
 	release_processor();
 }
 
@@ -168,7 +181,7 @@ void test_process_4() {
 }
 
 void test_process_5() {
-/*
+
 	void* block;
 	void* block2;
 
@@ -249,22 +262,21 @@ void test_process_5() {
 	} else {
 		uart0_put_string("G015_test: test 12 FAIL\n\r");
 	}
-		*/
-			release_processor();
+
 }
 
 void test_process_6() {	
-/*
-	int num_alloc_blocks = 30;
-	void* blocks[num_alloc_blocks];
+
+	void* blocks[MAX_ALLOWED_BLOCKS];
 	void* block;
 	int i = 0;
 
 	actual_run_order[cur_index] = 6;
 	cur_index++;
 
-	//want to test allocating max number of blocks, blocking a process on a block request and releasing processes on block release
-	for (; i < num_alloc_blocks; i++) {
+	// want to test allocating max number of blocks, blocking a process on
+	// a block request and releasing processes on block release
+	for (i = 0; i < MAX_ALLOWED_BLOCKS; i++) {
 	 	block = request_memory_block();
 		blocks[i] = block;
 	}
@@ -290,7 +302,7 @@ void test_process_6() {
 		uart0_put_string("G015_test: test 9 FAIL\n\r");
 	}
 
-	//test_proc_5 is now of highest priority - but it is blocked - should not preempt here
+	// test_proc_5 is now of highest priority - but it is blocked - should not preempt here
 	set_process_priority(5, 0);
 
 	actual_run_order[cur_index] = 6;
@@ -302,7 +314,7 @@ void test_process_6() {
 		uart0_put_string("G015_test: test 10 FAIL\n\r");
 	}
 
-	//should be preempted after release - test_proc_5 has a higher priority
+	// should be preempted after release - test_proc_5 has a higher priority
 	release_memory_block(blocks[i]);
 	i--;
 
@@ -313,8 +325,6 @@ void test_process_6() {
 	//after release, test_proc_5 should get block and preempt - it has higher proority
 	release_memory_block(blocks[i]);
 	i--;
-	*/
-			release_processor();
 
 }
 

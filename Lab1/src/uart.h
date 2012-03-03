@@ -31,7 +31,7 @@ Empty interrupt for UARTn. The status of this can be read from UnLSR[5].*/
 can be determined by evaluating UnIIR[3:1]. Reset Value: 1 0 At least one interrupt is pending.
 1 No interrupt is pending.	   */
 
-#define IIR_RLS		0x03 /*Interrupt identification. UnIER[3:1] identifies an interrupt corresponding to the
+#define IIR_Receive_Line_Status		0x03 /*Interrupt identification. UnIER[3:1] identifies an interrupt corresponding to the
 UARTn Rx or TX FIFO. All other combinations of UnIER[3:1] not listed below
 are reserved (000,100,101,111).
 Reset value: 0

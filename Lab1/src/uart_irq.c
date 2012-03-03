@@ -146,7 +146,7 @@ void c_UART0_IRQHandler(void)
 	        g_UART0_TX_empty = 0;  // UART is not ready to transmit yet
 		}
 	    
-	} else if (IIR_IntId & IIR_RLS) {
+	} else if (IIR_IntId & IIR_Receive_Line_Status) {
 	    LSR_Val = pUart->LSR;
 		if (LSR_Val  & (LSR_OE|LSR_PE|LSR_FE|LSR_RXFE|LSR_BI) ) {
 		    // There are errors or break interrupt 

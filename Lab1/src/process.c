@@ -52,6 +52,7 @@ int has_more_important_process(int priority) {
 int k_set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
+	assert(!has_more_important_process(pCurrentProcessPCB->processPriority), "Error: running process is not of highest priority");
 	assert(process != NULL, "Invalid process ID in set process priority.");
 	assert(process_ID != 0, "Error: cannot change the priority of the NULL process.");
 
@@ -59,10 +60,14 @@ int k_set_process_priority (int process_ID, int priority) {
 		if (process->currentState == RDY) {
 		 	 remove_proc(&ready_queue[process->processPriority], process);
 			 enqueue(&ready_queue[priority], process);
-		}	
+		} else if (process->currentState == BLOCKED_ON_MEMORY) {
+			 remove_proc(&blocked_queue[process->processPriority], process);
+			 enqueue(&blocked_queue[priority], process);
+		}
 		process->processPriority = priority;
-		if (has_more_important_process(priority)) {
-			k_release_processor();
+		if ((has_more_important_process(priority) && pCurrentProcessPCB->processId == process_ID)
+		|| (priority < pCurrentProcessPCB->processPriority && process->currentState == RDY)) {
+		  	k_release_processor();
 		}
 		return 0;
 	} else {

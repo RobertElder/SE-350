@@ -78,7 +78,7 @@ state (all ones). An UnLSR read clears this status bit. The time of break detect
 is dependent on UnFCR[0].
 Note: The break interrupt is associated with the character at the top of the UARTn
 RBR FIFO.*/
-#define LSR_THRE	0x20 /*THRE is set immediately upon detection of an empty UARTn THR and is cleared
+#define LSR_THR_Empty	0x20 /*THRE is set immediately upon detection of an empty UARTn THR and is cleared
 on a UnTHR write.
 Reset value 1
 0 UnTHR contains valid data.

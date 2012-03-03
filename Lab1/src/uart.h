@@ -45,11 +45,11 @@ Reset value: 0
 UARTn Rx or TX FIFO. All other combinations of UnIER[3:1] not listed below
 are reserved (000,100,101,111).
 010 2a - Receive Data Available (RDA).*/
-#define IIR_CTI		0x06 /*Interrupt identification. UnIER[3:1] identifies an interrupt corresponding to the
+#define IIR_Character_Timeout_Indicator		0x06 /*Interrupt identification. UnIER[3:1] identifies an interrupt corresponding to the
 UARTn Rx or TX FIFO. All other combinations of UnIER[3:1] not listed below
 are reserved (000,100,101,111).
 110 2b - Character Time-out Indicator (CTI).*/
-#define IIR_THRE	0x01 /*Interrupt identification. UnIER[3:1] identifies an interrupt corresponding to the
+#define IIR_THR_Empty	0x01 /*Interrupt identification. UnIER[3:1] identifies an interrupt corresponding to the
 UARTn Rx or TX FIFO. All other combinations of UnIER[3:1] not listed below
 are reserved (000,100,101,111).
 001 3 - THRE Interrupt*/

@@ -138,7 +138,7 @@ void c_UART0_IRQHandler(void)
 	    g_UART0_count = 0;
 	    LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable RBR
 			
-	} else if (IIR_IntId & IIR_THRE) {  // THRE Interrupt, transmit holding register empty
+	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;
 	    if(LSR_Val & LSR_THRE) {
 	        g_UART0_TX_empty = 1;	// UART is ready to transmit 

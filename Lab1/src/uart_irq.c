@@ -156,7 +156,7 @@ void c_UART0_IRQHandler(void)
 		}
 		// If no error on RLS, normal ready, save into the data buffer.
 	    // Note: read RBR will clear the interrupt 
-		if (LSR_Val & LSR_RDR) { // Receive Data Ready
+		if (LSR_Val & LSR_Unread_Character) { // Receive Data Ready
 		    g_UART0_buffer[g_UART0_count++] = pUart->RBR; // read from the uart
 	        if ( g_UART0_count == BUFSIZE ) {
 		        g_UART0_count = 0;  // buffer overflow

@@ -54,7 +54,7 @@ UARTn Rx or TX FIFO. All other combinations of UnIER[3:1] not listed below
 are reserved (000,100,101,111).
 001 3 - THRE Interrupt*/
 
-#define LSR_RDR		0x01  /*UnLSR0 is set when the UnRBR holds an unread character and is cleared when
+#define LSR_Unread_Character		0x01  /*UnLSR0 is set when the UnRBR holds an unread character and is cleared when
 the UARTn RBR FIFO is empty.*/
 #define LSR_OE		0x02  /*The overrun error condition is set as soon as it occurs. An UnLSR read clears
 UnLSR1. UnLSR1 is set when UARTn RSR has a new character assembled and

@@ -19,30 +19,37 @@ int * pTestPointer1 = 0;
 // NOTE: Keep this section up to date so we are all aware of what's is going on.
 const int ORDER_LENGTH = 25;
 int expected_run_order[] = 
-// Test case 1:
+// Test case 1: Basic context switching between 2 processes
 {1, 5, 1, 5, 1, 5,
-// Test case 2:
+// Test case 2:	Lowering your own priority and getting pre-empted because of it
 1,5,
-// Test case 3:
+// Test case 3:	When there's 1 high priority process, it should not get pre-empted when releasing processor
 5,
-// Test case 4:
+// Test case 4: High priority process lowers his priority, but should not get pre-empted because there's no higher
+// priority processes
 5,
-// Test case 5:
+// Test case 5:	Now that there are processes with priorities equal to the running process,
+// release_processor should cause pre-emption of the running process
 2,
-// Test case 6:
+// Test case 6: A process can request a memory block (without blocking the process)
 2,
-// Test case 7:
+// Test case 7: Data can be written and read to and from a requested memory block
 2,
-// Test case 8:
+// Test case 8: A process can release a memory block (no pre-emption)
 2,
-// Test case 9:
+// Test case 9:	A process can request 30 blocks without blocking. Any other memory requests cause the
+// requesting process to be blocked. If a process releases some of his blocks, the blocked processes
+// receive the memory block but do not preempt unless their priorities are higher.
 6, 1, 5, 2, 6, 6,
-// Test case 10:
+// Test case 10: Give highest priority to a blocked process. There should be no preemption because it is
+// blocked.
 6,
-// Test case 11:
+// Test case 11: Releasing a memory block causes a higher priority blocked process to not only receive
+// the memory, but preempt the currently executing process.
 5,
-// Test case 12:
+// Test case 12: Additional blocking/premption/priority testing
 2, 1, 6, 5};
+// Further test TODOs: test if all processes are blocked, null process should run (keep as last test)
 int actual_run_order[ORDER_LENGTH];
 int cur_index = 0;
 
@@ -100,7 +107,7 @@ void test_process_1() {
 	block = request_memory_block();
 
 	//test_proc_1 got its mem block - but test_proc_6 had same priority and did not get preempted
-	//came here after test_proc_5 (higher priority) got blocked
+	//came here after test_proc_5 (higher priority) got blocked and test_proc_2 released processor
 	actual_run_order[cur_index] = 1;
 	cur_index++;
 
@@ -177,7 +184,7 @@ void test_process_2() {
 	actual_run_order[cur_index] = 2;
 	cur_index++;
 
-	//should switch to test_proc_6
+	//should switch to test_proc_1
 	release_processor();
 
 	//comes here after test_proc_1 is blocked on memory
@@ -266,7 +273,7 @@ void test_process_5() {
 	}
 
 	//requested block number 31 - will get blocked
-	//proc 1 will run next
+	//proc 2 will run next
 	block2 = request_memory_block();
 
 	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
@@ -344,7 +351,7 @@ void test_process_6() {
 	cur_index++;
 
 	//test_proc_1 and test_proc_5 are blocked on memory
-	//after release, test_proc_5 should get block and preempt - it has higher proority
+	//after release, test_proc_5 should get memory block and preempt - it has higher priority
 	release_memory_block(blocks[--i]);
 
 }

@@ -118,7 +118,15 @@ __asm void UART0_IRQHandler(void)
  */
 void c_UART0_IRQHandler(void)
 {
-    uint8_t IIR_IntId;	    // Interrupt ID from IIR		
+
+/*
+	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
+	IIR - Interrupt ID Register. Identifies which interrupt(s) are pending.
+	LSR - Line Status Register. Contains flags for transmit and receive status, including line errors.
+*/
+	//  Information about the interrupt
+    uint8_t IIR_IntId;	    // Interrupt ID from IIR
+	// Line Status Register value		
 	uint8_t LSR_Val;	    // LSR Value
 	uint8_t dummy = dummy;	// dummy variable to clear interrupt upon LSR error
 	LPC_UART_TypeDef * pUart = (LPC_UART_TypeDef *)LPC_UART0;

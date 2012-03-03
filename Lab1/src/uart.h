@@ -12,10 +12,11 @@
 // The following macros are from NXP uart.h
 
 // This stuff is found in lpc17xx_um_rev2.pdf page 300ish pages/840
-
-// IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
-// IIR - Interrupt ID Register. Identifies which interrupt(s) are pending.
-// LSR - Line Status Register. Contains flags for transmit and receive status, including line errors.
+/*
+	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
+	IIR - Interrupt ID Register. Identifies which interrupt(s) are pending.
+	LSR - Line Status Register. Contains flags for transmit and receive status, including line errors.
+*/
 
 #define IER_Receive_Data_Available		0x01	 /* Enables the Receive Data Available interrupt for UARTn. 
 It also controls the Character Receive Time-out interrupt. 

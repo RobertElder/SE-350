@@ -17,7 +17,7 @@
 // IIR - Interrupt ID Register. Identifies which interrupt(s) are pending.
 // LSR - Line Status Register. Contains flags for transmit and receive status, including line errors.
 
-#define IER_RBR		0x01	 /* Enables the Receive Data Available interrupt for UARTn. 
+#define IER_Receive_Data_Available		0x01	 /* Enables the Receive Data Available interrupt for UARTn. 
 It also controls the Character Receive Time-out interrupt. 
 0 Disable the RDA interrupts. 1 Enable the RDA interrupts.
 */

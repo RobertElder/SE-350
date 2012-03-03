@@ -89,7 +89,7 @@ int uart_init(int n_uart) {
 	// See Table 50 on pg73 in LPC17xx_UM for all possible UART0 interrupt sources
 	// See Table 275 on pg 302 in LPC17xx_UM for IER setting 
 	pUart->LCR &= ~(BIT(7)); // disable the Divisior Latch Access Bit DLAB=0
-	pUart->IER = IER_RBR | IER_THRE | IER_RLS; 
+	pUart->IER = IER_Receive_Data_Available | IER_THRE | IER_RLS; 
 
 	// Step 6b: enable the UART interrupt from the system level
 	// Use CMSIS call
@@ -136,7 +136,7 @@ void c_UART0_IRQHandler(void)
 		LPC_UART0->IER = IER_THRE | IER_RLS;			// Disable RBR 
 	    uart_send_string( 0, (uint8_t *)g_UART0_buffer, g_UART0_count );
 	    g_UART0_count = 0;
-	    LPC_UART0->IER = IER_THRE | IER_RLS | IER_RBR;	// Re-enable RBR
+	    LPC_UART0->IER = IER_THRE | IER_RLS | IER_Receive_Data_Available;	// Re-enable RBR
 			
 	} else if (IIR_IntId & IIR_THRE) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;
@@ -218,7 +218,7 @@ void uart0_put_string(unsigned char * c){
 		// We have advanced at most one buffersize in the string
 		lenSoFar += BUFSIZE;
 	}
-	LPC_UART0->IER = IER_THRE | IER_RLS | IER_RBR;	// Re-enable RBR
+	LPC_UART0->IER = IER_THRE | IER_RLS | IER_Receive_Data_Available;	// Re-enable RBR
 }
 
 

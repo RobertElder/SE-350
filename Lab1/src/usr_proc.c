@@ -30,12 +30,20 @@ int expected_run_order[] =
 // Test case 5:
 2,
 // Test case 6:
-2,2,6,1,5,2,6,6,6,5,1,2,6,5};
+2,
+// Test case 7:
+2,
+// Test case 8:
+2,
+// Test case 9:
+6,1,5,2,6,6,
+// Test case 10:
+6,5,1,2,6,5};
 int actual_run_order[ORDER_LENGTH];
 int cur_index = 0;
 
 int order_checker(int order_length_sofar) {
-	int i;
+	volatile int i;
 	for (i = 0; i < order_length_sofar; i++) {
 	 	if (actual_run_order[i] != expected_run_order[i]) {
 			return 0;
@@ -137,13 +145,17 @@ void test_process_2() {
 		block++;	
 	}
 	
+	actual_run_order[cur_index] = 2;
+	cur_index++;
+
 	if (alloc_bad > 0) {
 		uart0_put_string("G015_test: test 7 FAIL\n\r");
 	} else {
 	 	uart0_put_string("G015_test: test 7 OK\n\r");
 	}
 	
-	release_memory_block(block);
+	block -= 16;
+	release_memory_block(block);  
 		
 	// no test_processes were blocked on memory, should not preempt
 	actual_run_order[cur_index] = 2;
@@ -206,6 +218,10 @@ void test_process_5() {
 	} else {
 		uart0_put_string("G015_test: test 2 FAIL\n\r");
 	}
+	/**/
+	//set_process_priority(1, 0);
+	//release_processor();
+	/**/
 	
 	//should not preempt
 	release_processor();
@@ -290,8 +306,7 @@ void test_process_6() {
 	cur_index++;
 
 	//should not be preempted after release - test_proc_1 has the same priority
-	release_memory_block(blocks[i]);
-	i--;
+	release_memory_block(blocks[--i]);
 
 	actual_run_order[cur_index] = 6;
 	cur_index++;
@@ -315,16 +330,14 @@ void test_process_6() {
 	}
 
 	// should be preempted after release - test_proc_5 has a higher priority
-	release_memory_block(blocks[i]);
-	i--;
+	release_memory_block(blocks[--i]);
 
 	actual_run_order[cur_index] = 6;
 	cur_index++;
 
 	//test_proc_1 and test_proc_5 are blocked on memory
 	//after release, test_proc_5 should get block and preempt - it has higher proority
-	release_memory_block(blocks[i]);
-	i--;
+	release_memory_block(blocks[--i]);
 
 }
 

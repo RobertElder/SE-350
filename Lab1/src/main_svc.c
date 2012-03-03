@@ -60,7 +60,7 @@ int main(){
 
 	//  Set up memory
 	init_memory_allocation_table();
-
+	
 	ret_val = release_processor();
 	uart0_put_string("\nShould never reach here!!!\n\r");
 	

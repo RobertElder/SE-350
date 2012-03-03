@@ -48,13 +48,18 @@ int has_more_important_process(int priority) {
 	 return 0;
 }
 
+
 int k_set_process_priority (int process_ID, int priority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(process != NULL, "Invalid process ID in set process priority.");
 	assert(process_ID != 0, "Error: cannot change the priority of the NULL process.");
 
-   	if(priority >= 0 && priority < NUM_PRIORITIES - 1) {	
+   	if(priority >= 0 && priority < NUM_PRIORITIES - 1) {
+		if (process->currentState == RDY) {
+		 	 remove_proc(&ready_queue[process->processPriority], process);
+			 enqueue(&ready_queue[priority], process);
+		}	
 		process->processPriority = priority;
 		if (has_more_important_process(priority)) {
 			k_release_processor();
@@ -139,6 +144,30 @@ ProcessControlBlock* dequeue(QueueHead* qHead) {
 	}
 
 	return firstIn;
+}
+
+void remove_proc(QueueHead* qHead, ProcessControlBlock* pcb) {
+	ProcessControlBlock* curr = (*qHead).head;	
+
+	if (curr == pcb) {
+		if (pcb->next == NULL) {
+		 	qHead->tail = NULL;
+		}
+		qHead->head = pcb->next;
+		return;
+	}
+
+	while (curr != NULL) {
+		if (curr->next == pcb) {
+			if (pcb == qHead->tail) {
+				assert(pcb->next == NULL, "ERROR: Tail next is not null.");
+				qHead->tail = curr;
+			}
+			curr->next = pcb->next;
+			break;
+		}
+		curr = curr->next;
+	}
 }
 
 // --------------------------------------------------------------------------

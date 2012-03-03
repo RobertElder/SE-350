@@ -46,13 +46,13 @@ extern unsigned int free_mem;
 
 // user process stack size 512 = 0x80 *4 bytes	 (128 4-byte words)
 #define START_STACKS free_mem
-#define STACKS_SIZE 0x080
-#define NUM_PROCESSES 6
+#define STACKS_SIZE 0x200
+#define NUM_PROCESSES 7
 
 // dynamic heap for user processes
 #define START_OF_MEMORY_ALLOCATION_TABLE START_STACKS + NUM_PROCESSES * STACKS_SIZE
 #define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0xA
-#define MEMORY_BLOCK_SIZE 0x10
+#define MEMORY_BLOCK_SIZE 0x40
 #define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
 
 // ---------------------------------------------------------------
@@ -137,7 +137,8 @@ extern QueueHead blocked_queue[NUM_PRIORITIES];
 extern ProcessControlBlock * get_process_pointer_from_id(int);
 
 void enqueue(QueueHead*, ProcessControlBlock*);
-ProcessControlBlock* dequeue(QueueHead* );										
+ProcessControlBlock* dequeue(QueueHead* );
+void remove_proc(QueueHead*, ProcessControlBlock*);										
 extern void process_init(void);	    // initialize all procs in the system
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				// pick the pid of the next to run process
 int k_release_processor(void);		// kernel release_process API

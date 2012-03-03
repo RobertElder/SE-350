@@ -22,8 +22,9 @@ It also controls the Character Receive Time-out interrupt.
 0 Disable the RDA interrupts. 1 Enable the RDA interrupts.
 */
 
-#define IER_THR_Empty	0x02	 // Enables the THRE interrupt for UARTn. The status of this can be read from UnLSR[5].
-#define IER_RLS		0x04	 // Enables the UARTn RX line status interrupts. The status of this interrupt can be read from UnLSR[4:1].
+#define IER_THR_Empty	0x02	 /* Enables the Transmitter	Holding Register
+Empty interrupt for UARTn. The status of this can be read from UnLSR[5].*/
+#define IER_Receive_Line_Status		0x04	 // Enables the UARTn RX line status interrupts. The status of this interrupt can be read from UnLSR[4:1].
 
 #define IIR_PEND	0x01	 /* IntStatus Interrupt status. Note that UnIIR[0] is active low. The pending interrupt 
 can be determined by evaluating UnIIR[3:1]. Reset Value: 1 0 At least one interrupt is pending.

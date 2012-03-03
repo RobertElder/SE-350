@@ -41,7 +41,7 @@ Reset value: 0
 001 3 - THRE Interrupt*/
 
 
-#define IIR_RDA		0x02 /*Interrupt identification. UnIER[3:1] identifies an interrupt corresponding to the
+#define IIR_Receive_Data_Available		0x02 /*Interrupt identification. UnIER[3:1] identifies an interrupt corresponding to the
 UARTn Rx or TX FIFO. All other combinations of UnIER[3:1] not listed below
 are reserved (000,100,101,111).
 010 2a - Receive Data Available (RDA).*/

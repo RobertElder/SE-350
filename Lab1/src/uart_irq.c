@@ -126,7 +126,7 @@ void c_UART0_IRQHandler(void)
 	// Reading IIR automatically acknowledges the interrupt
 	IIR_IntId = (pUart->IIR) >> 1 ; // skip pending bit in IIR
 
-	if (IIR_IntId & IIR_RDA) {  // Receive Data Avaialbe
+	if (IIR_IntId & IIR_Receive_Data_Available) {  // Receive Data Avaialbe
 	    // Note: read RBR will clear the interrupt
 	    g_UART0_buffer[g_UART0_count++] = pUart->RBR; // read from the uart
 	    if ( g_UART0_count == BUFSIZE ) {

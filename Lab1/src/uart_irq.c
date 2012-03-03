@@ -139,13 +139,7 @@ void c_UART0_IRQHandler(void)
 	    g_UART0_buffer[g_UART0_count++] = pUart->RBR; // read from the uart
 	    if ( g_UART0_count == BUFSIZE ) {
 		    g_UART0_count = 0;  // buffer overflow
-	    }
-		// Output the data immeadiately
-		LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;			// Disable RBR 
-	    uart_send_string( 0, (uint8_t *)g_UART0_buffer, g_UART0_count );
-	    g_UART0_count = 0;
-	    LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable RBR
-			
+	    }	
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;
 	    if(LSR_Val & LSR_THR_Empty) {
@@ -153,7 +147,6 @@ void c_UART0_IRQHandler(void)
 	    } else {  
 	        g_UART0_TX_empty = 0;  // UART is not ready to transmit yet
 		}
-	    
 	} else if (IIR_IntId & IIR_Receive_Line_Status) {
 	    LSR_Val = pUart->LSR;
 		if (LSR_Val  & (LSR_OE|LSR_PE|LSR_FE|LSR_RXFE|LSR_BI) ) {

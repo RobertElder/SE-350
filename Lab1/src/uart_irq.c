@@ -89,7 +89,7 @@ int uart_init(int n_uart) {
 	// See Table 50 on pg73 in LPC17xx_UM for all possible UART0 interrupt sources
 	// See Table 275 on pg 302 in LPC17xx_UM for IER setting 
 	pUart->LCR &= ~(BIT(7)); // disable the Divisior Latch Access Bit DLAB=0
-	pUart->IER = IER_RBR | IER_THRE | IER_RLS; 
+	pUart->IER = IER_Receive_Data_Available | IER_THR_Empty | IER_Receive_Line_Status; 
 
 	// Step 6b: enable the UART interrupt from the system level
 	// Use CMSIS call
@@ -118,7 +118,15 @@ __asm void UART0_IRQHandler(void)
  */
 void c_UART0_IRQHandler(void)
 {
-    uint8_t IIR_IntId;	    // Interrupt ID from IIR		
+
+/*
+	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
+	IIR - Interrupt ID Register. Identifies which interrupt(s) are pending.
+	LSR - Line Status Register. Contains flags for transmit and receive status, including line errors.
+*/
+	//  Information about the interrupt
+    uint8_t IIR_IntId;	    // Interrupt ID from IIR
+	// Line Status Register value		
 	uint8_t LSR_Val;	    // LSR Value
 	uint8_t dummy = dummy;	// dummy variable to clear interrupt upon LSR error
 	LPC_UART_TypeDef * pUart = (LPC_UART_TypeDef *)LPC_UART0;
@@ -126,27 +134,20 @@ void c_UART0_IRQHandler(void)
 	// Reading IIR automatically acknowledges the interrupt
 	IIR_IntId = (pUart->IIR) >> 1 ; // skip pending bit in IIR
 
-	if (IIR_IntId & IIR_RDA) {  // Receive Data Avaialbe
+	if (IIR_IntId & IIR_Receive_Data_Available) {  // Receive Data Avaialbe
 	    // Note: read RBR will clear the interrupt
 	    g_UART0_buffer[g_UART0_count++] = pUart->RBR; // read from the uart
 	    if ( g_UART0_count == BUFSIZE ) {
 		    g_UART0_count = 0;  // buffer overflow
-	    }
-		// Output the data immeadiately
-		LPC_UART0->IER = IER_THRE | IER_RLS;			// Disable RBR 
-	    uart_send_string( 0, (uint8_t *)g_UART0_buffer, g_UART0_count );
-	    g_UART0_count = 0;
-	    LPC_UART0->IER = IER_THRE | IER_RLS | IER_RBR;	// Re-enable RBR
-			
-	} else if (IIR_IntId & IIR_THRE) {  // THRE Interrupt, transmit holding register empty
+	    }	
+	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;
-	    if(LSR_Val & LSR_THRE) {
+	    if(LSR_Val & LSR_THR_Empty) {
 	        g_UART0_TX_empty = 1;	// UART is ready to transmit 
 	    } else {  
 	        g_UART0_TX_empty = 0;  // UART is not ready to transmit yet
 		}
-	    
-	} else if (IIR_IntId & IIR_RLS) {
+	} else if (IIR_IntId & IIR_Receive_Line_Status) {
 	    LSR_Val = pUart->LSR;
 		if (LSR_Val  & (LSR_OE|LSR_PE|LSR_FE|LSR_RXFE|LSR_BI) ) {
 		    // There are errors or break interrupt 
@@ -156,7 +157,7 @@ void c_UART0_IRQHandler(void)
 		}
 		// If no error on RLS, normal ready, save into the data buffer.
 	    // Note: read RBR will clear the interrupt 
-		if (LSR_Val & LSR_RDR) { // Receive Data Ready
+		if (LSR_Val & LSR_Unread_Character) { // Receive Data Ready
 		    g_UART0_buffer[g_UART0_count++] = pUart->RBR; // read from the uart
 	        if ( g_UART0_count == BUFSIZE ) {
 		        g_UART0_count = 0;  // buffer overflow
@@ -203,7 +204,7 @@ void uart0_put_string(unsigned char * c){
 	int currentBufferPos = 0;
 	int i = 0;
 
-	LPC_UART0->IER = IER_THRE | IER_RLS;			// Disable RBR 
+	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;			// Disable IER_Receive_Data_Available 
 	while(lenSoFar < totalStringLen){
 		nextOutOfBoundsIndex = lenSoFar + BUFSIZE > totalStringLen ? totalStringLen : lenSoFar + BUFSIZE;
 		currentBufferPos = 0;
@@ -218,7 +219,7 @@ void uart0_put_string(unsigned char * c){
 		// We have advanced at most one buffersize in the string
 		lenSoFar += BUFSIZE;
 	}
-	LPC_UART0->IER = IER_THRE | IER_RLS | IER_RBR;	// Re-enable RBR
+	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable IER_Receive_Data_Available
 }
 
 

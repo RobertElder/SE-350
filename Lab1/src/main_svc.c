@@ -41,12 +41,13 @@ void print_some_numbers(){
 int main(){
 	 
 	volatile unsigned int ret_val = 1234;
-	
 	SystemInit();	// initialize the system
 
 	// Disable interrupt requests
 	__disable_irq();
-
+	/* Lower the priority of the svn calls so that 
+	 we can handle UART interrupts inside SVC calls */
+	NVIC_SetPriority(SVCall_IRQn, 1);
 	// Initialize UART output
 	uart0_init();   
 

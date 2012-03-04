@@ -72,8 +72,7 @@ void nullProc() {
 
 void test_process_1() {
 
-	void* block;
-	void* block2;
+	int * block;
 
 	uart0_put_string("G015_test: START\n\r");
 	actual_run_order[cur_index] = 1;
@@ -105,6 +104,7 @@ void test_process_1() {
 	//test_process_1 should get blocked - it requested block number 31 (we have max 30 blocks)
 	//test_process_5 should run next
 	block = request_memory_block();
+	*block = 0;
 
 	//test_proc_1 got its mem block - but test_proc_6 had same priority and did not get preempted
 	//came here after test_proc_5 (higher priority) got blocked and test_proc_2 released processor
@@ -113,6 +113,7 @@ void test_process_1() {
 
 	//request mem block number 32 - will get blocked
 	block = request_memory_block();
+	*block = 0;
 	
 }
 
@@ -205,8 +206,8 @@ void test_process_4() {
 
 void test_process_5() {
 
-	void* block;
-	void* block2;
+	int * block;
+	int * block2;
 
 	actual_run_order[cur_index] = 5;
 	cur_index++;
@@ -261,6 +262,7 @@ void test_process_5() {
 	//requested block number 32 - will get blocked
 	//proc 2 will run next
 	block = request_memory_block();
+	*block = 0;
 
 	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
 	actual_run_order[cur_index] = 5;
@@ -275,6 +277,7 @@ void test_process_5() {
 	//requested block number 31 - will get blocked
 	//proc 2 will run next
 	block2 = request_memory_block();
+	*block2 = 0;
 
 	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
 	actual_run_order[cur_index] = 5;

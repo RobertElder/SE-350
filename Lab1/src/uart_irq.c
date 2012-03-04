@@ -140,6 +140,9 @@ void c_UART0_IRQHandler(void)
 	    if ( g_UART0_count == BUFSIZE ) {
 		    g_UART0_count = 0;  // buffer overflow
 	    }	
+	    pUart->THR = *((uint8_t *)g_UART0_buffer);
+		g_UART0_TX_empty = 0;  // not empty in the THR until it shifts out
+
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;
 	    if(LSR_Val & LSR_THR_Empty) {
@@ -168,14 +171,9 @@ void c_UART0_IRQHandler(void)
 	}	
 }
 
-void uart_send_string( uint32_t n_uart, uint8_t *p_buffer, uint32_t len ){
-    LPC_UART_TypeDef *pUart;
-
-    if(n_uart == 0 ) {  // UART0 is implemented
-        pUart = (LPC_UART_TypeDef *) LPC_UART0;
-    } else {  // other UARTs are not implemented
-        return;
-    }
+void uart_send_string(uint32_t len){
+    LPC_UART_TypeDef *pUart = (LPC_UART_TypeDef *) LPC_UART0;
+	uint8_t *p_buffer =(uint8_t *)g_UART0_buffer;
 
     while ( len != 0 ) {
 	    // THRE status, contain valid data  
@@ -214,7 +212,7 @@ void uart0_put_string(unsigned char * c){
 			g_UART0_count++;
 			currentBufferPos++;
 		}
-		uart_send_string( 0, (uint8_t *)g_UART0_buffer, g_UART0_count );
+		uart_send_string( g_UART0_count );
 		g_UART0_count = 0;
 		// We have advanced at most one buffersize in the string
 		lenSoFar += BUFSIZE;

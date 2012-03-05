@@ -14,6 +14,10 @@ ProcessControlBlock pcb_array[NUM_PROCESSES];
 //                  Priority API
 // --------------------------------------------------------------------------
 
+int is_ready_or_new(proc_state_t state ){
+	return state == RDY || state == NEW;
+}
+
 int has_more_important_process(int priority) {
 	 int i = 0;
 	 for (; i < priority; i++) {
@@ -33,16 +37,16 @@ int k_set_process_priority (int process_ID, int priority) {
 	assert(process_ID != 0, "Error: cannot change the priority of the NULL process.");
 
    	if(priority >= 0 && priority < NUM_PRIORITIES - 1) {
-		if (process->currentState == RDY) {
+		if (is_ready_or_new(process->currentState)) {
 		 	 remove_proc(&ready_queue[process->processPriority], process);
 			 enqueue(&ready_queue[priority], process);
 		} else if (process->currentState == BLOCKED_ON_MEMORY) {
-			 remove_proc(&blocked_queue[process->processPriority], process);
-			 enqueue(&blocked_queue[priority], process);
+			 remove_proc(&blocked_memory_queue[process->processPriority], process);
+			 enqueue(&blocked_memory_queue[priority], process);
 		}
 		process->processPriority = priority;
 		if ((has_more_important_process(priority) && pCurrentProcessPCB->processId == process_ID)
-		|| (priority < pCurrentProcessPCB->processPriority && process->currentState == RDY)) {
+		|| (priority < pCurrentProcessPCB->processPriority && is_ready_or_new(process->currentState))) {
 		  	k_release_processor();
 		}
 		return 0;
@@ -172,6 +176,8 @@ void process_init()
 		//  Set up the process control block
 		process.processId = proc_init_table[procIndex].pid;
 		process.currentState = NEW;
+		process.waitingMessages.head = NULL;
+		process.waitingMessages.tail = NULL;
 		// must mod 4 so that the priorities don't go over 3 (only null process can be level 4)
 		process.processPriority =  proc_init_table[procIndex].priority;
 		
@@ -224,7 +230,7 @@ void block_current_process() {
 
     pCurrentProcessPCB->currentState = BLOCKED_ON_MEMORY;
 
-	enqueue(&blocked_queue[pCurrentProcessPCB->processPriority], pCurrentProcessPCB);
+	enqueue(&blocked_memory_queue[pCurrentProcessPCB->processPriority], pCurrentProcessPCB);
 }
 
 ProcessControlBlock* getNextReadyProcess(void) {
@@ -244,8 +250,8 @@ ProcessControlBlock* getBlockedProcess() {
 	int i;
 	// Look for highest priority ready process.
 	for (i = 0; i < NUM_PRIORITIES; i++) {
-	 	if (blocked_queue[i].head != NULL) {
-			return blocked_queue[i].head;	
+	 	if (blocked_memory_queue[i].head != NULL) {
+			return blocked_memory_queue[i].head;	
 		}
 	}
 	return NULL; 	
@@ -267,7 +273,7 @@ ProcessControlBlock* getRunningProcess() {
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
 	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Attempted to schedule NULL");
 
-	assert(pNewPCB->currentState == RDY || pNewPCB->currentState == NEW,
+	assert(is_ready_or_new(pNewPCB->currentState),
 		"ERROR: Scheduler attempted to schedule a non-ready or non-new process.");
 
 	assert(pOldPCB->currentState != RDY,
@@ -322,7 +328,7 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		
 
 		/* -- Updating new process -- */
-		if (pCurrentProcessPCB->currentState == RDY || pCurrentProcessPCB->currentState == NEW) {
+		if (is_ready_or_new(pCurrentProcessPCB->currentState)) {
 		   // We remove running processes from the ready queue
 			pNewProcessPCB = dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]));
 			assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");
@@ -356,7 +362,7 @@ int k_release_processor(void){
 	// Get next ready process
 	ProcessControlBlock* pNewProcessPCB = getNextReadyProcess();
 
-	assert((pNewProcessPCB->currentState == RDY || pNewProcessPCB->currentState == NEW),
+	assert(is_ready_or_new(pNewProcessPCB->currentState),
  	"Error: We have a process that is not in a ready or new state in the ready queue.");
 
 	// Decide what should run next

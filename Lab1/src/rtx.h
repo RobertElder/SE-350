@@ -38,13 +38,24 @@ extern unsigned int free_mem;
 #define NUM_PRIORITIES 5
 
 // process states
-typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY} proc_state_t;
+typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY, BLOCKED_ON_RECEIVE} proc_state_t;
 
+typedef struct list_node {
+	 struct list_node* next;
+	 void* data;
+} ListNode;
+
+typedef struct linked_list {
+	ListNode* head;
+	ListNode* tail;
+} LinkedList;
 
 typedef struct pcb {
   
   struct pcb* next;
-  
+
+  LinkedList waitingMessages;
+
   // stack pointer of the process
   uint32_t* processStackPointer;
 
@@ -65,10 +76,13 @@ typedef struct queue_head {
 } QueueHead;
 
 extern QueueHead ready_queue[NUM_PRIORITIES];
-extern QueueHead blocked_queue[NUM_PRIORITIES];
+extern QueueHead blocked_memory_queue[NUM_PRIORITIES];
+extern QueueHead blocked_receive_queue[NUM_PRIORITIES];
 
 void enqueue(QueueHead*, ProcessControlBlock*);
-ProcessControlBlock* dequeue(QueueHead* );
+void enqueue_ll(LinkedList*, ListNode*);
+ProcessControlBlock* dequeue(QueueHead*);
+ListNode* dequeue_ll(LinkedList*);
 void remove_proc(QueueHead*, ProcessControlBlock*);	
 
 #endif

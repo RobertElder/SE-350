@@ -41,8 +41,8 @@ int k_set_process_priority (int process_ID, int priority) {
 		 	 remove_proc(&ready_queue[process->processPriority], process);
 			 enqueue(&ready_queue[priority], process);
 		} else if (process->currentState == BLOCKED_ON_MEMORY) {
-			 remove_proc(&blocked_queue[process->processPriority], process);
-			 enqueue(&blocked_queue[priority], process);
+			 remove_proc(&blocked_memory_queue[process->processPriority], process);
+			 enqueue(&blocked_memory_queue[priority], process);
 		}
 		process->processPriority = priority;
 		if ((has_more_important_process(priority) && pCurrentProcessPCB->processId == process_ID)
@@ -176,6 +176,8 @@ void process_init()
 		//  Set up the process control block
 		process.processId = proc_init_table[procIndex].pid;
 		process.currentState = NEW;
+		process.waitingMessages.head = NULL;
+		process.waitingMessages.tail = NULL;
 		// must mod 4 so that the priorities don't go over 3 (only null process can be level 4)
 		process.processPriority =  proc_init_table[procIndex].priority;
 		
@@ -228,7 +230,7 @@ void block_current_process() {
 
     pCurrentProcessPCB->currentState = BLOCKED_ON_MEMORY;
 
-	enqueue(&blocked_queue[pCurrentProcessPCB->processPriority], pCurrentProcessPCB);
+	enqueue(&blocked_memory_queue[pCurrentProcessPCB->processPriority], pCurrentProcessPCB);
 }
 
 ProcessControlBlock* getNextReadyProcess(void) {
@@ -248,8 +250,8 @@ ProcessControlBlock* getBlockedProcess() {
 	int i;
 	// Look for highest priority ready process.
 	for (i = 0; i < NUM_PRIORITIES; i++) {
-	 	if (blocked_queue[i].head != NULL) {
-			return blocked_queue[i].head;	
+	 	if (blocked_memory_queue[i].head != NULL) {
+			return blocked_memory_queue[i].head;	
 		}
 	}
 	return NULL; 	

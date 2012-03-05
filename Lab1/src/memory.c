@@ -27,7 +27,7 @@ void request_mem_block_helper() {
 	if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY) {
 		ProcessControlBlock* runningProcess = getRunningProcess();
 
-		ProcessControlBlock* pNewProcessPCB = dequeue(&(blocked_queue[pCurrentProcessPCB->processPriority]));
+		ProcessControlBlock* pNewProcessPCB = dequeue(&(blocked_memory_queue[pCurrentProcessPCB->processPriority]));
 		assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: blocked queue and process priorities not in sync.");	
 
 		if (runningProcess->processPriority <= pCurrentProcessPCB->processPriority) {

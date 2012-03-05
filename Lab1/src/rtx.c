@@ -9,7 +9,8 @@
 //Variable declarations 
 
 QueueHead ready_queue[NUM_PRIORITIES];
-QueueHead blocked_queue[NUM_PRIORITIES];
+QueueHead blocked_memory_queue[NUM_PRIORITIES];
+QueueHead blocked_receive_queue[NUM_PRIORITIES];
 
 unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
@@ -21,7 +22,7 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 void enqueue(QueueHead* qHead, ProcessControlBlock* pcb) {
 	ProcessControlBlock* oldTail = (*qHead).tail;
 	(*qHead).tail = pcb;
-	(*pcb).next = NULL; // TODO what if pcb is NULL?		 -- OOPS!
+	(*pcb).next = NULL; // TODO what if pcb is NULL?
 
 	if (oldTail != NULL) {
 		(*oldTail).next = pcb;
@@ -29,6 +30,20 @@ void enqueue(QueueHead* qHead, ProcessControlBlock* pcb) {
 
 	if ((*qHead).head == NULL) {
 	 	(*qHead).head = pcb;
+	}
+}
+
+void enqueue_ll(LinkedList* listHead, ListNode* node) {
+	ListNode* oldTail = (*listHead).tail;
+	(*listHead).tail = node;
+	(*node).next = NULL; // TODO what if pcb is NULL?
+
+	if (oldTail != NULL) {
+		(*oldTail).next = node;
+	}
+
+	if ((*listHead).head == NULL) {
+	 	(*listHead).head = node;
 	}
 }
 
@@ -45,6 +60,21 @@ ProcessControlBlock* dequeue(QueueHead* qHead) {
 
 	return firstIn;
 }
+
+ListNode* dequeue_ll(LinkedList* qHead) {
+	ListNode* firstIn = (*qHead).head;
+	if (firstIn == NULL) return NULL;
+	
+	(*qHead).head = (*firstIn).next;
+	(*firstIn).next = NULL;
+
+	if ((*qHead).head == NULL) {
+	 	(*qHead).tail = NULL;
+	}
+
+	return firstIn;
+}
+
 
 void remove_proc(QueueHead* qHead, ProcessControlBlock* pcb) {
 	ProcessControlBlock* curr = (*qHead).head;	

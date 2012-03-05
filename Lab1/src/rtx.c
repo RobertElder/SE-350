@@ -8,7 +8,6 @@
 
 //Variable declarations 
 
-<<<<<<< HEAD
 #ifdef DEBUG_0
 #include <stdio.h>
 #endif // DEBUG_0
@@ -19,7 +18,7 @@
 
 int maxNumberOfMemoryBlocksEverAllocatedAtOnce = 0;
 extern int numberOfMemoryBlocksCurrentlyAllocated = 0;
-=======
+
 QueueHead ready_queue[NUM_PRIORITIES];
 QueueHead blocked_queue[NUM_PRIORITIES];
 
@@ -29,14 +28,13 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 // -------------------------------------------------------------------------
 //           Helpers
 // -------------------------------------------------------------------------
->>>>>>> d53f7d43deb1ad29c3b6cb666d985c3e20a470fb
 
 void enqueue(QueueHead* qHead, ProcessControlBlock* pcb) {
 	ProcessControlBlock* oldTail = (*qHead).tail;
 	(*qHead).tail = pcb;
 	(*pcb).next = NULL; // TODO what if pcb is NULL?		 -- OOPS!
+}
 
-<<<<<<< HEAD
 void * get_address_of_memory_block_at_index(int memoryBlockIndex) {
 	//  taken up by pMaxNumberOfMemoryBlocksEverAllocated plus the offset of the byte for that memory block
 	return (void*)(START_OF_ALLOCATABLE_MEMORY + (memoryBlockIndex * MEMORY_BLOCK_SIZE));
@@ -70,11 +68,11 @@ void request_mem_block_helper() {
 			enqueue(&(ready_queue[runningProcess->processPriority]), runningProcess);
 			pCurrentProcessPCB->currentState = RUN;	
 		}
-=======
+	}
+
 	if (oldTail != NULL) {
 		(*oldTail).next = pcb;
 	}
->>>>>>> d53f7d43deb1ad29c3b6cb666d985c3e20a470fb
 
 	if ((*qHead).head == NULL) {
 	 	(*qHead).head = pcb;

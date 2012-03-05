@@ -15,14 +15,11 @@
 // into different files. For example, memory related kernel APIs in one file
 // and process related API(s) in another file.
 
-
-
-
 int maxNumberOfMemoryBlocksEverAllocatedAtOnce = 0;
 extern int numberOfMemoryBlocksCurrentlyAllocated = 0;
 
 
-void * get_address_of_memory_block_at_index(int memoryBlockIndex){
+void * get_address_of_memory_block_at_index(int memoryBlockIndex) {
 	//  taken up by pMaxNumberOfMemoryBlocksEverAllocated plus the offset of the byte for that memory block
 	return (void*)(START_OF_ALLOCATABLE_MEMORY + (memoryBlockIndex * MEMORY_BLOCK_SIZE));
 }

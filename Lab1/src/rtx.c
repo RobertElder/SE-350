@@ -8,6 +8,7 @@
 
 //Variable declarations 
 
+
 QueueHead ready_queue[NUM_PRIORITIES];
 QueueHead blocked_memory_queue[NUM_PRIORITIES];
 QueueHead blocked_receive_queue[NUM_PRIORITIES];
@@ -19,10 +20,12 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 //           Helpers
 // -------------------------------------------------------------------------
 
+
 void enqueue(QueueHead* qHead, ProcessControlBlock* pcb) {
 	ProcessControlBlock* oldTail = (*qHead).tail;
 	(*qHead).tail = pcb;
 	(*pcb).next = NULL; // TODO what if pcb is NULL?
+
 
 	if (oldTail != NULL) {
 		(*oldTail).next = pcb;

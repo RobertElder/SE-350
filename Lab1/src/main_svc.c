@@ -14,14 +14,15 @@
 #else
 #define NULL 0
 #endif // DEBUG_0
+#include "process.h"
 #include "uart.h"
 #include "timer.h"
-#include "rtx.h"
+#include "memory.h"
 #include "utils.h" 
 #include "usr_proc.h"
 
 
-extern void process_init(void);
+//extern void process_init(void);
 
 void print_some_numbers(){
 	int i;
@@ -44,8 +45,6 @@ extern volatile uint32_t g_timer_count;
 
 int main(){
 	
-
-	 
 	volatile unsigned int ret_val = 1234;
 	SystemInit();	// initialize the system
 
@@ -68,12 +67,12 @@ int main(){
 	//  Set up memory
 	init_memory_allocation_table();
 	
-    while (1) {
+  /*  while (1) {
         if (g_timer_count % 10 == 0) {
 			print_unsigned_integer(g_timer_count / 10);
 		    uart0_put_string("\r\n");
 		}     
-	}
+	}	*/
 
 	ret_val = release_processor();
 	uart0_put_string("\nShould never reach here!!!\n\r");

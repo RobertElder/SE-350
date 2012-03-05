@@ -1,38 +1,14 @@
-/**
- * @brief: process.h  process management source file
- * @author Irene Huang
- * @author Thomas Reidemeister
- * @date 2011/01/18
- * NOTE: The example code shows one way of context switching implmentation.
- *       The code only has minimal sanity check. There is no stack overflow check.
- *       The implementation assumes only two simple user processes, NO external interrupts. 
- *  	 The purpose is to show how context switch could be done under stated assumptions. 
- *       These assumptions are not true in the required RTX Project!!!
- *       If you decide to use this piece of code, you need to understand the assumptions and
- *       the limitations. Some part of the code is not written in the most efficient way.
- */
-
 #include <LPC17xx.h>
 #include <system_LPC17xx.h>
 #include "utils.h"
 #include "process.h"
-
-#ifdef DEBUG_0
-#include <stdio.h>
-#endif // DEBUG_0
-
+#include "rtx.h"
 
 /* Variable definitions */
 ProcessControlBlock* pCurrentProcessPCB  = NULL;
 
 ProcessEntry proc_init_table[NUM_PROCESSES];
 ProcessControlBlock pcb_array[NUM_PROCESSES];
-
-QueueHead ready_queue[NUM_PRIORITIES];
-QueueHead blocked_queue[NUM_PRIORITIES];
-
-
-extern unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 
 // --------------------------------------------------------------------------
 //                  Priority API
@@ -119,72 +95,13 @@ int has_blocked_processes(){
 	return 0;
 }
 
-// -------------------------------------------------------------------------
-//           Helpers
-// -------------------------------------------------------------------------
-
-void enqueue(QueueHead* qHead, ProcessControlBlock* pcb) {
-	ProcessControlBlock* oldTail = (*qHead).tail;
-	(*qHead).tail = pcb;
-	(*pcb).next = NULL; // TODO what if pcb is NULL?
-
-	if (oldTail != NULL) {
-		(*oldTail).next = pcb;
-	}
-
-	if ((*qHead).head == NULL) {
-	 	(*qHead).head = pcb;
-	}
-}
-
-ProcessControlBlock* dequeue(QueueHead* qHead) {
-	ProcessControlBlock* firstIn = (*qHead).head;
-	if (firstIn == NULL) return NULL;
-	
-	(*qHead).head = (*firstIn).next;
-	(*firstIn).next = NULL;
-
-	if ((*qHead).head == NULL) {
-	 	(*qHead).tail = NULL;
-	}
-
-	return firstIn;
-}
-
-void remove_proc(QueueHead* qHead, ProcessControlBlock* pcb) {
-	ProcessControlBlock* curr = (*qHead).head;	
-
-	if (curr == pcb) {
-		if (pcb->next == NULL) {
-		 	qHead->tail = NULL;
-		}
-		qHead->head = pcb->next;
-		return;
-	}
-
-	while (curr != NULL) {
-		if (curr->next == pcb) {
-			if (pcb == qHead->tail) {
-				assert(pcb->next == NULL, "ERROR: Tail next is not null.");
-				qHead->tail = curr;
-			}
-			curr->next = pcb->next;
-			break;
-		}
-		curr = curr->next;
-	}
-}
-
-// --------------------------------------------------------------------------
-
-
 // --------------------------------------------------------------------------------------
 //
 //                       Initialize process management
 //
 // --------------------------------------------------------------------------------------
 
-	 // We will have 4 priorities --> 0,1,2  are for normal processes; 3 is for the NULL process
+// We will have 5 priorities --> 0,1,2,3  are for normal processes; 4 is for the NULL process
 void init_processe_table() {
 	unsigned int sp = free_mem;
    	int i;
@@ -238,13 +155,6 @@ void init_ready_queue() {
 	}
 }
 
-/**
- * @brief: initialize all processes in the system
-
- *       TODO: We should have also used an initialization table which contains the entry
- *       points of each process so that this code does not have to hard code
- *       proc1 and proc2 symbols. We leave all these imperfections as excercies to the reader 
- */
 void process_init() 
 {
     volatile int i;
@@ -433,9 +343,8 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 }
 
 	
-/**
- * @brief release_processor(). 
- * @return -1 on error and zero on success
+/**	  
+ * TODO: @return -1 on error and zero on success
  * POST: pCurrentProcessPCB gets updated
  */
 int k_release_processor(void){

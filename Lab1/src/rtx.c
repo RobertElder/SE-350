@@ -21,21 +21,6 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 // -------------------------------------------------------------------------
 
 
-/*void enqueue(QueueHead* qHead, ProcessControlBlock* pcb) {
-	ProcessControlBlock* oldTail = (*qHead).tail;
-	(*qHead).tail = pcb;
-	(*pcb).next = NULL; // TODO what if pcb is NULL?
-
-
-	if (oldTail != NULL) {
-		(*oldTail).next = pcb;
-	}
-
-	if ((*qHead).head == NULL) {
-	 	(*qHead).head = pcb;
-	}
-}*/
-
 void enqueue(LinkedList* listHead, ListNode* node) {
 	ListNode* oldTail = (*listHead).tail;
 	(*listHead).tail = node;
@@ -49,20 +34,6 @@ void enqueue(LinkedList* listHead, ListNode* node) {
 	 	(*listHead).head = node;
 	}
 }
-
-/*ProcessControlBlock* dequeue(QueueHead* qHead) {
-	ProcessControlBlock* firstIn = (*qHead).head;
-	if (firstIn == NULL) return NULL;
-	
-	(*qHead).head = (*firstIn).next;
-	(*firstIn).next = NULL;
-
-	if ((*qHead).head == NULL) {
-	 	(*qHead).tail = NULL;
-	}
-
-	return firstIn;
-}*/
 
 ListNode* dequeue(LinkedList* qHead) {
 	ListNode* firstIn = (*qHead).head;

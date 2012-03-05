@@ -39,10 +39,10 @@ int k_set_process_priority (int process_ID, int priority) {
 
    	if(priority >= 0 && priority < NUM_PRIORITIES - 1) {
 		if (is_ready_or_new(process->currentState)) {
-		 	 ListNode *node = remove_proc(&ready_queue[process->processPriority], (void*)process);
+		 	 ListNode *node = remove_node(&ready_queue[process->processPriority], (void*)process);
 			 enqueue(&ready_queue[priority], node);
 		} else if (process->currentState == BLOCKED_ON_MEMORY) {
-			 ListNode *node = remove_proc(&blocked_memory_queue[process->processPriority], (void*)process);
+			 ListNode *node = remove_node(&blocked_memory_queue[process->processPriority], (void*)process);
 			 enqueue(&blocked_memory_queue[priority], node);
 		} // TODO: need an else if for BLOCKED_ON_RECEIVE queue
 		process->processPriority = priority;
@@ -71,7 +71,7 @@ ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 	return (process_ID > NUM_PROCESSES - 1) ? NULL : &pcb_array[process_ID];
 }
 
-Listnode* get_node_of_process(int process_ID) {
+ListNode* get_node_of_process(int process_ID) {
 	ListNode *node = (process_ID > NUM_PROCESSES - 1) ? NULL : &node_array[process_ID];
 
 	assert(node != NULL, "ERROR: process does not have a list node");
@@ -162,7 +162,7 @@ void init_processe_table() {
 }
 
 // zero-initialization (just in case)
-void zero_init_queue(QueueHead* qHead[], int len) {
+void zero_init_queue(LinkedList qHead[], int len) {
 	int i;
 	for (i = 0; i < len; ++i) {
 	 	qHead[i].head = qHead[i].tail = NULL;

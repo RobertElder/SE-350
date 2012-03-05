@@ -36,7 +36,7 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 	}
 }*/
 
-void enqueue_ll(LinkedList* listHead, ListNode* node) {
+void enqueue(LinkedList* listHead, ListNode* node) {
 	ListNode* oldTail = (*listHead).tail;
 	(*listHead).tail = node;
 	(*node).next = NULL; // TODO what if pcb is NULL?
@@ -64,7 +64,7 @@ void enqueue_ll(LinkedList* listHead, ListNode* node) {
 	return firstIn;
 }*/
 
-ListNode* dequeue_ll(LinkedList* qHead) {
+ListNode* dequeue(LinkedList* qHead) {
 	ListNode* firstIn = (*qHead).head;
 	if (firstIn == NULL) return NULL;
 	
@@ -92,7 +92,7 @@ ListNode* remove_node(LinkedList* qHead, void* node_data) {
 
 	while (curr != NULL) {
 		if (curr->next->data == node_data) { 
-			ListNode *return_node;
+			ListNode* return_node;
 			if (node_data == qHead->tail->data) {
 				assert(qHead->tail->next == NULL, "ERROR: Tail next is not null.");
 				qHead->tail = curr;
@@ -103,6 +103,7 @@ ListNode* remove_node(LinkedList* qHead, void* node_data) {
 		}
 		curr = curr->next;
 	}
+	return NULL;
 }
 
 // --------------------------------------------------------------------------

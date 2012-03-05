@@ -77,9 +77,9 @@ extern LinkedList blocked_memory_queue[NUM_PRIORITIES];
 extern LinkedList blocked_receive_queue[NUM_PRIORITIES];
 
 void enqueue(LinkedList*, ListNode*);
-void enqueue_ll(LinkedList*, ListNode*);
+//void enqueue_ll(LinkedList*, ListNode*);
 ListNode* dequeue(LinkedList*);
-ListNode* dequeue_ll(LinkedList*);
+//ListNode* dequeue_ll(LinkedList*);
 //void remove_proc(QueueHead*, ProcessControlBlock*);
 ListNode* remove_node(LinkedList*, void*);	
 

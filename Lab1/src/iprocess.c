@@ -58,8 +58,9 @@ int delayed_send(int pid, Envelope * envelope, int delay) {
 
 	//add node containing m to timeoutProcess message queue
 	expiry_sorted_enqueue(&delayed_messages, node);
+	//send_message(pid, env) //send itself a message??
 
-	return 0;
+	return 0; //What should the return value be?
 }
 
 void timeout_i_process() {
@@ -68,7 +69,7 @@ void timeout_i_process() {
 	int receiver_pid;
 
 	while(env != NULL) {
-		node->data = &env;
+		node->data = &(env->message_data); //Get DelayedMessage data out of envelope
 		node->next = NULL;
 
 	 	expiry_sorted_enqueue(&delayed_messages, node);

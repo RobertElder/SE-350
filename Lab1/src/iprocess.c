@@ -22,23 +22,27 @@ void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 	if(currentNode == NULL) {
 	 	(* listHead).head = node;
 		(* listHead).tail = node;
-		return;
-	}
+	} 
+	else 
+	{
 
-	//if node.expiry < head.expiry (insert at beginning)														   
-	if(((DelayedMessage *)currentNode->data)->expiry_time > ((DelayedMessage *)node->data)->expiry_time) {
-		(* node).next = listHead->head;
-		(* listHead).head = node;
-	}
+	 	while(currentNode != NULL) {
+			if(currentNode->next == NULL) {
+			 	(* currentNode).next = node;
+				(* listHead).tail = node;
+				return;
+			} 
+			else if (((DelayedMessage *)currentNode->data)->expiry_time < ((DelayedMessage *)node->data)->expiry_time) {
+				(* node).next = currentNode->next;
+				(* currentNode).next = node;	
+				return;			
+			}		 	
+		}
 
-	//while curr.expiry > node.expiry
-	while(((DelayedMessage *)currentNode->data)->expiry_time < ((DelayedMessage *)node->data)->expiry_time) {
 		currentNode = currentNode->next;
 	}
 
-	//insert in proper location
-	(* node).next = currentNode->next;
-	(* currentNode).next = node;
+	return;
 }
 
 int delayed_send(int pid, Envelope * envelope, int delay) {

@@ -51,9 +51,6 @@ typedef struct linked_list {
 } LinkedList;
 
 typedef struct pcb {
-  
-  struct pcb* next;
-
   LinkedList waitingMessages;
 
   // stack pointer of the process
@@ -70,19 +67,13 @@ typedef struct pcb {
 
 } ProcessControlBlock;
 
-typedef struct queue_head {
-	ProcessControlBlock* head;
-	ProcessControlBlock* tail;
-} QueueHead;
 
-extern QueueHead ready_queue[NUM_PRIORITIES];
-extern QueueHead blocked_memory_queue[NUM_PRIORITIES];
-extern QueueHead blocked_receive_queue[NUM_PRIORITIES];
+extern LinkedList ready_queue[NUM_PRIORITIES];
+extern LinkedList blocked_memory_queue[NUM_PRIORITIES];
+extern LinkedList blocked_receive_queue[NUM_PRIORITIES];
 
-void enqueue(QueueHead*, ProcessControlBlock*);
-void enqueue_ll(LinkedList*, ListNode*);
-ProcessControlBlock* dequeue(QueueHead*);
-ListNode* dequeue_ll(LinkedList*);
-void remove_proc(QueueHead*, ProcessControlBlock*);	
+void enqueue(LinkedList*, ListNode*);
+ListNode* dequeue(LinkedList*);
+ListNode* remove_node(LinkedList*, void*);	
 
 #endif

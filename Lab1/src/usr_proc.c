@@ -264,7 +264,7 @@ void test_process_3() {
 		+8-8*3/9*4%4/9-3+1+9%5/2+4%8+5%1%1+0-9%1+7%4%4*0-2+3*4*4*3/2
 		/3-3+4*8-5+9+3*2/5*6;
 	
-		//  Is math broken?
+		//  Did the calculation work?
 		if (!(result == 0x1B79 && order_checker(cur_index))) {
 			break;
 		}

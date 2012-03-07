@@ -27,7 +27,9 @@ __asm void SVC_Handler (void)
 	PRESERVE8			; 8 bytes alignement of the stack
 ;MRS: Move the contents of a special register to a general-purpose register.
 	MRS  R0, MSP		; Read MSP
-	
+
+;LDR Rt, [Rn {, #offset}] ; immediate offset  Rt is the register to load.		   
+;Rn is the register on which the memory address is based.  offset is an offset from Rn. If offset is omitted, the address is the contents of Rn.
 	LDR  R1, [R0, #24]	; Read Saved PC from SP
 	                    ; Loads R1 from a word 24 bytes  above the address in R0
 						; Note that R0 now contains the the SP value after the
@@ -50,8 +52,10 @@ __asm void SVC_Handler (void)
 						 ; C kernel functions entry point
 						 ; R0-R3 contains the kernel function input params according to AAPCS
 						;  The BX and BLX Rm instructions cause a UsageFault exception if bit[0] of Rm is 0.
-						 
+		
+;MRS Rd, spec_reg  Rd is the destination register.  spec_reg can be any of: APSR, IPSR, EPSR, IEPSR, IAPSR, EAPSR, PSR, MSP, PSP, PRIMASK, BASEPRI, BASEPRI_MAX, FAULTMASK, or CONTROL.				 
 	MRS  R12, MSP        ; Read MSP
+	; Store R0 into the address of R12
 	STR  R0, [R12]       ; store C kernel function return value in R0
 	                     ; to R0 on the exception stack frame  
 SVC_EXIT

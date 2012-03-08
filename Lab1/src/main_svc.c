@@ -20,6 +20,7 @@
 #include "memory.h"
 #include "utils.h" 
 #include "usr_proc.h"
+#include "iprocess.h"
 
 
 //extern void process_init(void);
@@ -57,6 +58,7 @@ int main(){
 	uart0_init();   
 	// Initialize stack and PCB for processes
 	process_init();
+	init_i_processes();
 	// Enable interrupt requests
 	__enable_irq();
 	
@@ -65,6 +67,7 @@ int main(){
 
 	//  Set up memory
 	init_memory_allocation_table();
+
 
 /*
     while (1) {

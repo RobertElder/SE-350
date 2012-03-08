@@ -8,10 +8,14 @@
 
 #include <LPC17xx.h>
 #include "timer.h"
-
+#include "irq.h"
 #define BIT(X) (1<<X)
 
 volatile uint32_t g_timer_count = 0; // increment every 1 ms
+
+uint32_t get_current_time() {
+	return g_timer_count;
+}
 
 /**
  * @brief: initialize timer. Only timer 0 is supported
@@ -94,5 +98,6 @@ __asm void TIMER0_IRQHandler(void)
 void c_TIMER0_IRQHandler(void)
 {
     LPC_TIM0->IR = BIT(0);  // ack inttrupt, see section  21.6.1 on pg 493 of LPC17XX_UM
-    g_timer_count++ ;
+    g_timer_count++;
+	//irq_handler(TIMER_IRQ);
 }

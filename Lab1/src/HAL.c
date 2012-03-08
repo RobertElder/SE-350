@@ -20,6 +20,15 @@ __asm void __rte(void)
 	MVN  LR, #:NOT:0xFFFFFFF9  ; set EXC_RETURN value, Thread mode, MSP
 	BX   LR
 }
+
+// pop off exception stack frame from the stack
+__asm void __sys_rte(void)
+{
+    PRESERVE8
+	MVN  LR, #:NOT:0xFFFFFFF1  ; set EXC_RETURN value, Thread mode, MSP
+	BX   LR
+}
+
 // NOTE: assuming MSP is used
 //       ideally, PSP should be used 
 __asm void SVC_Handler (void) 
@@ -28,7 +37,7 @@ __asm void SVC_Handler (void)
 ;MRS: Move the contents of a special register to a general-purpose register.
 	MRS  R0, MSP		; Read MSP
 
-;LDR Rt, [Rn {, #offset}] ; immediate offset  Rt is the register to load.		   
+;LDR Rt, [Rn {, #offset ; immediate offset  Rt is the register to load.		   
 ;Rn is the register on which the memory address is based.  offset is an offset from Rn. If offset is omitted, the address is the contents of Rn.
 	LDR  R1, [R0, #24]	; Read Saved PC from SP
 	                    ; Loads R1 from a word 24 bytes  above the address in R0

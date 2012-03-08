@@ -11,6 +11,7 @@ ProcessEntry proc_init_table[NUM_PROCESSES];
 ProcessControlBlock pcb_array[NUM_PROCESSES];
 ListNode node_array[NUM_PROCESSES];
 
+
 // --------------------------------------------------------------------------
 //                  Priority API
 // --------------------------------------------------------------------------
@@ -67,8 +68,17 @@ int k_get_process_priority (int process_ID) {
 
 // -----------------------------------------------------------------------------------
 
+
 ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 	return (process_ID > NUM_PROCESSES - 1) ? NULL : &pcb_array[process_ID];
+}
+
+ProcessControlBlock* get_interrupted_process() {
+ 	int i;
+	for(i = 0; i < NUM_PROCESSES; i++){	
+	 	if (pcb_array[i].currentState == INTERRUPTED) return &pcb_array[i];
+	}
+	return NULL;
 }
 
 ListNode* get_node_of_process(int process_ID) {
@@ -332,11 +342,13 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 
 		/* -- Updating old process -- */
 
-		if (pOldProcessPCB->currentState == RUN) {
-			pOldProcessPCB->currentState = RDY; 
-			// Put old process back in his appropriate priority queue
-			enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-				get_node_of_process(pOldProcessPCB->processId));
+		if (pOldProcessPCB->currentState == RUN ) {
+			pOldProcessPCB->currentState = RDY;
+			if (pCurrentProcessPCB->currentState != INTERRUPTED) {
+				// Put old process back in his appropriate priority queue
+				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
+					get_node_of_process(pOldProcessPCB->processId)); 
+			}
 		}
 
 		// Don't save the MSP if the process is NEW because it was not running,
@@ -347,7 +359,8 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		
 
 		/* -- Updating new process -- */
-		if (is_ready_or_new(pCurrentProcessPCB->currentState)) {
+		if (is_ready_or_new(pCurrentProcessPCB->currentState)
+			&& pOldProcessPCB->currentState != INTERRUPTED) {
 		   // We remove running processes from the ready queue
 			pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
 			assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");
@@ -361,6 +374,8 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 			pCurrentProcessPCB->currentState = RUN;
 			// pop exception stack frame from the stack for new processes (assembly function in hal.c)
 			__rte(); //EXITTING CALL
+
+			
 		}
 		pCurrentProcessPCB->currentState = RUN;
 	    

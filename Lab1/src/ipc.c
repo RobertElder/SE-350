@@ -3,10 +3,6 @@
 #include "process.h"
 #include "memory.h"
 
-#define COMMAND_REGISTRATION 1
-#define KEYBOARD_INPUT 2
-#define OUTPUT_STRING 3
-
 #define KERNEL_POINTERS_OFFSET                0
 #define SENDER_PID_OFFSET                     KERNEL_POINTERS_OFFSET + sizeof(int *)
 #define DESTINATION_PID_OFFSET                SENDER_PID_OFFSET + sizeof(int)
@@ -108,7 +104,7 @@ void set_message_data(void * p_message, void * data_to_copy, int bytes_to_copy){
 	char * destination;
 	char * source;
 	for(i = 0; i < bytes_to_copy; i++){
-		assert(MESSAGE_DATA_OFFSET + i >= MEMORY_BLOCK_SIZE, "Attempt to write outside the range of a memory block.");
+		assert(MESSAGE_DATA_OFFSET + i <= MEMORY_BLOCK_SIZE, "Attempt to write outside the range of a memory block.");
 		destination = (char *) p_message + MESSAGE_DATA_OFFSET + i;
 		source = (char *)data_to_copy + i;
 		*destination = *source;

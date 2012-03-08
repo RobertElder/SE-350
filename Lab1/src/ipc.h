@@ -2,8 +2,12 @@
 #define _IPC_H_
 
 #include <stdint.h>
-
 #include "rtx.h"
+
+#define COMMAND_REGISTRATION 1
+#define KEYBOARD_INPUT 2
+#define OUTPUT_STRING 3
+#define DELAYED_SEND 4
 
 typedef struct env {
 	uint32_t sender_pid;

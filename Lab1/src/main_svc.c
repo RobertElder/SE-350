@@ -67,9 +67,7 @@ int main(){
 
 	//  Set up memory
 	init_memory_allocation_table();
-	roberts_tests();
-
-
+	
 /*
     while (1) {
         if (g_timer_count % 10 == 0) {

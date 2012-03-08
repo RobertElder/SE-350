@@ -8,15 +8,13 @@
 
 void run_memory_tests(void){
 	int i = 0;
-	int testCases = 10000;
+	int testCases = 500;
 	int currentTestCase = 0;
 	int tmpCounter = 0;
 	int testValue1 = 6;
 	int * pTestPointer1 = 0;
 	int testsPassed = 0;
 	int testsFailed = 0;
-	int temp1 = 0;
-	int temp2 = 0;
 
 	int numberOfPointersYouCanPutInOneBlockOfMemory = MEMORY_BLOCK_SIZE / sizeof(int);
 	if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS) {
@@ -54,8 +52,8 @@ void run_memory_tests(void){
 					if(!((*pointerToCurrentMemoryBlockPointer)[tmpCounter] == ((int)(*pointerToCurrentMemoryBlockPointer)) + tmpCounter)) {
 						testsFailed++;
 					}
-					temp1 = (*pointerToCurrentMemoryBlockPointer)[tmpCounter];
-					temp2 = ((int)(*pointerToCurrentMemoryBlockPointer)) + tmpCounter;
+					//temp1 = (*pointerToCurrentMemoryBlockPointer)[tmpCounter];
+					//temp2 = ((int)(*pointerToCurrentMemoryBlockPointer)) + tmpCounter;
 					assert((*pointerToCurrentMemoryBlockPointer)[tmpCounter] == ((int)(*pointerToCurrentMemoryBlockPointer)) + tmpCounter,"Memory test failure: block failed sanity check.");
 				}
 				//  Delete this block

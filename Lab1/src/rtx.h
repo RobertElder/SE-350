@@ -28,17 +28,20 @@ extern unsigned int free_mem;
 #define NUM_PROCESSES 7
 
 // dynamic heap for user processes
-#define START_OF_MEMORY_ALLOCATION_TABLE START_STACKS + NUM_PROCESSES * STACKS_SIZE
-#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0xA
-#define MEMORY_BLOCK_SIZE 0x40
-#define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
+#define MEMORY_BLOCK_SIZE                            0x40
+#define MAX_ALLOWED_MEMORY_BLOCKS                    0x1E
+// there are 7 user processes plus 2 iprocesses 
+//TODO: might need to consider system processes here as well 
+#define START_OF_MEMORY_ALLOCATION_TABLE             START_STACKS + (NUM_PROCESSES + 2) * STACKS_SIZE
+#define START_OF_ALLOCATABLE_MEMORY                  START_OF_MEMORY_ALLOCATION_TABLE + MAX_ALLOWED_MEMORY_BLOCKS
+
 
 // ----------------------------------------------------------------
 
 #define NUM_PRIORITIES 5
 
 // process states
-typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY, BLOCKED_ON_RECEIVE} proc_state_t;
+typedef enum {NEW = 0, RDY, RUN, BLOCKED_ON_MEMORY, BLOCKED_ON_RECEIVE, INTERRUPTED} proc_state_t;
 
 typedef struct list_node {
 	 struct list_node* next;

@@ -64,6 +64,7 @@ extern ProcessControlBlock * pCurrentProcessPCB;  // always point to the current
 // -----------------------------------------------------
 
 ProcessControlBlock * get_process_pointer_from_id(int);
+ProcessControlBlock * get_interrupted_process(void);
 ListNode* get_node_of_process(int);									
 void process_init(void);	    // initialize all procs in the system
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				// pick the pid of the next to run process

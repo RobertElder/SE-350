@@ -8,7 +8,7 @@
 
 void run_memory_tests(void){
 	int i = 0;
-	int testCases = 1000;
+	int testCases = 10000;
 	int currentTestCase = 0;
 	int tmpCounter = 0;
 	int testValue1 = 6;
@@ -93,4 +93,7 @@ void run_memory_tests(void){
 	}
 }
 
+void roberts_tests(void){
+	run_memory_tests();	
+}
 

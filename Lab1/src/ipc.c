@@ -1,6 +1,18 @@
+#include "utils.h"
 #include "ipc.h"
 #include "process.h"
 #include "memory.h"
+
+#define COMMAND_REGISTRATION 1
+#define KEYBOARD_INPUT 2
+#define OUTPUT_STRING 3
+
+#define KERNEL_POINTERS_OFFSET                0
+#define SENDER_PID_OFFSET                     KERNEL_POINTERS_OFFSET + sizeof(int *)
+#define DESTINATION_PID_OFFSET                SENDER_PID_OFFSET + sizeof(int)
+#define MESSAGE_TYPE_OFFSET                   DESTINATION_PID_OFFSET + sizeof(int)
+#define MESSAGE_DATA_OFFSET                   MESSAGE_TYPE_OFFSET + sizeof(int)
+
 
 int k_send_message(int target_pid, void* envelope) {
 	//atomic(on);
@@ -45,3 +57,62 @@ void* k_receive_message(int* sender_ID) {
 	//atomic(off)
 	return env;	
 }
+
+/*
+	A Message  
+
+--------------------------
+|     Kernel Pointers    |
+--------------------------
+|       Sender PID       |
+--------------------------
+|    Destination PID     |
+--------------------------
+|      Message Type      |
+--------------------------
+|       Message Data     |
+--------------------------
+*/
+
+//  We will assume that a message is a memory block size
+int get_sender_PID(void * p_message){
+	return *((int * )((char *)p_message + SENDER_PID_OFFSET));
+}
+
+void set_sender_PID(void * p_message, int value){
+	*((int * )((char *)p_message + SENDER_PID_OFFSET)) = value;
+}
+
+int get_destination_PID(void * p_message){
+	return *((int * )((char *)p_message + DESTINATION_PID_OFFSET));
+}
+
+void set_destination_PID(void * p_message, int value){
+	*((int * )((char *)p_message + DESTINATION_PID_OFFSET)) = value;
+}
+
+int get_message_type(void * p_message){
+	return *((int * )((char *)p_message + MESSAGE_TYPE_OFFSET));
+}
+
+void set_message_type(void * p_message, int value){
+	*((int * )((char *)p_message + MESSAGE_TYPE_OFFSET)) = value;
+}
+
+void * get_message_data(void * p_message){
+	return (char *) p_message + MESSAGE_DATA_OFFSET;
+}
+
+void set_message_data(void * p_message, void * data_to_copy, int bytes_to_copy){
+	int i = 0;
+	char * destination;
+	char * source;
+	for(i = 0; i < bytes_to_copy; i++){
+		assert(MESSAGE_DATA_OFFSET + i >= MEMORY_BLOCK_SIZE, "Attempt to write outside the range of a memory block.");
+		destination = (char *) p_message + MESSAGE_DATA_OFFSET + i;
+		source = (char *)data_to_copy + i;
+		*destination = *source;
+	}
+}
+
+

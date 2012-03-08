@@ -29,9 +29,10 @@ extern unsigned int free_mem;
 
 // dynamic heap for user processes
 #define START_OF_MEMORY_ALLOCATION_TABLE START_STACKS + NUM_PROCESSES * STACKS_SIZE
-#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + 0xA
-#define MEMORY_BLOCK_SIZE 0x40
 #define MAX_ALLOWED_MEMORY_BLOCKS 0x1E
+#define START_OF_ALLOCATABLE_MEMORY START_OF_MEMORY_ALLOCATION_TABLE + MAX_ALLOWED_MEMORY_BLOCKS
+#define MEMORY_BLOCK_SIZE 0x40
+
 
 // ----------------------------------------------------------------
 

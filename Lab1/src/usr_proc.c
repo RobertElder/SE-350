@@ -82,15 +82,15 @@ void test_process_1() {
 	int * block;
 
 	 //TEST MSG STUFF
-	char message = 'c';	
-	Envelope * env = request_memory_block();
-
-	set_sender_PID(env, 11);
-	set_destination_PID(env, 11);
-	set_message_type(env, DELAYED_SEND);
-	set_message_data(env, &message, sizeof(char));
-
-	delayed_send(2, env, 10000);
+//	char message = 'c';	
+//	Envelope * env = request_memory_block();
+//
+//	set_sender_PID(env, 11);
+//	set_destination_PID(env, 11);
+//	set_message_type(env, DELAYED_SEND);
+//	set_message_data(env, &message, sizeof(char));
+//
+//	delayed_send(2, env, 10000);
 
 	//END TEST STUF
 

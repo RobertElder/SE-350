@@ -20,4 +20,15 @@ extern void* k_receive_message(int* sender_ID);
 #define receive_message(sender) _receive_message((U32)k_receive_message, sender)
 extern void* _receive_message(U32 p_func, int sender) __SVC_0;
 
+//  Message API functions
+int get_sender_PID(void * p_message);
+void set_sender_PID(void * p_message, int value);
+int get_destination_PID(void * p_message);
+void set_destination_PID(void * p_message, int value);
+int get_message_type(void * p_message);
+void set_message_type(void * p_message, int value);
+void * get_message_data(void * p_message);
+void set_message_data(void * p_message, void * data_to_copy, int bytes_to_copy);
+
+
 #endif

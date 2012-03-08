@@ -21,7 +21,7 @@
 #include "utils.h" 
 #include "usr_proc.h"
 #include "iprocess.h"
-
+#include "roberts_tests.h"
 
 //extern void process_init(void);
 
@@ -67,6 +67,7 @@ int main(){
 
 	//  Set up memory
 	init_memory_allocation_table();
+	roberts_tests();
 
 
 /*

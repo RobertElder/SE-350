@@ -51,7 +51,6 @@ int command_tests_passed(){
 		register_command("asfdsafsdd",1);
 		register_command("afasdfdsasd",1);
 		register_command("afdsafdsfsdfsd",1);
-				register_command("afdsafdsfsdfsd",1);
 		unregister_all_commands();
 	}
 

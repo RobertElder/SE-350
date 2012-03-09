@@ -15,6 +15,10 @@ int current_command_length = 0;
 // These are dummy variables so this code will compile.  This code is nowhere near finished
 uint8_t g_UART0_TX_empty_placeholder=1;
 
+void unregister_all_commands(){
+	number_of_registered_commands = 0;
+}
+
 void register_command(char * s, int process_id){
 	int i = 0;
 

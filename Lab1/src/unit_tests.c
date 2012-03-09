@@ -39,17 +39,21 @@ int message_api_tests_passed(){
 }
 
 int command_tests_passed(){
-
-	register_command("asd",1);
-	register_command("asd",1);
-	register_command("asd",1);
-	register_command("asd",1);
-	register_command("asd",1);
-	register_command("asd",1);
-	register_command("asd",1);
-	register_command("asd",1);
-	register_command("asd",1);
-	register_command("asd",1);
+	int i = 0;
+   	for(i = 0; i < 100; i++){
+		register_command("asd",1);
+		register_command("afdsasd",1);
+		register_command("asfdsafsdd",1);
+		register_command("afdsasd",1);
+		register_command("afdsafsdsd",1);
+		register_command("afdsafsdsd",1);
+		register_command("afsdafsdasd",1);
+		register_command("asfdsafsdd",1);
+		register_command("afasdfdsasd",1);
+		register_command("afdsafdsfsdfsd",1);
+				register_command("afdsafdsfsdfsd",1);
+		unregister_all_commands();
+	}
 
 	return 1;
 }

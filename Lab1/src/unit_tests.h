@@ -4,5 +4,6 @@
 int unit_tests_passed(void);
 
 void register_command(char *, int);
+void unregister_all_commands(void);
 
 #endif

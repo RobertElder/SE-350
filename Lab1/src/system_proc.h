@@ -9,6 +9,7 @@ char registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS][MAX_COMMAND_LENGTH
 int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
 
 void register_command(char *, int);
+void unregister_all_commands(void);
 void keyboard_command_decoder(void * message);
 void crt_display(void);
 

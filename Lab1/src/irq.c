@@ -12,6 +12,8 @@ void irq_handler(irq_type type) {
 		case TIMER_IRQ:
 			context_switch(pCurrentProcessPCB, get_timer_pcb());
 			break;
+		case UART0_IRQ:
+			break;
 		default:
 			break;
 	}

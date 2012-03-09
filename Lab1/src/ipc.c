@@ -41,15 +41,18 @@ int k_send_message(int target_pid, void* envelope) {
 
 void* k_receive_message(int* sender_ID) {
 	// atomic(on)
-
 	Envelope* env;
 	
-	while (pCurrentProcessPCB->waitingMessages.head == NULL) {
+	//don't want to block system calls or iprocesses (block only user procs pid 0 to 6)
+	while (pCurrentProcessPCB->processId > NUM_PROCESSES && pCurrentProcessPCB->waitingMessages.head == NULL) {
 	 	pCurrentProcessPCB->currentState = BLOCKED_ON_RECEIVE;
 		release_processor();
 	}
 	
 	env = (Envelope*)dequeue(&pCurrentProcessPCB->waitingMessages)->data;
+	if (sender_ID != NULL) {
+		*sender_ID = env->sender_pid;
+	}
 	//atomic(off)
 	return env;	
 }

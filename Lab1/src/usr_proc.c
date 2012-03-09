@@ -6,6 +6,7 @@
 #include "process.h"
 #include "ipc.h"
 #include "iprocess.h"
+#include "roberts_tests.h"
 
 #ifdef DEBUG_0
 #include <stdio.h>
@@ -95,7 +96,7 @@ void test_process_1() {
 	release_processor();
 
 	//Compare our actual running sequence to expected running sequence
-	if(order_checker(cur_index)){
+	if(roberts_tests_passed() && order_checker(cur_index)){
 		uart0_put_string("G015_test: test 1 OK\n\r");
 	} else {
 		uart0_put_string("G015_test: test 1 FAIL\n\r");

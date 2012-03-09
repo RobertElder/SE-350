@@ -7,7 +7,7 @@
 #include "process.h"
 #include "ipc.h"
 
-void run_memory_tests(void){
+int memory_tests_passed(void){
 	int i = 0;
 	int testCases = 500;
 	int currentTestCase = 0;
@@ -90,10 +90,11 @@ void run_memory_tests(void){
 		release_memory_block(pTestPointer1);
 		// Everything should be in the same state as when we entered this function
 	}
+	return 1;
 }
 
 
-void run_message_api_tests(){
+int message_api_tests_passed(){
 
 	void * p = request_memory_block();
 	int i = 0;
@@ -117,12 +118,14 @@ void run_message_api_tests(){
 	}
    
 	release_memory_block(p);
-
+	return 1;
 }
 
 
-void roberts_tests(void){
-	run_memory_tests();
-	run_message_api_tests();	
+int roberts_tests_passed(void){
+	return (
+		memory_tests_passed() &&
+		message_api_tests_passed()	
+	);
 }
 

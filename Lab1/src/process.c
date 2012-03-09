@@ -379,9 +379,13 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		if (pCurrentProcessPCB->currentState == NEW) {
 			pCurrentProcessPCB->currentState = RUN;
 			
-			// pop exception stack frame from the stack for new processes (assembly function in hal.c)
-			__rte(); //EXITTING CALL
-		
+			if (pOldProcessPCB->currentState != INTERRUPTED) {
+				// pop exception stack frame from the stack for new processes (assembly function in hal.c)
+				__rte(); //EXITTING CALL
+			} else {
+				pCurrentProcessPCB->processStackPointer += 3;
+				__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+			}
 		}
 		pCurrentProcessPCB->currentState = RUN;
 	    

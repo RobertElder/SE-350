@@ -74,6 +74,16 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 }
 
 void timeout_i_process() {
+int i = 0;
+	while(1) {
+	 	
+		
+		ProcessControlBlock* interrupted_proc = get_interrupted_process();
+		i++;
+		context_switch(pCurrentProcessPCB, interrupted_proc);
+	//	release_processor();
+	}
+/*
 	Envelope * env = receive_message(NULL);
 	ListNode * node;
 	int receiver_pid;
@@ -95,18 +105,7 @@ void timeout_i_process() {
 			receiver_pid = env->receiver_pid;
 			send_message( receiver_pid, env ); //forward msg to destination
 		}						
-	}
-
-}
-
-void timeTEMP() {
- 	
-	//printf("WOAH.");	
-	int i = 3;
-	//get the interrupted process and context switch to it
-	ProcessControlBlock* interrupted_proc = get_interrupted_process();
-	assert(interrupted_proc != NULL, "ERROR: no interrupted process found");
-	//context_switch(pCurrentProcessPCB, interrupted_proc);
+	} */
 
 }
 
@@ -121,7 +120,8 @@ void init_i_processes() {
 	int procIndex;
 	uint32_t *sp;
 	ProcessControlBlock* iproc[2];	 
-	uint32_t* funcPointers[] = {  (uint32_t*)uart0_i_process, (uint32_t*)timeTEMP };
+	uint32_t* funcPointers[] = {  (uint32_t*)uart0_i_process,
+		 (uint32_t*)timeout_i_process };
 	iproc[0] = &i_uart_pcb;
 	iproc[1] =  &i_timer_pcb ;
 
@@ -144,7 +144,7 @@ void init_i_processes() {
 		*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
 	
 		// Set the entry point of the process
-		*(--sp) = (uint32_t) funcPointers[i];
+		*(--sp) = (uint32_t) funcPointers[procIndex];
 		
 		for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
 			*(--sp) = 0x0;

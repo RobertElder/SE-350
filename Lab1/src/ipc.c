@@ -34,22 +34,25 @@ int k_send_message(int target_pid, void* envelope) {
 	//atomic(off);
 	// Target process can preempt the current process if it is of a higher priority
 	if (targetProcess->processPriority > pCurrentProcessPCB->processPriority) {
-		release_processor();
+		k_release_processor();
 	}
 	return 0;
 }
 
 void* k_receive_message(int* sender_ID) {
 	// atomic(on)
-
 	Envelope* env;
 	
-	while (pCurrentProcessPCB->waitingMessages.head == NULL) {
+	//don't want to block system calls or iprocesses (block only user procs pid 0 to 6)
+	while (pCurrentProcessPCB->processId > NUM_PROCESSES && pCurrentProcessPCB->waitingMessages.head == NULL) {
 	 	pCurrentProcessPCB->currentState = BLOCKED_ON_RECEIVE;
-		release_processor();
+		k_release_processor();
 	}
 	
 	env = (Envelope*)dequeue(&pCurrentProcessPCB->waitingMessages)->data;
+	if (sender_ID != NULL) {
+		*sender_ID = env->sender_pid;
+	}
 	//atomic(off)
 	return env;	
 }

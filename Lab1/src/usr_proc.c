@@ -81,20 +81,6 @@ void test_process_1() {
 
 	int * block;
 
-	 //TEST MSG STUFF
-	char message = 'c';	
-	Envelope * env = (Envelope *)request_memory_block();
-
-	set_sender_PID(env, 11);
-	set_destination_PID(env, 11);
-	set_message_type(env, DELAYED_SEND);
-	set_message_data(env, &message, sizeof(char));
-
-	delayed_send(2, env, 10000);
-
-	//END TEST STUF
-
-
 	uart0_put_string("G015_test: START\n\r");
 	actual_run_order[cur_index] = 1;
 	cur_index++;
@@ -294,17 +280,26 @@ void test_process_3() {
 		uart0_put_string("G015_test: test 13 FAIL\n\r");
 	}
 
-
-
-	while (1) {
-		uart0_put_string("G015_test: END\n\r");
-	 	release_processor();
-	}
-
+	//GOTO process 6
+	set_process_priority(6, 0);
+	release_processor();
 }
 
 void test_process_4() {
+	char message = 'c';	
+	Envelope * env = (Envelope *)request_memory_block();
 
+	set_sender_PID(env, 11);
+	set_destination_PID(env, 11);
+	set_message_type(env, DELAYED_SEND);
+	set_message_data(env, &message, sizeof(char));
+
+	delayed_send(2, env, 10000);
+
+	while (1) {
+		uart0_put_string("G015_test: END\n\r");
+		release_processor();
+	}
 }
 
 
@@ -397,9 +392,6 @@ void test_process_5() {
 	set_process_priority(5, 1);
 	actual_run_order[cur_index] = 5;
 	set_process_priority(3, 0);
-
-
-
 }
 
 void test_process_6() {	
@@ -460,5 +452,19 @@ void test_process_6() {
 	//after release, test_proc_5 should get memory block and preempt - it has higher priority
 	release_memory_block(blocks[--i]);
 
+
+	//Release all the things
+	while(i > 0) {
+		release_memory_block(blocks[--i]);
+	}
+	
+	set_process_priority(4, 0);
+	set_process_priority(1, 3);
+	set_process_priority(2, 3);
+	set_process_priority(3, 3);
+	set_process_priority(5, 3);
+	set_process_priority(6, 3);
+	release_processor();
 }
+
 

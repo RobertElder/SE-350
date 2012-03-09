@@ -74,28 +74,34 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 }
 
 void timeout_i_process() {
+	int i = 0;
+	while(1) {
+		ProcessControlBlock* interrupted_proc = get_interrupted_process();
 
-	Envelope * env = receive_message(NULL);
-	ListNode * node;
-	int receiver_pid;
-
-	while(env != NULL) {
-		node->data = &(env->message_data); //Get DelayedMessage data out of envelope
-		node->next = NULL;
-
-	 	expiry_sorted_enqueue(&delayed_messages, node);
-
-		env = receive_message(NULL);
-	}
-
-	if(delayed_messages.head != NULL) {
-		while (((DelayedMessage *)(delayed_messages.head->data))->expiry_time
-			 <= get_current_time())
-		{
-			env = ((DelayedMessage *)dequeue(&delayed_messages)->data)->envelope;
-			receiver_pid = env->receiver_pid;
-			send_message( receiver_pid, env ); //forward msg to destination
-		}						
+		Envelope * env = k_receive_message(NULL);
+		ListNode * node;
+		int receiver_pid;
+	
+		while(env != NULL) {
+			node->data = &(env->message_data); //Get DelayedMessage data out of envelope
+			node->next = NULL;
+	
+		 	expiry_sorted_enqueue(&delayed_messages, node);
+	
+			env = receive_message(NULL);
+		}
+	
+		if(delayed_messages.head != NULL) {
+			while (((DelayedMessage *)(delayed_messages.head->data))->expiry_time
+				 <= get_current_time())
+			{
+				env = ((DelayedMessage *)dequeue(&delayed_messages)->data)->envelope;
+				receiver_pid = env->receiver_pid;
+				send_message( receiver_pid, env ); //forward msg to destination
+			}						
+		} 
+		i++;
+		context_switch(pCurrentProcessPCB, interrupted_proc);
 	}
 }
 

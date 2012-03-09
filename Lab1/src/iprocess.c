@@ -55,7 +55,7 @@ void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 
 int k_delayed_send(int pid, Envelope * envelope, int delay) {
 	DelayedMessage * m;
-	Envelope * env = (Envelope *)request_memory_block();
+	Envelope * env = (Envelope *)k_request_memory_block();
 
 	m->pid = pid;
 	m->envelope = envelope;
@@ -68,7 +68,7 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 
 	//add node containing m to timeoutProcess message queue
 	//expiry_sorted_enqueue(&delayed_messages, node);
-	send_message(11, env); //send message to timeout_i_process
+	k_send_message(11, env); //send message to timeout_i_process
 
 	return 0; //What should the return value be?
 }
@@ -96,7 +96,6 @@ void timeout_i_process() {
 			send_message( receiver_pid, env ); //forward msg to destination
 		}						
 	}
-
 }
 
 void timeTEMP() {

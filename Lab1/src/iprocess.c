@@ -96,14 +96,14 @@ void timeout_i_process() {
 }
 
 void timeTEMP() {
- 	while(1){
-		//printf("WOAH.");	
-		int i = 3;
-		//get the interrupted process and context switch to it
-		ProcessControlBlock* interrupted_proc = get_interrupted_process();
-		assert(interrupted_proc != NULL, "ERROR: no interrupted process found");
-		context_switch(pCurrentProcessPCB, interrupted_proc);
-	}
+ 	
+	//printf("WOAH.");	
+	int i = 3;
+	//get the interrupted process and context switch to it
+	ProcessControlBlock* interrupted_proc = get_interrupted_process();
+	assert(interrupted_proc != NULL, "ERROR: no interrupted process found");
+	//context_switch(pCurrentProcessPCB, interrupted_proc);
+
 }
 
 void uart0_i_process() {

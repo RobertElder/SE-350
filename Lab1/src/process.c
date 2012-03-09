@@ -299,6 +299,8 @@ ProcessControlBlock* getRunningProcess() {
 }
 
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
+	ProcessControlBlock* interruptedPCB = NULL;
+	
 	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Attempted to schedule NULL");
 
 	assert(is_ready_or_new(pNewPCB->currentState),
@@ -307,7 +309,11 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 	assert(pOldPCB->currentState != RDY,
 		"ERROR: Scheduler encountered an unexpected state for the old (current) process.");
 
- 	if (pNewPCB->processPriority <= pOldPCB->processPriority) {
+	interruptedPCB  = get_interrupted_process();
+
+	if (interruptedPCB != NULL && pNewPCB->processPriority >= interruptedPCB->processPriority) {
+		return interruptedPCB;
+ 	} else if (pNewPCB->processPriority <= pOldPCB->processPriority) {
 		return pNewPCB;
 	} else {
 		if (pOldPCB->currentState == RUN || pOldPCB->currentState == NEW) {
@@ -372,10 +378,10 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		// NOTE: __rte() exits. That is why we assign RUN twice.
 		if (pCurrentProcessPCB->currentState == NEW) {
 			pCurrentProcessPCB->currentState = RUN;
+			
 			// pop exception stack frame from the stack for new processes (assembly function in hal.c)
 			__rte(); //EXITTING CALL
-
-			
+		
 		}
 		pCurrentProcessPCB->currentState = RUN;
 	    

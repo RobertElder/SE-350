@@ -325,6 +325,10 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 
 }
 
+__asm void __new_iproc_return(void) {
+	POP {r0-r4,r12,pc}	;needed to pop what was pushed in i-proc initialisation
+}
+
 void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
 	pCurrentProcessPCB = pNewProcessPCB;
 
@@ -385,8 +389,9 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 				// pop exception stack frame from the stack for new processes (assembly function in hal.c)
 				__rte(); //EXITTING CALL
 			} else {
-				pCurrentProcessPCB->processStackPointer += 3;
+			//	pCurrentProcessPCB->processStackPointer += 3;
 				__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+				__new_iproc_return();
 			}
 		} else if (pCurrentProcessPCB->currentState != INTERRUPTED) {
 			pCurrentProcessPCB->currentState = RUN;

@@ -77,7 +77,7 @@ void timeout_i_process() {
 	int i = 0;
 	while(1) {
 		ProcessControlBlock* interrupted_proc = get_interrupted_process();
-
+		/*
 		Envelope * env = k_receive_message(NULL);
 		ListNode * node;
 		int receiver_pid;
@@ -99,7 +99,7 @@ void timeout_i_process() {
 				receiver_pid = env->receiver_pid;
 				send_message( receiver_pid, env ); //forward msg to destination
 			}						
-		} 
+		} 	 */
 		i++;
 		context_switch(pCurrentProcessPCB, interrupted_proc);
 	}

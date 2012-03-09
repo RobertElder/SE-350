@@ -22,14 +22,14 @@ int uart_init(int n_uart) {
 
     LPC_UART_TypeDef *pUart;
 
-	if (n_uart ==0 ) {
+	if (n_uart == 0 ) {
 	    // Steps 1 & 2: system control configuration.
 		//              Under CMSIS, system_LPC17xx.c does these two steps
 		 
 		// Step 1: Power control configuration, table 46 pg63 in LPC17xx_UM
 		// enable UART0 power, this is the default setting
 		// done in system_LPC17xx.c under CMSIS
-		// enclose the code for your refrence
+		// enclose the code for your reference
 	    //LPC_SC->PCONP |= BIT(3);
 	
 		
@@ -202,7 +202,7 @@ void uart0_put_string(unsigned char * c){
 	int currentBufferPos = 0;
 	int i = 0;
 
-	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;			// Disable IER_Receive_Data_Available 
+	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;	// Disable IER_Receive_Data_Available 
 	while(lenSoFar < totalStringLen){
 		nextOutOfBoundsIndex = lenSoFar + BUFSIZE > totalStringLen ? totalStringLen : lenSoFar + BUFSIZE;
 		currentBufferPos = 0;

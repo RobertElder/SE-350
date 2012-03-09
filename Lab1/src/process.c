@@ -299,6 +299,8 @@ ProcessControlBlock* getRunningProcess() {
 }
 
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
+	ProcessControlBlock* interruptedPCB = NULL;
+	
 	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Attempted to schedule NULL");
 
 	assert(is_ready_or_new(pNewPCB->currentState),
@@ -307,7 +309,11 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 	assert(pOldPCB->currentState != RDY,
 		"ERROR: Scheduler encountered an unexpected state for the old (current) process.");
 
- 	if (pNewPCB->processPriority <= pOldPCB->processPriority) {
+	interruptedPCB  = get_interrupted_process();
+
+	if (interruptedPCB != NULL && pNewPCB->processPriority >= interruptedPCB->processPriority) {
+		return interruptedPCB;
+ 	} else if (pNewPCB->processPriority <= pOldPCB->processPriority) {
 		return pNewPCB;
 	} else {
 		if (pOldPCB->currentState == RUN || pOldPCB->currentState == NEW) {
@@ -319,6 +325,10 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 
 }
 
+__asm void __new_iproc_return(void) {
+	POP {r0-r4,r12,pc}	;needed to pop what was pushed in i-proc initialisation
+}
+
 void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
 	pCurrentProcessPCB = pNewProcessPCB;
 
@@ -328,6 +338,8 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		if (pCurrentProcessPCB->currentState == NEW) {
 			pCurrentProcessPCB->currentState = RUN;
 			__rte(); 	
+		} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
+		 	pCurrentProcessPCB->currentState = RUN;
 		}
 
 	// Context switch due to release memory
@@ -372,12 +384,18 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		// NOTE: __rte() exits. That is why we assign RUN twice.
 		if (pCurrentProcessPCB->currentState == NEW) {
 			pCurrentProcessPCB->currentState = RUN;
-			// pop exception stack frame from the stack for new processes (assembly function in hal.c)
-			__rte(); //EXITTING CALL
-
 			
+			if (pOldProcessPCB->currentState != INTERRUPTED) {
+				// pop exception stack frame from the stack for new processes (assembly function in hal.c)
+				__rte(); //EXITTING CALL
+			} else {
+			//	pCurrentProcessPCB->processStackPointer += 3;
+				__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+				__new_iproc_return();
+			}
+		} else if (pCurrentProcessPCB->currentState != INTERRUPTED) {
+			pCurrentProcessPCB->currentState = RUN;
 		}
-		pCurrentProcessPCB->currentState = RUN;
 	    
 	}
 }

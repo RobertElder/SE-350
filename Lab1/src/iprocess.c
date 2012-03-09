@@ -4,6 +4,7 @@
 #include "iprocess.h"
 #include "process.h"
 #include "utils.h"
+#include "memory.h"
 
 
 LinkedList delayed_messages;
@@ -52,21 +53,24 @@ void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 	return;
 }
 
-int delayed_send(int pid, Envelope * envelope, int delay) {
+int k_delayed_send(int pid, Envelope * envelope, int delay) {
 	DelayedMessage * m;
-	ListNode * node;
+	Envelope * env = (Envelope *)request_memory_block();
 
 	m->pid = pid;
 	m->envelope = envelope;
 	m->expiry_time = get_current_time() + delay;
-	
-	node->data = &m;
-	node->next = NULL;
+
+	set_sender_PID(env, 11);
+	set_destination_PID(env, 11);
+	set_message_type(env, DELAYED_SEND);
+	set_message_data(env, m, sizeof(m));
 
 	//add node containing m to timeoutProcess message queue
-	expiry_sorted_enqueue(&delayed_messages, node);
+	//expiry_sorted_enqueue(&delayed_messages, node);
+	send_message(11, env); //send message to timeout_i_process
 
-	return 0;
+	return 0; //What should the return value be?
 }
 
 void timeout_i_process() {
@@ -75,7 +79,7 @@ void timeout_i_process() {
 	int receiver_pid;
 
 	while(env != NULL) {
-		node->data = &env;
+		node->data = &(env->message_data); //Get DelayedMessage data out of envelope
 		node->next = NULL;
 
 	 	expiry_sorted_enqueue(&delayed_messages, node);

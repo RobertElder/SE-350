@@ -4,6 +4,8 @@
 #include "utils.h"
 #include "memory.h"
 #include "process.h"
+#include "ipc.h"
+#include "iprocess.h"
 
 #ifdef DEBUG_0
 #include <stdio.h>
@@ -78,6 +80,19 @@ void nullProc() {
 void test_process_1() {
 
 	int * block;
+
+	 //TEST MSG STUFF
+//	char message = 'c';	
+//	Envelope * env = request_memory_block();
+//
+//	set_sender_PID(env, 11);
+//	set_destination_PID(env, 11);
+//	set_message_type(env, DELAYED_SEND);
+//	set_message_data(env, &message, sizeof(char));
+//
+//	delayed_send(2, env, 10000);
+
+	//END TEST STUF
 
 
 	uart0_put_string("G015_test: START\n\r");

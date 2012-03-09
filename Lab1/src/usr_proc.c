@@ -12,8 +12,7 @@
 #include <stdio.h>
 #endif // DEBUG_0
 
-  // TODO is this proper?
-#define MAX_ALLOWED_BLOCKS 0x1E
+#define MAX_ALLOWED_BLOCKS MAX_ALLOWED_MEMORY_BLOCKS
 
 int num_blocks_to_request = 0;
 int mem_request_attempt_made = 0;

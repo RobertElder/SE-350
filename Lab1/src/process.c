@@ -334,6 +334,8 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		if (pCurrentProcessPCB->currentState == NEW) {
 			pCurrentProcessPCB->currentState = RUN;
 			__rte(); 	
+		} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
+		 	pCurrentProcessPCB->currentState = RUN;
 		}
 
 	// Context switch due to release memory
@@ -386,8 +388,9 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 				pCurrentProcessPCB->processStackPointer += 3;
 				__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 			}
+		} else if (pCurrentProcessPCB->currentState != INTERRUPTED) {
+			pCurrentProcessPCB->currentState = RUN;
 		}
-		pCurrentProcessPCB->currentState = RUN;
 	    
 	}
 }

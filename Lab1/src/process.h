@@ -14,6 +14,7 @@
 #define INITIAL_xPSR 0x01000000  // user process initial xPSR value
 
 extern void __rte(void);			// pop exception stack frame
+extern void __sys_rte(void);
 
 extern int k_release_processor(void);
 #define release_processor() _release_processor((U32)k_release_processor)

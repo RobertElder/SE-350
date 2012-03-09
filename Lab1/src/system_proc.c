@@ -6,12 +6,7 @@
 #include "process.h"
 #include "ipc.h"
 
-#define	MAX_NUMBER_OF_REGISTERABLE_COMMANDS             10
-#define	MAX_COMMAND_LENGTH                              500
 
-int number_of_registered_commands = 0;
-char registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS][MAX_COMMAND_LENGTH];
-int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
 
 char current_command_buffer[MAX_COMMAND_LENGTH];
 int current_command_length = 0;
@@ -33,8 +28,9 @@ void register_command(char * s, int process_id){
 			break;
 
 	}
-	number_of_registered_commands++;
 	assert(number_of_registered_commands < MAX_NUMBER_OF_REGISTERABLE_COMMANDS, "Too many commands registered");
+	number_of_registered_commands++;
+
 }
 
 int get_index_of_matching_command(){
@@ -62,38 +58,38 @@ int get_index_of_matching_command(){
 	return -1;
 } 
 
-void keyboard_command_decoder(void){
- 	while(1){
-		int aaa = 0;
-		int sender_id = -1;
-		// Get our new message
-		void * message = k_receive_message(&sender_id);
-		//  Point to the data
-		char * pChar = get_message_data(message);
+void keyboard_command_decoder(void * message){
 
-		// If the buffer is full, they are not part of any valid command so we don't care
-		if(current_command_length <= MAX_COMMAND_LENGTH){
-			//  Put the character we received into the buffer
-			current_command_buffer[current_command_length] = *pChar;
-			current_command_length++;
-		}
+	int aaa = 0;
+	int sender_id = -1;
 
-		// Did they type a newline?
-		if(*pChar == 10){
-			int matched_command = get_index_of_matching_command();
-	
-			//  Does the thing in the buffer match a command that was registered? 
-			if(matched_command > -1){
-			 	  //  The user type a command that we recognized
-				  aaa++;
-			}
-
-			// Reset the buffer for new commands
-			current_command_length = 0;
-		}
-
-		release_memory_block(message);		
+	// Get our new message
+	//void * message = k_receive_message(&sender_id);
+	//  Point to the data
+	char * pChar = get_message_data(message);
+	aaa = sender_id;
+	// If the buffer is full, they are not part of any valid command so we don't care
+	if(current_command_length <= MAX_COMMAND_LENGTH){
+		//  Put the character we received into the buffer
+		current_command_buffer[current_command_length] = *pChar;
+		current_command_length++;
 	}
+
+	// Did they type a newline?
+	if(*pChar == 10){
+		int matched_command = get_index_of_matching_command();
+
+		//  Does the thing in the buffer match a command that was registered? 
+		if(matched_command > -1){
+		 	  //  The user type a command that we recognized
+			  aaa++;
+		}
+
+		// Reset the buffer for new commands
+		current_command_length = 0;
+	}
+
+	release_memory_block(message);	
 }
 
 void crt_display(void){

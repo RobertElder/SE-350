@@ -76,6 +76,7 @@ int main(){
 		}     
 	}	
 */
+	assert(unit_tests_passed(),"Unit tests failed.");
 
 	ret_val = release_processor();
 	uart0_put_string("\nShould never reach here!!!\n\r");

@@ -23,7 +23,7 @@ int  * last_block_allocated;
 int * pTestPointer1 = 0;
 
 // NOTE: Keep this section up to date so we are all aware of what's is going on.
-const int ORDER_LENGTH = 26;
+const int ORDER_LENGTH = 33;
 int expected_run_order[] = 
 // Test case 1: Basic context switching between 2 processes
 {1, 5, 1, 5, 1, 5,
@@ -57,9 +57,10 @@ int expected_run_order[] =
 2, 1, 6, 5,
 ///	TODO: document this test case
 3,
-// Test case 15: Proc4 blocks on receive_msg, proc3 executes and sends a message with a delay of 0
+// Test case 14: Proc4 blocks on receive_msg, proc3 executes and sends a message with a delay of 0
 // This means proc4 should be unblocked right away and continue executing (Basic delayed_send preemption test)
-4, 3, 4
+// proc4 sends itself delayed messages with delays 0, 10, 50
+4, 3, 4, 4, 4, 4
 };
 // Further test TODOs: test if all processes are blocked, null process should run (keep as last test)
 int actual_run_order[ORDER_LENGTH];
@@ -404,6 +405,7 @@ void test_process_4() {
 	Envelope * env;
 	int delay_time;
 	char message_test15;
+	int test_passed = 1;
 	
 	// NOTE, STARTING TEST CASE 15 
 	actual_run_order[cur_index++] = 4;
@@ -427,14 +429,15 @@ void test_process_4() {
 	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
 
 	//Check message contents
-	if(get_current_time() != delay_time || !message_checker(env, 4, 4, 5, 'b')) {
-		uart0_put_string("G015_test: test 15 FAIL\n\r");
-		return;
+	//Add 1 to delay_time in order to account for context switches and stuff
+	//(too late) || (too early) || (Check message contents)
+	if(get_current_time() > delay_time + 1 || get_current_time() < delay_time || !message_checker(env, 4, 4, 5, 'b')) {
+		test_passed = 0;
 	}
 
 	actual_run_order[cur_index++] = 4;
 
-	//Set up message 1 (delay 1000)
+	//Set up message 1 (delay 10)
 	message_test15 = 'c';	
 	set_sender_PID(env, 4);
 	set_destination_PID(env, 4);
@@ -443,18 +446,17 @@ void test_process_4() {
 
 	//Send msg 1
 	delay_time = get_current_time();
-	delayed_send(4, env, 1000);
+	delayed_send(4, env, 10);
 	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
 
-	//Check message contents
-	if(get_current_time() != (delay_time + 1000) || !message_checker(env, 4, 4, 5, 'c')) {
-		uart0_put_string("G015_test: test 15 FAIL\n\r");
-		return;
+	//(too late) || (too early) || (Check message contents)
+	if(get_current_time() > (delay_time + 10 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, 5, 'c')) {
+		test_passed = 0;
 	}
 
 	actual_run_order[cur_index++] = 4;
 
-	//Set up message 1 (delay 1000)
+	//Set up message 1 (delay 50)
 	message_test15 = 'd';	
 	set_sender_PID(env, 4);
 	set_destination_PID(env, 4);
@@ -463,27 +465,25 @@ void test_process_4() {
 
 	//Send msg 1
 	delay_time = get_current_time();
-	delayed_send(4, env, 10000);
+	delayed_send(4, env, 50);
 	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
 
-	//Check message contents
-	if(get_current_time() != (delay_time + 10000) || !message_checker(env, 4, 4, 5, 'd')) {
-		uart0_put_string("G015_test: test 15 FAIL\n\r");
-		return;
+	//(too late) || (too early) || (Check message contents)
+	if(get_current_time() > (delay_time + 50 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, 5, 'd')) {
+		test_passed = 0;
 	}
 
 	actual_run_order[cur_index++] = 4;
 
 	
 	// TODO check message is good
-	if (order_checker(cur_index)) {
-		uart0_put_string("G015_test: test 15 OK\n\r");
+	if (order_checker(cur_index) && test_passed) {
+		uart0_put_string("G015_test: test 14 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 15 FAIL\n\r");
+		uart0_put_string("G015_test: test 14 FAIL\n\r");
 	}
 
 	while (1) {
-		//uart0_put_string("G015_test: END\n\r");
 		release_processor();
 	}
 }

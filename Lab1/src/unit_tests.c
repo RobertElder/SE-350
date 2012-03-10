@@ -40,20 +40,30 @@ int message_api_tests_passed(){
 
 int command_tests_passed(){
 	int i = 0;
+	void * p;
+	char cmd[] = "%WS12:45:00\n";
+
    	for(i = 0; i < 100; i++){
-		register_command("asd",1);
 		register_command("afdsasd",1);
+		register_command("%mkdir",1);
 		register_command("asfdsafsdd",1);
 		register_command("afdsasd",1);
 		register_command("afdsafsdsd",1);
 		register_command("afdsafsdsd",1);
 		register_command("afsdafsdasd",1);
 		register_command("asfdsafsdd",1);
-		register_command("afasdfdsasd",1);
+		register_command("fWS",1);
 		register_command("afdsafdsfsdfsd",1);
 		unregister_all_commands();
 	}
 
+	register_command("%WS",1);
+
+	for(i = 0; i < 12; i++){
+		p = k_request_memory_block();
+		set_message_data(p , &(cmd[i]) , 1);
+		keyboard_command_decoder(p);
+	}
 	return 1;
 }
 

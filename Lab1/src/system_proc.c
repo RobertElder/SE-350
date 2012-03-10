@@ -9,6 +9,7 @@
 
 ProcessControlBlock crt_pcb;
 ProcessControlBlock kcd_pcb;
+ProcessControlBlock clock_pcb;
 
 ProcessControlBlock* get_crt_pcb() {
 	return &crt_pcb;
@@ -18,9 +19,14 @@ ProcessControlBlock* get_kcd_pcb() {
 	return &kcd_pcb;
 }
 
+ProcessControlBlock* get_clock_pcb() {
+	return &clock_pcb;
+}
+
 ProcessControlBlock* get_new_sys_proc() {
 	if (crt_pcb.currentState == NEW) return &crt_pcb;
 	if (kcd_pcb.currentState == NEW) return &kcd_pcb;
+	if (clock_pcb.currentState == NEW) return &clock_pcb;
 	return NULL;
 }
 
@@ -177,7 +183,7 @@ void wall_clock() {
 	Envelope * env;
 
 	while(1) {
-		env = (Envelope *)receive_message(sender_id);
+		env = (Envelope *)k_receive_message(sender_id);
 
 		switch(env->message_type) {
 			case CLOCK_TICK:
@@ -188,14 +194,14 @@ void wall_clock() {
 						char* time_string = get_formatted_time_from_seconds(clock_time);
 
 						release_memory_block(env);
-						env = (Envelope *)request_memory_block();
+						env = (Envelope *)k_request_memory_block();
 
 						set_sender_PID(env, 14);
 						set_destination_PID(env, 13);
 						set_message_type(env, OUTPUT_STRING);
 						set_message_bytes(env, time_string, sizeof(time_string));
 
-						send_message(13, env); //display
+						k_send_message(13, env); //display
 					}
 				}
 				break;
@@ -224,19 +230,25 @@ void init_sys_procs() {
 	int procIndex;
 
 	uint32_t* sp;
-	uint32_t* stacks_start[2];
+	uint32_t* stacks_start[3];
 
-	ProcessControlBlock* sys_procs[2];	 
-	uint32_t* funcPointers[] = {  (uint32_t*)crt_display,
-		 (uint32_t*)keyboard_command_decoder };
+	ProcessControlBlock* sys_procs[3];	 
+	uint32_t* funcPointers[] = {  
+		(uint32_t*)crt_display,
+		(uint32_t*)keyboard_command_decoder,
+		(uint32_t*)wall_clock
+	};
 
 	sys_procs[0] = &crt_pcb;
-	sys_procs[1] =  &kcd_pcb;
+	sys_procs[1] = &kcd_pcb;
+	sys_procs[2] = &clock_pcb;
+
 	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES)
 		 * STACKS_SIZE + STACKS_SIZE);
 	stacks_start[1] = stacks_start[0] + (STACKS_SIZE) / sizeof(uint32_t);
+	stacks_start[2] = stacks_start[1] + (STACKS_SIZE) / sizeof(uint32_t);
 
-	for (procIndex = 0; procIndex < 2; procIndex++) {
+	for (procIndex = 0; procIndex < 3; procIndex++) {
 		int i;
 		sys_procs[procIndex]->processId = 0xC + i;
 		sys_procs[procIndex]->currentState = NEW;

@@ -208,7 +208,7 @@ void test_process_1() {
 	//request mem block number 32 - will get blocked
 	block = request_memory_block();
 	*block = 0;
-	
+	assert(0,"Should not reach this point. End of proc 1");
 }
 
 void test_process_2() {
@@ -288,6 +288,7 @@ void test_process_2() {
 
 	//should switch to test_proc_6
 	release_processor();
+	assert(0,"Should not reach this point. End of proc 2");
 }
 
 void test_process_3() {
@@ -422,6 +423,7 @@ void test_process_4() {
 		//uart0_put_string("G015_test: END\n\r");
 		release_processor();
 	}
+
 }
 
 
@@ -514,6 +516,7 @@ void test_process_5() {
 	set_process_priority(5, 1);
 	actual_run_order[cur_index] = 5;
 	set_process_priority(3, 0);
+	assert(0,"Should not reach this point. End of proc 5");
 }
 
 void test_process_6() {	
@@ -588,6 +591,7 @@ void test_process_6() {
 	set_process_priority(5, 3);
 	set_process_priority(6, 3);
 	release_processor();
+	assert(0,"Should not reach this point. End of proc 6");
 }
 
 

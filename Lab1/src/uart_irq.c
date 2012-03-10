@@ -152,7 +152,7 @@ void execute_uart() {
 		message = k_request_memory_block();
 		set_message_bytes(message,&c,1);
 		set_message_type(message,COMMAND_INPUT);
-		keyboard_command_decoder(message);	   //TODO change to delayed_send
+	//	keyboard_command_decoder(message);	   //TODO change to delayed_send
 
 		// Now send a message to echo that character back to the screen.
 		message = k_request_memory_block();

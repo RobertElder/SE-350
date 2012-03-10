@@ -18,6 +18,12 @@ ProcessControlBlock* get_kcd_pcb() {
 	return &kcd_pcb;
 }
 
+ProcessControlBlock* get_new_sys_proc() {
+	if (crt_pcb.currentState == NEW) return &crt_pcb;
+	if (kcd_pcb.currentState == NEW) return &kcd_pcb;
+	return NULL;
+}
+
 int number_of_registered_commands = 0;
 char registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS][MAX_COMMAND_LENGTH];
 int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
@@ -36,7 +42,7 @@ void register_command(char * s, int process_id){
 
 	registered_processes[number_of_registered_commands] = process_id;
 	for(i = 0; i < MAX_COMMAND_LENGTH; i++){
-		assert(i < MAX_COMMAND_LENGTH,"Invalid attempt to register a command that is too long.");
+		assert(i < MAX_COMMAND_LENGTH, "Invalid attempt to register a command that is too long.");
 
 		registered_commands[number_of_registered_commands][i]  = s[i];
 		//  We want to copy everything up to and including the null
@@ -78,46 +84,71 @@ int get_index_of_matching_command(){
 //     System Processes         
 // ------------------------------------------ 
 
-void keyboard_command_decoder(void * message){
+void keyboard_command_decoder(){
 
-	// Get our new message
-	//void * message = k_receive_message(&sender_id);
-	//  Point to the data
-	char * pChar = get_message_data(message);
-	if(get_message_type(message) == COMMAND_INPUT){
-		/* If the buffer is full, they are not part of any valid command so 
-			we don't care (also < because we want space for the terminating null)
-		*/
-		if(current_command_length < MAX_COMMAND_LENGTH){
-			//  Put the character we received into the buffer
-			current_command_buffer[current_command_length] = *pChar;
-			current_command_length++;
-		}
-	
-		// Did they type a carriage return?
-		if(*pChar == 0xD){
-			int matched_command = get_index_of_matching_command();
-	
-			//  Does the thing in the buffer match a command that was registered? 
-			if(matched_command > -1){
-			 	//  The user type a command that we recognized
-				current_command_buffer[current_command_length] = 0;
-				uart0_put_string("A command was matched:\r\n");
-				uart0_put_string((unsigned char *)&current_command_buffer);
-				uart0_put_string("\r\n");
+	while (1) {
+		int sender_id = -1;
+		int destination = -1;
+
+		// Get our new message
+		Envelope* message = (Envelope*)receive_message(&sender_id);
+		char * pChar = get_message_data(message);
+		destination = get_destination_PID(message);
+
+		assert(sender_id == message->sender_pid,
+			 "ERROR: receive_message did not supply sender_id");
+		assert(destination == kcd_pcb.processId,
+			 "ERROR: Message destination did not match with KCD pid");
+	   
+		if (get_message_type(message) == COMMAND_INPUT){
+			/* If the buffer is full, they are not part of any valid command so 
+				we don't care (also < because we want space for the terminating null)
+			*/
+			if(current_command_length < MAX_COMMAND_LENGTH){
+				//  Put the character we received into the buffer
+				current_command_buffer[current_command_length] = *pChar;
+				current_command_length++;
 			}
-	
-			// Reset the buffer for new commands
-			current_command_length = 0;
+		
+			// Did they type a carriage return?
+			if(*pChar == 0xD){
+				int matched_command = get_index_of_matching_command();
+		
+				//  Does the thing in the buffer match a command that was registered? 
+				if(matched_command > -1){
+				 	//  The user type a command that we recognized
+					current_command_buffer[current_command_length] = 0;
+					uart0_put_string("A command was matched:\r\n");
+					uart0_put_string((unsigned char *)&current_command_buffer);
+					uart0_put_string("\r\n");
+				}
+		
+				// Reset the buffer for new commands
+				current_command_length = 0;
+			}
 		}
+		k_release_memory_block(message);
 	}
 
-	k_release_memory_block(message);	
+		
 }
 
 void crt_display(){
 	while (1) {
-/*		uint8_t * current_character = '';//TODO get_message_data(message);
+		int sender_id = -1;
+		int destination = -1;
+
+		Envelope* message = (Envelope*) receive_message(&sender_id);
+		uint8_t * current_character = get_message_data(message);
+		assert(message != NULL, "ERROR: CRT received a NULL message");
+		destination = get_destination_PID(message);
+
+		assert(sender_id == message->sender_pid,
+			 "ERROR: receive_message did not supply sender_id");
+		assert(destination == crt_pcb.processId,
+			"ERROR: Message destination did not match with CRT pid");
+
+		
 		if (message != NULL) {
 			LPC_UART_TypeDef *pUart = (LPC_UART_TypeDef *) LPC_UART0;
 			// Our message data should be a null terminated string
@@ -132,7 +163,7 @@ void crt_display(){
 			
 			// We don't want that memory block anymore
 			k_release_memory_block(message);
-		}	*/	
+		}		
 	}
 }
 

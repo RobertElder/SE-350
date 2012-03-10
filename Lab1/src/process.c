@@ -4,6 +4,7 @@
 #include "process.h"
 #include "rtx.h"
 #include "iprocess.h"
+#include "system_proc.h"
 
 /* Variable definitions */
 ProcessControlBlock* pCurrentProcessPCB  = NULL;
@@ -126,6 +127,10 @@ int has_blocked_processes(){
 	}
 	//  nothing is blocked
 	return 0;
+}
+
+uint8_t is_i_proc(int proc_id) {
+ 	return proc_id == get_timer_pcb()->processId || proc_id == get_uart_pcb()->processId;
 }
 
 // --------------------------------------------------------------------------------------
@@ -308,6 +313,7 @@ ProcessControlBlock* getRunningProcess() {
 
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
 	ProcessControlBlock* interruptedPCB = NULL;
+	ProcessControlBlock * newSysProc = NULL;
 	
 	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Attempted to schedule NULL");
 
@@ -317,11 +323,18 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 	assert(pOldPCB->currentState != RDY,
 		"ERROR: Scheduler encountered an unexpected state for the old (current) process.");
 
+	// If there is an interrupted process with higher priority, it should run next
 	interruptedPCB  = get_interrupted_process();
+	
+	// If there is a new sys proc, we should schedule it
+	newSysProc = get_new_sys_proc();
 
 	if (interruptedPCB != NULL && pNewPCB->processPriority >= interruptedPCB->processPriority) {
 		return interruptedPCB;
- 	} else if (pNewPCB->processPriority <= pOldPCB->processPriority) {
+ 	} else if (newSysProc != NULL) {
+		assert(newSysProc->currentState == NEW, "ERROR: New sys proc was not new.");
+		return newSysProc;
+	} else if (pNewPCB->processPriority <= pOldPCB->processPriority) {
 		return pNewPCB;
 	} else {
 		if (pOldPCB->currentState == RUN || pOldPCB->currentState == NEW) {
@@ -421,7 +434,8 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 			}
 	
 			/* -- Updating new process -- */
-			if (is_ready_or_new(pCurrentProcessPCB->currentState)) {
+			if (is_ready_or_new(pCurrentProcessPCB->currentState) && 
+				pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
 			   // We remove running processes from the ready queue
 				pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
 				assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");

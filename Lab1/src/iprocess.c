@@ -81,7 +81,7 @@ void timeout_i_process() {
 		ProcessControlBlock* interrupted_proc = get_interrupted_process();
 		
 		Envelope * env = k_receive_message(senderId);
-		ListNode * node;
+		ListNode * node = &env->dummyVar;
 		int receiver_pid;
 	
 		while(env != NULL) {
@@ -90,7 +90,7 @@ void timeout_i_process() {
 	
 		 	expiry_sorted_enqueue(&delayed_messages, node);
 	
-			env = k_receive_message(NULL);
+			env = k_receive_message(senderId);
 		}
 	
 		if(delayed_messages.head != NULL) {

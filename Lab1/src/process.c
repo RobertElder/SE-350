@@ -404,12 +404,14 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		} else {
 
 			/* -- Updating old process -- */
-	
-			if (pOldProcessPCB->currentState == RUN ) {
+			
+			if (pOldProcessPCB->currentState == RUN) {
 				pOldProcessPCB->currentState = RDY;
-				// Put old process back in his appropriate priority queue
-				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-					get_node_of_process(pOldProcessPCB->processId)); 
+				if (pOldProcessPCB->processId < NUM_PROCESSES) {
+					// Put old process back in his appropriate priority queue
+					enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
+						get_node_of_process(pOldProcessPCB->processId)); 
+				}
 			}
 	
 			// Don't save the MSP if the process is NEW because it was not running,

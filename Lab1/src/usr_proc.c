@@ -411,7 +411,7 @@ void test_process_4() {
 
 	// Comes in from proc3
 	actual_run_order[cur_index++] = 4;
-
+	// TODO check message is good
 	if (order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 15 OK\n\r");
 	} else {

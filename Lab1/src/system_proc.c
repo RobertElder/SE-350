@@ -52,7 +52,7 @@ int get_index_of_matching_command(){
 			}else if(j >= current_command_length){
 				//  We reached the end of the command buffer, there is nothing to check
 				break;
-			}else if(!(registered_commands[i][j] == current_command_buffer[i])){
+			}else if(!(registered_commands[i][j] == current_command_buffer[j])){
 				// This command did not match
 				break;
 			}	
@@ -64,16 +64,16 @@ int get_index_of_matching_command(){
 
 void keyboard_command_decoder(void * message){
 
-	int aaa = 0;
 	int sender_id = -1;
 
 	// Get our new message
 	//void * message = k_receive_message(&sender_id);
 	//  Point to the data
 	char * pChar = get_message_data(message);
-	aaa = sender_id;
-	// If the buffer is full, they are not part of any valid command so we don't care
-	if(current_command_length <= MAX_COMMAND_LENGTH){
+	/* If the buffer is full, they are not part of any valid command so 
+		we don't care (also < because we want space for the terminating null)
+	*/
+	if(current_command_length < MAX_COMMAND_LENGTH){
 		//  Put the character we received into the buffer
 		current_command_buffer[current_command_length] = *pChar;
 		current_command_length++;
@@ -85,8 +85,11 @@ void keyboard_command_decoder(void * message){
 
 		//  Does the thing in the buffer match a command that was registered? 
 		if(matched_command > -1){
-		 	  //  The user type a command that we recognized
-			  aaa++;
+		 	//  The user type a command that we recognized
+			current_command_buffer[current_command_length] = 0;
+			uart0_put_string("A command was matched:\r\n");
+			uart0_put_string((unsigned char *)&current_command_buffer);
+			uart0_put_string("\r\n");
 		}
 
 		// Reset the buffer for new commands

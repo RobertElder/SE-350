@@ -122,4 +122,6 @@ void uart0_put_string(unsigned char *);	 // write a string to the n_uart
                                 
 void execute_uart(void);
 
+volatile extern uint8_t g_UART0_TX_empty;
+
 #endif // ! _UART_H_ 

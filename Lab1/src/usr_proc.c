@@ -419,7 +419,7 @@ void test_process_4() {
 	}
 
 	while (1) {
-		uart0_put_string("G015_test: END\n\r");
+		//uart0_put_string("G015_test: END\n\r");
 		release_processor();
 	}
 }

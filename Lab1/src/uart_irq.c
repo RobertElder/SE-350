@@ -151,8 +151,10 @@ void execute_uart() {
 		set_message_bytes(message,&c,1);
 		keyboard_command_decoder(message);
 
-	    pUart->THR = c;
-		g_UART0_TX_empty = 0;  // not empty in the THR until it shifts out
+		// Now send a message to echo that character back to the screen.
+		message = k_request_memory_block();
+		set_message_bytes(message,&c,1);
+		crt_display(message);
 
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;

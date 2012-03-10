@@ -9,6 +9,6 @@
 void register_command(char *, int);
 void unregister_all_commands(void);
 void keyboard_command_decoder(void * message);
-void crt_display(void);
+void crt_display(void * message);
 
 #endif 

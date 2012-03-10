@@ -9,6 +9,11 @@
 #define KEYBOARD_INPUT 3
 #define OUTPUT_STRING 4
 #define DELAYED_SEND 5
+#define START_CLOCK	6
+#define STOP_CLOCK 7
+#define CLOCK_TICK 8
+#define PAUSE_CLOCK 9
+#define UNPAUSE_CLOCK 10
 
 typedef struct env {
 	ListNode dummyVar; // DO NOT USE ME.

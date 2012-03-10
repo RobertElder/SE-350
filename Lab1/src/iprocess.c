@@ -75,7 +75,6 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 }
 
 void timeout_i_process() {
-	int i = 0;
 	while(1) {
 		int* senderId;
 		ProcessControlBlock* interrupted_proc = get_interrupted_process();
@@ -102,7 +101,19 @@ void timeout_i_process() {
 				k_send_message( receiver_pid, envelope ); //forward msg to destination
 			}						
 		} 	 
-		i++;
+
+		if(get_current_time() % 1000 == 0) {
+			int time = get_current_time() % 1000;
+
+		 	//send wall_clock a message to tick
+			env = (Envelope *)k_request_memory_block();
+			set_sender_PID(env, 11);
+			set_destination_PID(env, 14);
+			set_message_type(env, CLOCK_TICK);
+
+			k_send_message(14, env);
+		}		
+
 		context_switch(pCurrentProcessPCB, interrupted_proc);
 	}
 }

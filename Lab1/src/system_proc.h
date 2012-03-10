@@ -7,6 +7,7 @@
 #include "rtx.h"
 
 int get_seconds_from_formatted_time(char *);
+char* get_formatted_time_from_seconds(int);
 void register_command(char *, int);
 void unregister_all_commands(void);
 void keyboard_command_decoder(void * message);

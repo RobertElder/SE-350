@@ -25,6 +25,8 @@ int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
 char current_command_buffer[MAX_COMMAND_LENGTH];
 int current_command_length = 0;
 
+char time[] = "00:00:00";
+
 volatile extern uint8_t g_UART0_TX_empty;
 
 void unregister_all_commands(){
@@ -136,6 +138,55 @@ void crt_display(){
 	}
 }
 
+void wall_clock() {
+	int doCount = 0;
+	int displayClock = 0;
+	int clock_time = 0;
+	int* sender_id;
+	Envelope * env;
+
+	while(1) {
+		env = (Envelope *)receive_message(sender_id);
+
+		switch(env->message_type) {
+			case CLOCK_TICK:
+				if(doCount) {
+					clock_time++; //tick
+
+					if(displayClock) {
+						char* time_string = get_formatted_time_from_seconds(clock_time);
+
+						release_memory_block(env);
+						env = (Envelope *)request_memory_block();
+
+						set_sender_PID(env, 14);
+						set_destination_PID(env, 13);
+						set_message_type(env, OUTPUT_STRING);
+						set_message_bytes(env, time_string, sizeof(time_string));
+
+						send_message(13, env); //display
+					}
+				}
+				break;
+			case STOP_CLOCK:
+				doCount = 0;
+				break;
+			case START_CLOCK:
+				clock_time = (int)env->message_data;	
+				doCount = displayClock = 1;
+				break;
+			case PAUSE_CLOCK:
+				displayClock = 0;
+				break;
+			case UNPAUSE_CLOCK:
+				displayClock = 1;
+				break;
+			default:
+				break;
+		}
+	}
+}
+
 // --------------------------------------------------------
 
 void init_sys_procs() {
@@ -166,7 +217,21 @@ int get_seconds_from_formatted_time(char *c){
 	return h1 + h2 + m1 + m2 + s1 + s2;	
 }
 
-void wall_clock(void){
+char* get_formatted_time_from_seconds(int seconds) {
+	int h, m, s;
 
+	h = (int)(seconds / 3600);
+	seconds -= (h * 3600);
+	m = (int)(seconds / 60);
+	seconds -= (m * 60);
+	s = seconds;
 
+	time[0] = (h / 10) + 0x30;
+	time[1] = (h % 10) + 0x30;
+	time[3] = (m / 10) + 0x30;
+	time[4] = (m % 10) + 0x30;
+	time[6] = (s / 10) + 0x30;
+	time[7] = (s % 10) + 0x30;
+	
+	return time; 
 }

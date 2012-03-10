@@ -28,7 +28,7 @@ extern unsigned int free_mem;
 #define NUM_PROCESSES 7
 
 // dynamic heap for user processes
-#define MEMORY_BLOCK_SIZE                            0x40
+#define MEMORY_BLOCK_SIZE                            0x64
 #define MAX_ALLOWED_MEMORY_BLOCKS                    0x1E
 // there are 7 user processes plus 2 iprocesses 
 //TODO: might need to consider system processes here as well 

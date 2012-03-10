@@ -7,6 +7,7 @@
 
 #include <LPC17xx.h>
 #include "uart.h"
+#include "irq.h"
 
 volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
@@ -118,12 +119,16 @@ __asm void UART0_IRQHandler(void)
  */
 void c_UART0_IRQHandler(void)
 {
+	irq_handler(UART0_IRQ);
+}
 
-/*
+void execute_uart() {
+	/*
 	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
 	IIR - Interrupt ID Register. Identifies which interrupt(s) are pending.
 	LSR - Line Status Register. Contains flags for transmit and receive status, including line errors.
-*/
+	*/
+
 	//  Information about the interrupt
     uint8_t IIR_IntId;	    // Interrupt ID from IIR
 	// Line Status Register value		
@@ -168,7 +173,7 @@ void c_UART0_IRQHandler(void)
 		}	    
 	} else {  // IIR_CTI and reserved combination are not implemented yet
 	    return;
-	}	
+	}
 }
 
 void uart_send_string(uint32_t len){

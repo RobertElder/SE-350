@@ -54,8 +54,11 @@ int expected_run_order[] =
 5,
 // Test case 12: Additional blocking/premption/priority testing
 2, 1, 6, 5,
-///
-3
+///	TODO: document this test case
+3,
+// Test case 15: Proc4 blocks on receive_msg, proc3 executes and sends a message with a delay of 0
+// This means proc4 should be unblocked right away and continue executing (Basic delayed_send preemption test)
+4, 3, 4
 };
 // Further test TODOs: test if all processes are blocked, null process should run (keep as last test)
 int actual_run_order[ORDER_LENGTH];
@@ -288,6 +291,8 @@ void test_process_2() {
 }
 
 void test_process_3() {
+	Envelope * env_test15;
+	char message_test15;
 
 	int a = 0;
 	int b = 1;
@@ -306,7 +311,7 @@ void test_process_3() {
 	int result;
 	int testCases = 100;
 
-	actual_run_order[cur_index] = 3;
+	actual_run_order[cur_index++] = 3;
 
 	for(i = 0; i < testCases; i++){
 		randomWait = get_random() % 1000;
@@ -350,16 +355,13 @@ void test_process_3() {
 		/3-3+4*8-5+9+3*2/5*6;
 	
 		//  Did the calculation work?
-		if (!(result == 0x1B79 && order_checker(cur_index))) {
+		if (!(result == 0x1B79)) {
 			break;
 		}
 	}
 
-	if(i == testCases ){
+	if(i == testCases && order_checker(cur_index)){
 		uart0_put_string("G015_test: test 13 OK\n\r");
-		uart0_put_string("G015_test: 13/13 tests OK\n\r");
-		uart0_put_string("G015_test: END\n\r");
-
 	} else {
 		uart0_put_string("G015_test: test 13 FAIL\n\r");
 	}
@@ -367,18 +369,54 @@ void test_process_3() {
 	//GOTO process 6
 	set_process_priority(6, 0);
 	release_processor();
+
+	// comes in from proc4
+	actual_run_order[cur_index++] = 3;
+
+  	 message_test15 = 'c';	
+
+	env_test15 = (Envelope *)request_memory_block();
+
+	set_sender_PID(env_test15, 3);
+	set_destination_PID(env_test15, 4);
+	set_message_type(env_test15, DELAYED_SEND);
+	set_message_bytes(env_test15, &message_test15, sizeof(char));
+
+	delayed_send(4, env_test15, 0);
+
+	// This will get preempted by proc4 some time in the loop
+	while (1) {}
+
 }
 
 void test_process_4() {
+
+	int* sender_id;
+   /*
 	char message = 'c';	
 	Envelope * env = (Envelope *)request_memory_block();
 
 	set_sender_PID(env, 11);
 	set_destination_PID(env, 11);
 	set_message_type(env, DELAYED_SEND);
-	set_message_data(env, &message, sizeof(char));
+	set_message_bytes(env, &message, sizeof(char));
 
-	delayed_send(2, env, 10000);
+	delayed_send(2, env, 10000);	*/
+	
+	// NOTE, STARTING TEST CASE 15 (artem must document 14, robert must document 13)
+	actual_run_order[cur_index++] = 4;
+
+	// This blocks (process 3 takes over)
+	receive_message(sender_id);
+
+	// Comes in from proc3
+	actual_run_order[cur_index++] = 4;
+
+	if (order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 15 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 15 FAIL\n\r");
+	}
 
 	while (1) {
 		uart0_put_string("G015_test: END\n\r");
@@ -536,8 +574,9 @@ void test_process_6() {
 	//after release, test_proc_5 should get memory block and preempt - it has higher priority
 	release_memory_block(blocks[--i]);
 
+	// Comes in from process 3
 
-	//Release all the things
+	// Release all the memory blocks
 	while(i > 0) {
 		release_memory_block(blocks[--i]);
 	}
@@ -545,7 +584,7 @@ void test_process_6() {
 	set_process_priority(4, 0);
 	set_process_priority(1, 3);
 	set_process_priority(2, 3);
-	set_process_priority(3, 3);
+	set_process_priority(3, 1);
 	set_process_priority(5, 3);
 	set_process_priority(6, 3);
 	release_processor();

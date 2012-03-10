@@ -5,6 +5,7 @@
 #include "process.h"
 #include "utils.h"
 #include "memory.h"
+#include "uart.h"
 
 
 LinkedList delayed_messages;
@@ -54,17 +55,17 @@ void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 }
 
 int k_delayed_send(int pid, Envelope * envelope, int delay) {
-	DelayedMessage * m;
+	DelayedMessage m;
 	Envelope * env = (Envelope *)k_request_memory_block();
 
-	m->pid = pid;
-	m->envelope = envelope;
-	m->expiry_time = get_current_time() + delay;
+	m.pid = pid;
+	m.envelope = envelope;
+	m.expiry_time = get_current_time() + delay;
 
-	set_sender_PID(env, 11);
-	set_destination_PID(env, 11);
+	set_sender_PID(env, 11);  //sender should be original sender
+	set_destination_PID(env, 11);								 //dont harcode 11 like noob
 	set_message_type(env, DELAYED_SEND);
-	set_message_data(env, m, sizeof(m));
+	set_message_words(env, &m, sizeof(m) / sizeof(uint32_t));
 
 	//add node containing m to timeoutProcess message queue
 	//expiry_sorted_enqueue(&delayed_messages, node);
@@ -76,9 +77,10 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 void timeout_i_process() {
 	int i = 0;
 	while(1) {
+		int* senderId;
 		ProcessControlBlock* interrupted_proc = get_interrupted_process();
-		/*
-		Envelope * env = k_receive_message(NULL);
+		
+		Envelope * env = k_receive_message(senderId);
 		ListNode * node;
 		int receiver_pid;
 	
@@ -88,27 +90,31 @@ void timeout_i_process() {
 	
 		 	expiry_sorted_enqueue(&delayed_messages, node);
 	
-			env = receive_message(NULL);
+			env = k_receive_message(NULL);
 		}
 	
 		if(delayed_messages.head != NULL) {
 			while (((DelayedMessage *)(delayed_messages.head->data))->expiry_time
 				 <= get_current_time())
 			{
-				env = ((DelayedMessage *)dequeue(&delayed_messages)->data)->envelope;
-				receiver_pid = env->receiver_pid;
-				send_message( receiver_pid, env ); //forward msg to destination
+				Envelope* envelope = ((DelayedMessage *)dequeue(&delayed_messages)->data)->envelope;
+				receiver_pid = envelope->receiver_pid;
+				k_send_message( receiver_pid, envelope ); //forward msg to destination
 			}						
-		} 	 */
+		} 	 
 		i++;
 		context_switch(pCurrentProcessPCB, interrupted_proc);
 	}
 }
 
 void uart0_i_process() {
-   while(1) {
-
-   }
+	int i = 0;
+	while(1) {
+		ProcessControlBlock* interrupted_proc = get_interrupted_process();
+		execute_uart();
+		i++;
+		context_switch(pCurrentProcessPCB, interrupted_proc);
+	}
 }
 
 // Initiate iprocesses and their stacks

@@ -13,14 +13,12 @@ void irq_handler(irq_type type) {
 			context_switch(pCurrentProcessPCB, get_timer_pcb());
 			break;
 		case UART0_IRQ:
+			context_switch(pCurrentProcessPCB, get_uart_pcb()); 
 			break;
 		default:
 			break;
 	}
 	k_release_processor();
-	//return_from_interrupt();
-	//rte();
-	//__enable_irq();
 
 }
 

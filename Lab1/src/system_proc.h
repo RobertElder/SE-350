@@ -5,7 +5,7 @@
 #define	MAX_COMMAND_LENGTH                              500
 
 
-
+int get_seconds_from_formatted_time(char *);
 void register_command(char *, int);
 void unregister_all_commands(void);
 void keyboard_command_decoder(void * message);

@@ -6,6 +6,7 @@
 #include "memory.h"
 #include "process.h"
 #include "ipc.h"
+#include "system_proc.h"
 
 
 
@@ -58,6 +59,7 @@ int command_tests_passed(){
 	}
 
 	register_command("%WS",1);
+	register_command("%WT",1);
 
 	for(i = 0; i < 12; i++){
 		p = k_request_memory_block();
@@ -67,11 +69,21 @@ int command_tests_passed(){
 	return 1;
 }
 
+int wall_clock_tests_passed(){
+	assert(get_seconds_from_formatted_time("00:00:01") == 1,"Wall clock 00:00:01 broke.");
+	assert(get_seconds_from_formatted_time("00:01:00") == 60,"Wall clock 00:01:00 broke.");
+	assert(get_seconds_from_formatted_time("00:60:01") == 3601,"Wall clock 00:60:01 broke.");
+	assert(get_seconds_from_formatted_time("23:59:59") == 86399,"Wall clock 23:59:59 broke.");
+	assert(get_seconds_from_formatted_time("10:00:00") == 36000,"Wall clock 10:00:00 broke.");
+	return 1;
+}
+
 
 int unit_tests_passed(void){
 	return (
 		message_api_tests_passed() &&
-		command_tests_passed()	
+		command_tests_passed() &&
+		wall_clock_tests_passed()	
 	);
 }
 

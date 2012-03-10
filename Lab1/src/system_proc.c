@@ -71,30 +71,32 @@ void keyboard_command_decoder(void * message){
 	//void * message = k_receive_message(&sender_id);
 	//  Point to the data
 	char * pChar = get_message_data(message);
-	/* If the buffer is full, they are not part of any valid command so 
-		we don't care (also < because we want space for the terminating null)
-	*/
-	if(current_command_length < MAX_COMMAND_LENGTH){
-		//  Put the character we received into the buffer
-		current_command_buffer[current_command_length] = *pChar;
-		current_command_length++;
-	}
-
-	// Did they type a carriage return?
-	if(*pChar == 0xD){
-		int matched_command = get_index_of_matching_command();
-
-		//  Does the thing in the buffer match a command that was registered? 
-		if(matched_command > -1){
-		 	//  The user type a command that we recognized
-			current_command_buffer[current_command_length] = 0;
-			uart0_put_string("A command was matched:\r\n");
-			uart0_put_string((unsigned char *)&current_command_buffer);
-			uart0_put_string("\r\n");
+	if(get_message_type(message) == COMMAND_INPUT){
+		/* If the buffer is full, they are not part of any valid command so 
+			we don't care (also < because we want space for the terminating null)
+		*/
+		if(current_command_length < MAX_COMMAND_LENGTH){
+			//  Put the character we received into the buffer
+			current_command_buffer[current_command_length] = *pChar;
+			current_command_length++;
 		}
-
-		// Reset the buffer for new commands
-		current_command_length = 0;
+	
+		// Did they type a carriage return?
+		if(*pChar == 0xD){
+			int matched_command = get_index_of_matching_command();
+	
+			//  Does the thing in the buffer match a command that was registered? 
+			if(matched_command > -1){
+			 	//  The user type a command that we recognized
+				current_command_buffer[current_command_length] = 0;
+				uart0_put_string("A command was matched:\r\n");
+				uart0_put_string((unsigned char *)&current_command_buffer);
+				uart0_put_string("\r\n");
+			}
+	
+			// Reset the buffer for new commands
+			current_command_length = 0;
+		}
 	}
 
 	k_release_memory_block(message);	
@@ -118,4 +120,21 @@ void crt_display(void * message){
 		k_release_memory_block(message);
 	}		
 	
+}
+
+
+int get_seconds_from_formatted_time(char *c){
+	int h1 = (c[0] - 0x30) * 10 * 60 * 60;	
+	int h2 = (c[1] - 0x30) * 60 * 60;	
+	int m1 = (c[3] - 0x30) * 10 * 60;	
+	int m2 = (c[4] - 0x30) * 60;
+	int s1 = (c[6] - 0x30) * 10;	
+	int s2 = c[7] - 0x30;
+	
+	return h1 + h2 + m1 + m2 + s1 + s2;	
+}
+
+void wall_clock(void){
+
+
 }

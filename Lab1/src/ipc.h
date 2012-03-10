@@ -5,9 +5,10 @@
 #include "rtx.h"
 
 #define COMMAND_REGISTRATION 1
-#define KEYBOARD_INPUT 2
-#define OUTPUT_STRING 3
-#define DELAYED_SEND 4
+#define COMMAND_INPUT 2
+#define KEYBOARD_INPUT 3
+#define OUTPUT_STRING 4
+#define DELAYED_SEND 5
 
 typedef struct env {
 	ListNode dummyVar; // DO NOT USE ME.

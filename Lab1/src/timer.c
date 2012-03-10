@@ -11,6 +11,8 @@
 #include "irq.h"
 #define BIT(X) (1<<X)
 
+
+
 volatile uint32_t g_timer_count = 0; // increment every 1 ms
 
 uint32_t get_current_time() {

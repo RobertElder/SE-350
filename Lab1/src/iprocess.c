@@ -120,14 +120,20 @@ void uart0_i_process() {
 // Initiate iprocesses and their stacks
 void init_i_processes() {
 	int procIndex;
+
 	uint32_t *sp;
+	uint32_t* stacks_start[2];
+
 	ProcessControlBlock* iproc[2];	 
 	uint32_t* funcPointers[] = {  (uint32_t*)uart0_i_process,
 		 (uint32_t*)timeout_i_process };
-	iproc[0] = &i_uart_pcb;
-	iproc[1] =  &i_timer_pcb ;
 
-	sp = get_process_pointer_from_id(NUM_USR_PROCESSES - 1)->processStackPointer;
+	iproc[0] = &i_uart_pcb;
+	iproc[1] = &i_timer_pcb;
+	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES) * STACKS_SIZE + STACKS_SIZE);
+	stacks_start[1] = stacks_start[0] + (STACKS_SIZE) / sizeof(uint32_t);
+
+	//get_process_pointer_from_id(NUM_USR_PROCESSES - 1)->processStackPointer;
 
 	for (procIndex = 0; procIndex < 2; procIndex++) {
 		int i;
@@ -137,12 +143,12 @@ void init_i_processes() {
 		iproc[procIndex]->waitingMessages.tail = NULL;
 		iproc[procIndex]->processPriority = 0;
 	
-		sp += (STACKS_SIZE) / sizeof(uint32_t);
+		sp = stacks_start[procIndex];
 	
 		if (!(((uint32_t)sp) & 0x04)) {
 		    --sp; 
 		}
-	
+														   
 		*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
 	
 		// Set the entry point of the process

@@ -140,19 +140,45 @@ void crt_display(){
 
 void init_sys_procs() {
 	int procIndex;
-	uint32_t sp;
-	uint32_t sp2;
+
+	uint32_t* sp;
+	uint32_t* stacks_start[2];
+
 	ProcessControlBlock* sys_procs[2];	 
 	uint32_t* funcPointers[] = {  (uint32_t*)crt_display,
 		 (uint32_t*)keyboard_command_decoder };
+
 	sys_procs[0] = &crt_pcb;
 	sys_procs[1] =  &kcd_pcb;
+	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES)
+		 * STACKS_SIZE + STACKS_SIZE);
+	stacks_start[1] = stacks_start[0] + (STACKS_SIZE) / sizeof(uint32_t);
 
-	sp = START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES) * STACKS_SIZE;
-	sp2 = (uint32_t)get_process_pointer_from_id(0xB)->processStackPointer;
-	if (sp == sp2) sp = 1;
-	sp = 0;
-	procIndex = 4;
+	for (procIndex = 0; procIndex < 2; procIndex++) {
+		int i;
+		sys_procs[procIndex]->processId = 0xC + i;
+		sys_procs[procIndex]->currentState = NEW;
+		sys_procs[procIndex]->waitingMessages.head = NULL;
+		sys_procs[procIndex]->waitingMessages.tail = NULL;
+		sys_procs[procIndex]->processPriority = 0;
+
+		sp = stacks_start[procIndex];
+
+		if (!(((uint32_t)sp) & 0x04)) {
+		    --sp; 
+		}
+														   
+		*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
+	
+		// Set the entry point of the process
+		*(--sp) = (uint32_t) funcPointers[procIndex];
+		
+		for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
+			*(--sp) = 0x0;
+		}
+		
+		sys_procs[procIndex]->processStackPointer = sp;
+	}
 }
 
 int get_seconds_from_formatted_time(char *c){

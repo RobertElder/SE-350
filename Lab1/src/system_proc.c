@@ -7,6 +7,17 @@
 #include "ipc.h"
 
 
+ProcessControlBlock crt_pcb;
+ProcessControlBlock kcd_pcb;
+
+ProcessControlBlock* get_crt_pcb() {
+	return &crt_pcb;
+}
+
+ProcessControlBlock* get_kcd_pcb() {
+	return &kcd_pcb;
+}
+
 int number_of_registered_commands = 0;
 char registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS][MAX_COMMAND_LENGTH];
 int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
@@ -63,9 +74,11 @@ int get_index_of_matching_command(){
 	return -1;
 } 
 
+// ------------------------------------------
+//     System Processes         
+// ------------------------------------------ 
+
 void keyboard_command_decoder(void * message){
-
-
 
 	// Get our new message
 	//void * message = k_receive_message(&sender_id);
@@ -102,26 +115,32 @@ void keyboard_command_decoder(void * message){
 	k_release_memory_block(message);	
 }
 
-void crt_display(void * message){
-	uint8_t * current_character = get_message_data(message);
-	if (message != NULL) {
-		LPC_UART_TypeDef *pUart = (LPC_UART_TypeDef *) LPC_UART0;
-		// Our message data should be a null terminated string
-	    while ( *current_character != 0 ) {
-		    // THRE status, contain valid data  
-		    while ( !(g_UART0_TX_empty & 0x01) );
-			//  Setting this value makes the interrupt fire at a later time	
-		    pUart->THR = *current_character;
-			g_UART0_TX_empty = 0;  // not empty in the THR until it shifts out
-		    current_character++;
-	    }
-		
-		// We don't want that memory block anymore
-		k_release_memory_block(message);
-	}		
-	
+void crt_display(){
+	while (1) {
+		uint8_t * current_character = get_message_data(message);
+		if (message != NULL) {
+			LPC_UART_TypeDef *pUart = (LPC_UART_TypeDef *) LPC_UART0;
+			// Our message data should be a null terminated string
+		    while ( *current_character != 0 ) {
+			    // THRE status, contain valid data  
+			    while ( !(g_UART0_TX_empty & 0x01) );
+				//  Setting this value makes the interrupt fire at a later time	
+			    pUart->THR = *current_character;
+				g_UART0_TX_empty = 0;  // not empty in the THR until it shifts out
+			    current_character++;
+		    }
+			
+			// We don't want that memory block anymore
+			k_release_memory_block(message);
+		}		
+	}
 }
 
+// --------------------------------------------------------
+
+void init_sys_procs() {
+
+}
 
 int get_seconds_from_formatted_time(char *c){
 	int h1 = (c[0] - 0x30) * 10 * 60 * 60;	

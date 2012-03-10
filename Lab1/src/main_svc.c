@@ -21,6 +21,7 @@
 #include "utils.h" 
 #include "usr_proc.h"
 #include "iprocess.h"
+#include "system_proc.h"
 
 //extern void process_init(void);
 
@@ -59,6 +60,8 @@ int main(){
 	// Initialize stack and PCB for processes
 	process_init();
 	init_i_processes();
+	init_sys_procs();
+
 	// Enable interrupt requests
 	__enable_irq();
 	

@@ -9,6 +9,10 @@ int get_seconds_from_formatted_time(char *);
 void register_command(char *, int);
 void unregister_all_commands(void);
 void keyboard_command_decoder(void * message);
-void crt_display(void * message);
+void crt_display(void);
+
+void init_sys_procs(void);
+ProcessControlBlock* get_kcd_pcb(void);
+ProcessControlBlock* get_crt_pcb(void);
 
 #endif 

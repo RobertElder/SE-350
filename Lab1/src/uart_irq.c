@@ -144,18 +144,20 @@ void execute_uart() {
 	// Reading IIR automatically acknowledges the interrupt
 	IIR_IntId = (pUart->IIR) >> 1 ; // skip pending bit in IIR
 
-	if (IIR_IntId & IIR_Receive_Data_Available) {  // Receive Data Avaialbe
+	if (IIR_IntId & IIR_Receive_Data_Available) {  // Receive Data Available
 		// Note: read RBR will clear the interrupt
 		c =   pUart->RBR; // read from the uart
+
+		// Read commands
 		message = k_request_memory_block();
 		set_message_bytes(message,&c,1);
 		set_message_type(message,COMMAND_INPUT);
-		keyboard_command_decoder(message);
+		keyboard_command_decoder(message);	   //TODO change to send_message
 
 		// Now send a message to echo that character back to the screen.
 		message = k_request_memory_block();
 		set_message_bytes(message,&c,1);
-		crt_display(message);
+	//TODO	crt_display(message);			   //change to send_message
 
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;

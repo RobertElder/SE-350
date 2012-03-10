@@ -18,8 +18,14 @@ int k_send_message(int target_pid, void* envelope) {
 	ListNode* node = &env->dummyVar;
 	ProcessControlBlock* targetProcess = get_process_pointer_from_id(target_pid);
 
-	env->sender_pid = pCurrentProcessPCB->processId;
-	env->receiver_pid = target_pid;
+	if (env->sender_pid == NULL) {
+		env->sender_pid = pCurrentProcessPCB->processId;
+	}
+
+	if (env->receiver_pid == NULL) {
+		env->receiver_pid = target_pid;
+	}
+	
 	// TODO set some message
 
 	//add envelope to the message queue of Target Process

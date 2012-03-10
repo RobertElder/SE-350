@@ -60,10 +60,10 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 
 	m.pid = pid;
 	m.envelope = envelope;
-	m.expiry_time = get_current_time() + delay;
+	m.expiry_time = get_current_time() + delay; //Delay is in ms
 
-	set_sender_PID(env, 11);  //sender should be original sender
-	set_destination_PID(env, 11);								 //dont harcode 11 like noob
+	set_sender_PID(env, pid);  //sender should be original sender
+	set_destination_PID(env, 11);
 	set_message_type(env, DELAYED_SEND);
 	set_message_words(env, &m, sizeof(m) / sizeof(uint32_t));
 

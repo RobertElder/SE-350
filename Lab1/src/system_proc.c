@@ -18,6 +18,12 @@ ProcessControlBlock* get_kcd_pcb() {
 	return &kcd_pcb;
 }
 
+ProcessControlBlock* get_new_sys_proc() {
+	if (crt_pcb.currentState == NEW) return &crt_pcb;
+	if (kcd_pcb.currentState == NEW) return &kcd_pcb;
+	return NULL;
+}
+
 int number_of_registered_commands = 0;
 char registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS][MAX_COMMAND_LENGTH];
 int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
@@ -38,7 +44,7 @@ void register_command(char * s, int process_id){
 
 	registered_processes[number_of_registered_commands] = process_id;
 	for(i = 0; i < MAX_COMMAND_LENGTH; i++){
-		assert(i < MAX_COMMAND_LENGTH,"Invalid attempt to register a command that is too long.");
+		assert(i < MAX_COMMAND_LENGTH, "Invalid attempt to register a command that is too long.");
 
 		registered_commands[number_of_registered_commands][i]  = s[i];
 		//  We want to copy everything up to and including the null
@@ -80,46 +86,71 @@ int get_index_of_matching_command(){
 //     System Processes         
 // ------------------------------------------ 
 
-void keyboard_command_decoder(void * message){
+void keyboard_command_decoder(){
 
-	// Get our new message
-	//void * message = k_receive_message(&sender_id);
-	//  Point to the data
-	char * pChar = get_message_data(message);
-	if(get_message_type(message) == COMMAND_INPUT){
-		/* If the buffer is full, they are not part of any valid command so 
-			we don't care (also < because we want space for the terminating null)
-		*/
-		if(current_command_length < MAX_COMMAND_LENGTH){
-			//  Put the character we received into the buffer
-			current_command_buffer[current_command_length] = *pChar;
-			current_command_length++;
-		}
-	
-		// Did they type a carriage return?
-		if(*pChar == 0xD){
-			int matched_command = get_index_of_matching_command();
-	
-			//  Does the thing in the buffer match a command that was registered? 
-			if(matched_command > -1){
-			 	//  The user type a command that we recognized
-				current_command_buffer[current_command_length] = 0;
-				uart0_put_string("A command was matched:\r\n");
-				uart0_put_string((unsigned char *)&current_command_buffer);
-				uart0_put_string("\r\n");
+	while (1) {
+		int sender_id = -1;
+		int destination = -1;
+
+		// Get our new message
+		Envelope* message = (Envelope*)receive_message(&sender_id);
+		char * pChar = get_message_data(message);
+		destination = get_destination_PID(message);
+
+		assert(sender_id == message->sender_pid,
+			 "ERROR: receive_message did not supply sender_id");
+		assert(destination == kcd_pcb.processId,
+			 "ERROR: Message destination did not match with KCD pid");
+	   
+		if (get_message_type(message) == COMMAND_INPUT){
+			/* If the buffer is full, they are not part of any valid command so 
+				we don't care (also < because we want space for the terminating null)
+			*/
+			if(current_command_length < MAX_COMMAND_LENGTH){
+				//  Put the character we received into the buffer
+				current_command_buffer[current_command_length] = *pChar;
+				current_command_length++;
 			}
-	
-			// Reset the buffer for new commands
-			current_command_length = 0;
+		
+			// Did they type a carriage return?
+			if(*pChar == 0xD){
+				int matched_command = get_index_of_matching_command();
+		
+				//  Does the thing in the buffer match a command that was registered? 
+				if(matched_command > -1){
+				 	//  The user type a command that we recognized
+					current_command_buffer[current_command_length] = 0;
+					uart0_put_string("A command was matched:\r\n");
+					uart0_put_string((unsigned char *)&current_command_buffer);
+					uart0_put_string("\r\n");
+				}
+		
+				// Reset the buffer for new commands
+				current_command_length = 0;
+			}
 		}
+		k_release_memory_block(message);
 	}
 
-	k_release_memory_block(message);	
+		
 }
 
 void crt_display(){
 	while (1) {
-/*		uint8_t * current_character = '';//TODO get_message_data(message);
+		int sender_id = -1;
+		int destination = -1;
+
+		Envelope* message = (Envelope*) receive_message(&sender_id);
+		uint8_t * current_character = get_message_data(message);
+		assert(message != NULL, "ERROR: CRT received a NULL message");
+		destination = get_destination_PID(message);
+
+		assert(sender_id == message->sender_pid,
+			 "ERROR: receive_message did not supply sender_id");
+		assert(destination == crt_pcb.processId,
+			"ERROR: Message destination did not match with CRT pid");
+
+		
 		if (message != NULL) {
 			LPC_UART_TypeDef *pUart = (LPC_UART_TypeDef *) LPC_UART0;
 			// Our message data should be a null terminated string
@@ -134,7 +165,7 @@ void crt_display(){
 			
 			// We don't want that memory block anymore
 			k_release_memory_block(message);
-		}	*/	
+		}		
 	}
 }
 
@@ -191,19 +222,45 @@ void wall_clock() {
 
 void init_sys_procs() {
 	int procIndex;
-	uint32_t sp;
-	uint32_t sp2;
+
+	uint32_t* sp;
+	uint32_t* stacks_start[2];
+
 	ProcessControlBlock* sys_procs[2];	 
 	uint32_t* funcPointers[] = {  (uint32_t*)crt_display,
 		 (uint32_t*)keyboard_command_decoder };
+
 	sys_procs[0] = &crt_pcb;
 	sys_procs[1] =  &kcd_pcb;
+	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES)
+		 * STACKS_SIZE + STACKS_SIZE);
+	stacks_start[1] = stacks_start[0] + (STACKS_SIZE) / sizeof(uint32_t);
 
-	sp = START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES) * STACKS_SIZE;
-	sp2 = (uint32_t)get_process_pointer_from_id(0xB)->processStackPointer;
-	if (sp == sp2) sp = 1;
-	sp = 0;
-	procIndex = 4;
+	for (procIndex = 0; procIndex < 2; procIndex++) {
+		int i;
+		sys_procs[procIndex]->processId = 0xC + i;
+		sys_procs[procIndex]->currentState = NEW;
+		sys_procs[procIndex]->waitingMessages.head = NULL;
+		sys_procs[procIndex]->waitingMessages.tail = NULL;
+		sys_procs[procIndex]->processPriority = 0;
+
+		sp = stacks_start[procIndex];
+
+		if (!(((uint32_t)sp) & 0x04)) {
+		    --sp; 
+		}
+														   
+		*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
+	
+		// Set the entry point of the process
+		*(--sp) = (uint32_t) funcPointers[procIndex];
+		
+		for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
+			*(--sp) = 0x0;
+		}
+		
+		sys_procs[procIndex]->processStackPointer = sp;
+	}
 }
 
 int get_seconds_from_formatted_time(char *c){

@@ -64,15 +64,24 @@ extern ProcessControlBlock * pCurrentProcessPCB;  // always point to the current
 // Public routines
 // -----------------------------------------------------
 int is_ready_or_new(proc_state_t state );
+uint8_t is_i_proc(int proc_id);
 ProcessControlBlock * get_process_pointer_from_id(int);
 ProcessControlBlock * get_interrupted_process(void);
-ListNode* get_node_of_process(int);									
-void process_init(void);	    // initialize all procs in the system
-ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				// pick the pid of the next to run process
+ListNode* get_node_of_process(int);	
+
+// initialize all procs in the system								
+void process_init(void);	    
+
+// pick the pid of the next to run process
+ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				
 int k_release_processor(void);		// kernel release_process API
+// Switch contexts from the passed-in PCB to the pCurrentPCB
+void context_switch(ProcessControlBlock*, ProcessControlBlock*);
+
 int has_blocked_processes(void); // check if there are blocked processes
 void block_current_process(void); // Put current process in a blocking state, as well as enqueue in the blocked queue
-void context_switch(ProcessControlBlock*, ProcessControlBlock*); // Switch contexts from the passed-in PCB to the pCurrentPCB
+
+
 ProcessControlBlock* getBlockedProcess(void); //Gets the highest priority blocked process
 ProcessControlBlock* getRunningProcess(void); //Gets a running process from all processes array
 

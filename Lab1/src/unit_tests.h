@@ -5,7 +5,6 @@ int unit_tests_passed(void);
 
 void register_command(char *, int);
 void unregister_all_commands(void);
-void keyboard_command_decoder(void *);
 
 //  Message API functions
 int get_sender_PID(void * p_message);

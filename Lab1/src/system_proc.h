@@ -10,11 +10,15 @@ int get_seconds_from_formatted_time(char *);
 char* get_formatted_time_from_seconds(int);
 void register_command(char *, int);
 void unregister_all_commands(void);
-void keyboard_command_decoder(void * message);
+
+//-SYS PROCS-
+void keyboard_command_decoder(void);
 void crt_display(void);
+//----------
 
 void init_sys_procs(void);
 ProcessControlBlock* get_kcd_pcb(void);
 ProcessControlBlock* get_crt_pcb(void);
+ProcessControlBlock* get_new_sys_proc(void);
 
 #endif 

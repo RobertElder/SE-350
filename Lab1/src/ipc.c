@@ -9,7 +9,9 @@
 #define MESSAGE_TYPE_OFFSET                   DESTINATION_PID_OFFSET + sizeof(int)
 #define MESSAGE_DATA_OFFSET                   MESSAGE_TYPE_OFFSET + sizeof(int)
 
-
+// ------------------------------------------------------------
+//                 Kernel primitives (user-facing API)
+// ------------------------------------------------------------
 int k_send_message(int target_pid, void* envelope) {
 	//atomic(on);
 	Envelope* env = (Envelope*) envelope;
@@ -51,8 +53,8 @@ void* k_receive_message(int* sender_ID) {
 	Envelope* env = NULL;
 	ListNode* node;
 	
-	//don't want to block system calls or iprocesses (block only user procs pid 0 to 6)
-	while (pCurrentProcessPCB->waitingMessages.head == NULL && pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
+	//don't want to block iprocesses (block only user procs pid 0 to 6, and 12 onward)
+	while (pCurrentProcessPCB->waitingMessages.head == NULL && !is_i_proc(pCurrentProcessPCB->processId)) {
 	 	pCurrentProcessPCB->currentState = BLOCKED_ON_RECEIVE;
 		k_release_processor();
 	}
@@ -68,6 +70,8 @@ void* k_receive_message(int* sender_ID) {
 	//atomic(off)
 	return env;	
 }
+
+// -----------------------------------------------------------
 
 /*
 	A Message  

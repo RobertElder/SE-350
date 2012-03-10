@@ -21,7 +21,6 @@
 #include "utils.h" 
 #include "usr_proc.h"
 #include "iprocess.h"
-#include "roberts_tests.h"
 
 //extern void process_init(void);
 
@@ -67,15 +66,6 @@ int main(){
 
 	//  Set up memory
 	init_memory_allocation_table();
-	
-/*
-    while (1) {
-        if (g_timer_count % 10 == 0) {
-			print_unsigned_integer(g_timer_count / 10);
-		    uart0_put_string("\r\n");
-		}     
-	}	
-*/
 
 	ret_val = release_processor();
 	uart0_put_string("\nShould never reach here!!!\n\r");

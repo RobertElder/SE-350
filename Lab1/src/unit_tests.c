@@ -61,7 +61,7 @@ int command_tests_passed(){
 
 	for(i = 0; i < 12; i++){
 		p = k_request_memory_block();
-		set_message_data(p , &(cmd[i]) , 1);
+		set_message_bytes(p , &(cmd[i]) , 1);
 		keyboard_command_decoder(p);
 	}
 	return 1;

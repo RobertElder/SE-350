@@ -34,7 +34,7 @@ int k_send_message(int target_pid, void* envelope) {
 	//atomic(off);
 	// Prempt to a user proc if he has higher priority OR prempt to a proc if coming from a system proc.
 	if (((targetProcess->processPriority < pCurrentProcessPCB->processPriority && targetProcess->processId < NUM_PROCESSES)
-		|| pCurrentProcessPCB->processId >= NUM_PROCESSES) && is_ready_or_new(targetProcess->processPriority)) {
+		|| pCurrentProcessPCB->processId >= NUM_PROCESSES) && is_ready_or_new(targetProcess->currentState)) {
 		context_switch(pCurrentProcessPCB, targetProcess);
 	}
 	return 0;

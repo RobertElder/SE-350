@@ -117,7 +117,7 @@ void keyboard_command_decoder(void * message){
 
 void crt_display(){
 	while (1) {
-		uint8_t * current_character = get_message_data(message);
+/*		uint8_t * current_character = '';//TODO get_message_data(message);
 		if (message != NULL) {
 			LPC_UART_TypeDef *pUart = (LPC_UART_TypeDef *) LPC_UART0;
 			// Our message data should be a null terminated string
@@ -132,14 +132,27 @@ void crt_display(){
 			
 			// We don't want that memory block anymore
 			k_release_memory_block(message);
-		}		
+		}	*/	
 	}
 }
 
 // --------------------------------------------------------
 
 void init_sys_procs() {
+	int procIndex;
+	uint32_t sp;
+	uint32_t sp2;
+	ProcessControlBlock* sys_procs[2];	 
+	uint32_t* funcPointers[] = {  (uint32_t*)crt_display,
+		 (uint32_t*)keyboard_command_decoder };
+	sys_procs[0] = &crt_pcb;
+	sys_procs[1] =  &kcd_pcb;
 
+	sp = START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES) * STACKS_SIZE;
+	sp2 = (uint32_t)get_process_pointer_from_id(0xB)->processStackPointer;
+	if (sp == sp2) sp = 1;
+	sp = 0;
+	procIndex = 4;
 }
 
 int get_seconds_from_formatted_time(char *c){

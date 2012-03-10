@@ -56,7 +56,7 @@ typedef struct processEntry {
 
 void init_processe_table(void);
 
-//extern ProcessControlBlock pcb_array[NUM_PROCESSES];
+//extern ProcessControlBlock pcb_array[NUM_USR_PROCESSES];
 
 extern ProcessControlBlock * pCurrentProcessPCB;  // always point to the current process
 

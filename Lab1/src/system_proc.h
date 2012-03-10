@@ -4,6 +4,7 @@
 #define	MAX_NUMBER_OF_REGISTERABLE_COMMANDS             10
 #define	MAX_COMMAND_LENGTH                              500
 
+#include "rtx.h"
 
 int get_seconds_from_formatted_time(char *);
 void register_command(char *, int);

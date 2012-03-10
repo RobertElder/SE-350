@@ -127,7 +127,7 @@ void init_i_processes() {
 	iproc[0] = &i_uart_pcb;
 	iproc[1] =  &i_timer_pcb ;
 
-	sp = get_process_pointer_from_id(NUM_PROCESSES - 1)->processStackPointer;
+	sp = get_process_pointer_from_id(NUM_USR_PROCESSES - 1)->processStackPointer;
 
 	for (procIndex = 0; procIndex < 2; procIndex++) {
 		int i;
@@ -137,7 +137,7 @@ void init_i_processes() {
 		iproc[procIndex]->waitingMessages.tail = NULL;
 		iproc[procIndex]->processPriority = 0;
 	
-		sp += STACKS_SIZE;
+		sp += (STACKS_SIZE) / sizeof(uint32_t);
 	
 		if (!(((uint32_t)sp) & 0x04)) {
 		    --sp; 

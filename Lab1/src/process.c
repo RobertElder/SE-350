@@ -8,9 +8,9 @@
 /* Variable definitions */
 ProcessControlBlock* pCurrentProcessPCB  = NULL;
 
-ProcessEntry proc_init_table[NUM_PROCESSES];
-ProcessControlBlock pcb_array[NUM_PROCESSES];
-ListNode node_array[NUM_PROCESSES];
+ProcessEntry proc_init_table[NUM_USR_PROCESSES];
+ProcessControlBlock pcb_array[NUM_USR_PROCESSES];
+ListNode node_array[NUM_USR_PROCESSES];
 
 
 // --------------------------------------------------------------------------
@@ -71,7 +71,7 @@ int k_get_process_priority (int process_ID) {
 
 
 ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
-	if (process_ID < NUM_PROCESSES) {
+	if (process_ID < NUM_USR_PROCESSES) {
 		return (process_ID >= 0) ? &pcb_array[process_ID] : NULL;
 	} else {
 		if (process_ID == 0xA) return get_uart_pcb();
@@ -83,14 +83,14 @@ ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 
 ProcessControlBlock* get_interrupted_process() {
  	int i;
-	for(i = 0; i < NUM_PROCESSES; i++){	
+	for(i = 0; i < NUM_USR_PROCESSES; i++){	
 	 	if (pcb_array[i].currentState == INTERRUPTED) return &pcb_array[i];
 	}
 	return NULL;
 }
 
 ListNode* get_node_of_process(int process_ID) {
-	ListNode *node = (process_ID > NUM_PROCESSES - 1) ? NULL : &node_array[process_ID];
+	ListNode *node = (process_ID > NUM_USR_PROCESSES - 1) ? NULL : &node_array[process_ID];
 
 	assert(node != NULL, "ERROR: process does not have a list node");
 	assert(((ProcessControlBlock*)node->data)->processId == process_ID, 
@@ -107,7 +107,7 @@ int is_process_blocked(int processId){
 int is_deadlocked(){
 	int i;
 	//  We don't need to check the null process, pid 0
-	for(i = 1; i < NUM_PROCESSES; i++){
+	for(i = 1; i < NUM_USR_PROCESSES; i++){
 		if(!(is_process_blocked(i))){
 			return 0;
 		}
@@ -119,7 +119,7 @@ int is_deadlocked(){
 int has_blocked_processes(){
 	int i;
 	//  We don't need to check the null process, pid 0
-	for(i = 1; i < NUM_PROCESSES; i++){
+	for(i = 1; i < NUM_USR_PROCESSES; i++){
 		if(is_process_blocked(i)){
 			return 1;
 		}
@@ -139,7 +139,7 @@ void init_processe_table() {
 	unsigned int sp = free_mem;
    	int i;
 
-	for( i = 0; i < NUM_PROCESSES; i++ ){
+	for( i = 0; i < NUM_USR_PROCESSES; i++ ){
 		ProcessEntry proc;
 
 		proc.pid = i;
@@ -200,7 +200,7 @@ void process_init()
 	zero_init_queue(blocked_receive_queue, NUM_PRIORITIES);
 
 	//  For all the processes
-	for (procIndex = 0; procIndex < NUM_PROCESSES; ++procIndex) {
+	for (procIndex = 0; procIndex < NUM_USR_PROCESSES; ++procIndex) {
 		ProcessControlBlock process;
 
 		//  Set up the process control block
@@ -235,7 +235,7 @@ void process_init()
 	}
 
 	// queue up all processes as ready
- 	for (i = 0; i < NUM_PROCESSES; ++i) {
+ 	for (i = 0; i < NUM_USR_PROCESSES; ++i) {
 		ListNode *node = &node_array[i];
 		priority = pcb_array[i].processPriority;
 		// Pass the priority's head node and theLlistNode that contains a pcb
@@ -296,7 +296,7 @@ ProcessControlBlock* getRunningProcess() {
 	int i;
 	ProcessControlBlock* runningProcess = NULL;
 	//run for all processes; need to make sure no more than 1 process is running
-	for (i = 0; i < NUM_PROCESSES; i++) { 
+	for (i = 0; i < NUM_USR_PROCESSES; i++) { 
 		if (pcb_array[i].currentState == RUN){
 			assert(runningProcess == NULL, "Error: multiple processes with state RUN.");
 			runningProcess = &pcb_array[i];	
@@ -373,7 +373,7 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 
 			// check if new process is a user process
-			if (pCurrentProcessPCB->processId < NUM_PROCESSES) {
+			if (pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
 			 	pOldProcessPCB->currentState = RDY;
 				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
 					get_node_of_process(pOldProcessPCB->processId));	
@@ -382,7 +382,7 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		   __set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 
 		   if (is_ready_or_new(pCurrentProcessPCB->currentState) && 
-		   		pCurrentProcessPCB->processId < NUM_PROCESSES) 
+		   		pCurrentProcessPCB->processId < NUM_USR_PROCESSES) 
 			{
 				// We remove processes from the ready queue
 				pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
@@ -392,7 +392,7 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		   if (pCurrentProcessPCB->currentState == NEW) {
 		   		pCurrentProcessPCB->currentState = RUN;
 
-				if (pCurrentProcessPCB->processId < NUM_PROCESSES) {
+				if (pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
 					__rte();
 				} else {
 					__new_iproc_return();
@@ -407,7 +407,7 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 			
 			if (pOldProcessPCB->currentState == RUN) {
 				pOldProcessPCB->currentState = RDY;
-				if (pOldProcessPCB->processId < NUM_PROCESSES) {
+				if (pOldProcessPCB->processId < NUM_USR_PROCESSES) {
 					// Put old process back in his appropriate priority queue
 					enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
 						get_node_of_process(pOldProcessPCB->processId)); 

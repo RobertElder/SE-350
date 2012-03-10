@@ -33,7 +33,7 @@ int k_send_message(int target_pid, void* envelope) {
 
 	//atomic(off);
 	// Prempt to a user proc if he has higher priority OR prempt to a proc if coming from a system proc.
-	if (((targetProcess->processPriority < pCurrentProcessPCB->processPriority && targetProcess->processId < NUM_PROCESSES)
+	if (((targetProcess->processPriority < pCurrentProcessPCB->processPriority && targetProcess->processId < NUM_USR_PROCESSES)
 		) && is_ready_or_new(targetProcess->currentState)) {
 		context_switch(pCurrentProcessPCB, targetProcess);
 	}
@@ -46,7 +46,7 @@ void* k_receive_message(int* sender_ID) {
 	ListNode* node;
 	
 	//don't want to block system calls or iprocesses (block only user procs pid 0 to 6)
-	while (pCurrentProcessPCB->waitingMessages.head == NULL && pCurrentProcessPCB->processId < NUM_PROCESSES) {
+	while (pCurrentProcessPCB->waitingMessages.head == NULL && pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
 	 	pCurrentProcessPCB->currentState = BLOCKED_ON_RECEIVE;
 		k_release_processor();
 	}

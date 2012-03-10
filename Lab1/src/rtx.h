@@ -25,14 +25,17 @@ extern unsigned int free_mem;
 // user process stack size 512 = 0x80 *4 bytes	 (128 4-byte words)
 #define START_STACKS free_mem
 #define STACKS_SIZE 0x200
-#define NUM_PROCESSES 7
+#define NUM_USR_PROCESSES 7
+#define NUM_I_PROCESSES 2
+#define NUM_SYS_PROCESSES 2
+#define NUM_PROCESSES (NUM_PROCESSES + NUM_I_PROCESSES + NUM_SYS_PROCESSES)
 
 // dynamic heap for user processes
 #define MEMORY_BLOCK_SIZE                            0x64
 #define MAX_ALLOWED_MEMORY_BLOCKS                    0x1E
 // there are 7 user processes plus 2 iprocesses 
 //TODO: might need to consider system processes here as well 
-#define START_OF_MEMORY_ALLOCATION_TABLE             START_STACKS + (NUM_PROCESSES + 2) * STACKS_SIZE
+#define START_OF_MEMORY_ALLOCATION_TABLE             START_STACKS + (NUM_USR_PROCESSES + 2) * STACKS_SIZE
 #define START_OF_ALLOCATABLE_MEMORY                  START_OF_MEMORY_ALLOCATION_TABLE + MAX_ALLOWED_MEMORY_BLOCKS
 
 

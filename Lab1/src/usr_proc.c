@@ -7,6 +7,7 @@
 #include "ipc.h"
 #include "iprocess.h"
 #include "unit_tests.h"
+#include "timer.h"
 
 
 #ifdef DEBUG_0
@@ -153,6 +154,13 @@ int order_checker(int order_length_sofar) {
 		}
 	}
 	return 1;
+}
+
+int message_checker(Envelope * env, int sender, int receiver, int messageType, char msg) {
+	return ((char)env->message_data == msg 
+		&& (env->sender_pid == sender)
+		&& (env->receiver_pid == receiver)
+		&& (env->message_type == messageType));
 }
 
 void nullProc() {
@@ -373,7 +381,8 @@ void test_process_3() {
 	// comes in from proc4
 	actual_run_order[cur_index++] = 3;
 
-  	 message_test15 = 'c';	
+	//Send message to proc 4
+  	message_test15 = 'a';	
 
 	env_test15 = (Envelope *)request_memory_block();
 
@@ -382,7 +391,7 @@ void test_process_3() {
 	set_message_type(env_test15, DELAYED_SEND);
 	set_message_bytes(env_test15, &message_test15, sizeof(char));
 
-	delayed_send(4, env_test15, 0);
+	send_message(4, env_test15);
 
 	// This will get preempted by proc4 some time in the loop
 	while (1) {}
@@ -392,25 +401,80 @@ void test_process_3() {
 void test_process_4() {
 
 	int* sender_id;
-   /*
-	char message = 'c';	
-	Envelope * env = (Envelope *)request_memory_block();
-
-	set_sender_PID(env, 11);
-	set_destination_PID(env, 11);
-	set_message_type(env, DELAYED_SEND);
-	set_message_bytes(env, &message, sizeof(char));
-
-	delayed_send(2, env, 10000);	*/
+	Envelope * env;
+	int delay_time;
+	char message_test15;
 	
-	// NOTE, STARTING TEST CASE 15 (artem must document 14, robert must document 13)
+	// NOTE, STARTING TEST CASE 15 
 	actual_run_order[cur_index++] = 4;
 
 	// This blocks (process 3 takes over)
-	receive_message(sender_id);
+	env = (Envelope *)receive_message(sender_id);
 
-	// Comes in from proc3
+   	// Comes in from proc3
 	actual_run_order[cur_index++] = 4;
+
+	//Set up message 1 (delay 0)
+	message_test15 = 'b';	
+	set_sender_PID(env, 4);
+	set_destination_PID(env, 4);
+	set_message_type(env, DELAYED_SEND);
+	set_message_bytes(env, &message_test15, sizeof(char));
+
+	//Send msg 1
+	delay_time = get_current_time();
+	delayed_send(4, env, 0);
+	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
+
+	//Check message contents
+	if(get_current_time() != delay_time || !message_checker(env, 4, 4, 5, 'b')) {
+		uart0_put_string("G015_test: test 15 FAIL\n\r");
+		return;
+	}
+
+	actual_run_order[cur_index++] = 4;
+
+	//Set up message 1 (delay 1000)
+	message_test15 = 'c';	
+	set_sender_PID(env, 4);
+	set_destination_PID(env, 4);
+	set_message_type(env, DELAYED_SEND);
+	set_message_bytes(env, &message_test15, sizeof(char));
+
+	//Send msg 1
+	delay_time = get_current_time();
+	delayed_send(4, env, 1000);
+	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
+
+	//Check message contents
+	if(get_current_time() != (delay_time + 1000) || !message_checker(env, 4, 4, 5, 'c')) {
+		uart0_put_string("G015_test: test 15 FAIL\n\r");
+		return;
+	}
+
+	actual_run_order[cur_index++] = 4;
+
+	//Set up message 1 (delay 1000)
+	message_test15 = 'd';	
+	set_sender_PID(env, 4);
+	set_destination_PID(env, 4);
+	set_message_type(env, DELAYED_SEND);
+	set_message_bytes(env, &message_test15, sizeof(char));
+
+	//Send msg 1
+	delay_time = get_current_time();
+	delayed_send(4, env, 10000);
+	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
+
+	//Check message contents
+	if(get_current_time() != (delay_time + 10000) || !message_checker(env, 4, 4, 5, 'd')) {
+		uart0_put_string("G015_test: test 15 FAIL\n\r");
+		return;
+	}
+
+	actual_run_order[cur_index++] = 4;
+
+	
 	// TODO check message is good
 	if (order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 15 OK\n\r");

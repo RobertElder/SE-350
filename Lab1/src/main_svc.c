@@ -43,6 +43,7 @@ void print_some_numbers(){
 
 extern volatile uint32_t g_timer_count;
 
+
 int main(){
 	volatile unsigned int ret_val = 1234;
 	SystemInit();	// initialize the system

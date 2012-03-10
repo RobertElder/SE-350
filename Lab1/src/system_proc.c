@@ -1,12 +1,15 @@
+#include "system_proc.h"
 #include "rtx.h"
 #include "uart.h"
-#include "system_proc.h"
 #include "utils.h"
 #include "memory.h"
 #include "process.h"
 #include "ipc.h"
 
 
+int number_of_registered_commands = 0;
+char registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS][MAX_COMMAND_LENGTH];
+int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
 
 char current_command_buffer[MAX_COMMAND_LENGTH];
 int current_command_length = 0;
@@ -79,8 +82,8 @@ void keyboard_command_decoder(void * message){
 		current_command_length++;
 	}
 
-	// Did they type a newline?
-	if(*pChar == 10){
+	// Did they type a carriage return?
+	if(*pChar == 0xD){
 		int matched_command = get_index_of_matching_command();
 
 		//  Does the thing in the buffer match a command that was registered? 
@@ -96,7 +99,7 @@ void keyboard_command_decoder(void * message){
 		current_command_length = 0;
 	}
 
-	release_memory_block(message);	
+	k_release_memory_block(message);	
 }
 
 void crt_display(void){

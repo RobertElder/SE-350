@@ -41,7 +41,7 @@ int message_api_tests_passed(){
 int command_tests_passed(){
 	int i = 0;
 	void * p;
-	char cmd[] = "%WS12:45:00\n";
+	char cmd[] = "%WS12:45:00\r";
 
    	for(i = 0; i < 100; i++){
 		register_command("afdsasd",1);

@@ -7,7 +7,10 @@
 
 #include <LPC17xx.h>
 #include "uart.h"
+#include "memory.h"
 #include "irq.h"
+#include "ipc.h"
+#include "system_proc.h"
 
 volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
@@ -123,6 +126,8 @@ void c_UART0_IRQHandler(void)
 }
 
 void execute_uart() {
+	void * message = 0;
+	char c;
 	/*
 	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
 	IIR - Interrupt ID Register. Identifies which interrupt(s) are pending.
@@ -140,12 +145,13 @@ void execute_uart() {
 	IIR_IntId = (pUart->IIR) >> 1 ; // skip pending bit in IIR
 
 	if (IIR_IntId & IIR_Receive_Data_Available) {  // Receive Data Avaialbe
-	    // Note: read RBR will clear the interrupt
-	    g_UART0_buffer[g_UART0_count++] = pUart->RBR; // read from the uart
-	    if ( g_UART0_count == BUFSIZE ) {
-		    g_UART0_count = 0;  // buffer overflow
-	    }	
-	    pUart->THR = *((uint8_t *)g_UART0_buffer);
+		// Note: read RBR will clear the interrupt
+		c =   pUart->RBR; // read from the uart
+		message = k_request_memory_block();
+		set_message_bytes(message,&c,1);
+		keyboard_command_decoder(message);
+
+	    pUart->THR = c;
 		g_UART0_TX_empty = 0;  // not empty in the THR until it shifts out
 
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty

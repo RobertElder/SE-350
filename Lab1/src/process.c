@@ -426,12 +426,11 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 			}
 	
 		   if (pCurrentProcessPCB->currentState == NEW) {
-		   		pCurrentProcessPCB->currentState = RUN;
-
 				if (is_i_proc(pCurrentProcessPCB->processId)) {
+					pCurrentProcessPCB->currentState = RUN;
 					__new_iproc_return();
 				} else {
-					__rte();
+					goto set_to_run_and_rte;
 				}
 		   }
 		   pCurrentProcessPCB->currentState = RUN;

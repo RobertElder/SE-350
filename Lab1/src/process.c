@@ -439,8 +439,8 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 	}
 
 
-
-	goto exit_function;
+	//  Don't delete this return even through it is tempting
+	return;
 
 	on_current_state_interrupted:
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
@@ -465,26 +465,23 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		
 		if (pCurrentProcessPCB->currentState == NEW) {
 			if (is_i_proc(pCurrentProcessPCB->processId)) {
-			pCurrentProcessPCB->currentState = RUN;
-			__new_iproc_return();
+				pCurrentProcessPCB->currentState = RUN;
+				__new_iproc_return();
 			} else {
-			goto set_to_run_and_rte;
+				goto set_to_run_and_rte;
 			}
 		}
 		pCurrentProcessPCB->currentState = RUN;
-		goto exit_function;
+		return;
 
 	save_old_and_set_new_MSP:
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-		goto exit_function;
+		return;
 	
 	set_to_run_and_rte:
 		pCurrentProcessPCB->currentState = RUN;
 		__rte();
-	
-	exit_function:
-		return;
 }
 
 	

@@ -64,7 +64,7 @@ void register_command(char * s, int process_id){
 			break;
 
 	}
-	assert(number_of_registered_commands < MAX_NUMBER_OF_REGISTERABLE_COMMANDS, "Too many commands registered");
+	assert(number_of_registered_commands < MAX_NUMBER_OF_REGISTERABLE_COMMANDS, "ERROR: Too many commands registered");
 	number_of_registered_commands++;
 
 }

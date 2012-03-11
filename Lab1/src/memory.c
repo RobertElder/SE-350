@@ -81,7 +81,7 @@ void * k_request_memory_block (){
 		}
 	}
 
-	assert(maxNumberOfMemoryBlocksEverAllocatedAtOnce < MAX_ALLOWED_MEMORY_BLOCKS, "Too many memory blocks allocated");
+	assert(maxNumberOfMemoryBlocksEverAllocatedAtOnce < MAX_ALLOWED_MEMORY_BLOCKS, "ERROR: Too many memory blocks allocated");
 	// There are no free blocks that we can use, allocate a new one
 	rtn = allocate_memory_block_at_index(maxNumberOfMemoryBlocksEverAllocatedAtOnce);
 	// There is now one more block allocated

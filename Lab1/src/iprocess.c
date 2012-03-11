@@ -30,27 +30,31 @@ typedef struct delayedMessage {
 
 void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 	ListNode* currentNode = listHead->head;
+	int node_expiry = ((DelayedMessage *)node->data)->expiry_time;
 
 	if(currentNode == NULL) {
 	 	(* listHead).head = node;
 		(* listHead).tail = node;
+	} else if (((DelayedMessage *)currentNode->data)->expiry_time > node_expiry) {
+		(*node).next = listHead->head;
+		(* listHead).head = node;		 
+		return;
 	} else {
-
 	 	while(currentNode != NULL) {
 			if(currentNode->next == NULL) {
 			 	(* currentNode).next = node;
 				(* listHead).tail = node;
 				return;
-			} else if (((DelayedMessage *)currentNode->data)->expiry_time 
-				< ((DelayedMessage *)node->data)->expiry_time) 
+			} 
+			else if (((DelayedMessage *)currentNode->next->data)->expiry_time > node_expiry) 
 			{
 				(* node).next = currentNode->next;
 				(* currentNode).next = node;	
 				return;			
 			}		 	
-		}
 
-		currentNode = currentNode->next;
+			currentNode = currentNode->next;
+		}		
 	}
 
 	return;

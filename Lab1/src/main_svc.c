@@ -62,14 +62,14 @@ int main(){
 	init_i_processes();
 	init_sys_procs();
 
+	//  Set up memory
+	init_memory_allocation_table();
+
 	// Enable interrupt requests
 	__enable_irq();
 	
 	// transit to unprivileged level, default MSP is used
 	__set_CONTROL(__get_CONTROL() | BIT(0));  
-
-	//  Set up memory
-	init_memory_allocation_table();
 
 	ret_val = release_processor();
 	uart0_put_string("\nShould never reach here!!!\n\r");

@@ -9,7 +9,7 @@
 /* Variable definitions */
 ProcessControlBlock* pCurrentProcessPCB  = NULL;
 
-ProcessEntry proc_init_table[NUM_USR_PROCESSES];
+ProcessEntry proc_init_table[NUM_USR_PROCESSES];							   ;
 ProcessControlBlock pcb_array[NUM_USR_PROCESSES];
 ListNode node_array[NUM_USR_PROCESSES];
 
@@ -77,6 +77,9 @@ ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 	} else {
 		if (process_ID == 0xA) return get_uart_pcb();
 		if (process_ID == 0xB) return get_timer_pcb();
+		if (process_ID == 0xC) return get_crt_pcb();
+		if (process_ID == 0xD) return get_kcd_pcb();
+		if (process_ID == 0xE) return get_clock_pcb();
 		return NULL;
 	}
 	
@@ -405,7 +408,9 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		   if (pCurrentProcessPCB->currentState == NEW) {
 		   		pCurrentProcessPCB->currentState = RUN;
 
-				if (pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
+
+
+				if (!is_i_proc(pCurrentProcessPCB->processId)) {
 					__rte();
 				} else {
 					__new_iproc_return();

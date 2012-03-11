@@ -497,20 +497,16 @@ void test_process_5() {
 	int * block;
 	int * block2;
 
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 	release_processor();
 
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 	release_processor();
 
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 	release_processor();
 
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 
 	//test the priority of test_proc_1
 	if (get_process_priority(1) == 1 && order_checker(cur_index)) {
@@ -522,8 +518,7 @@ void test_process_5() {
 	//should not preempt
 	release_processor();
 
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 
 	if (order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 3 OK\n\r");
@@ -533,8 +528,7 @@ void test_process_5() {
 
 	set_process_priority(5, 1);
 	// shouldn't get preempted by test_proc_2
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 	
 	if (get_process_priority(5) == 1 && order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 4 OK\n\r");
@@ -544,8 +538,7 @@ void test_process_5() {
 	release_processor();
 
 	//should come here after test_proc_1 is blocked on memory
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 
 	//requested block number 32 - will get blocked
 	//proc 2 will run next
@@ -553,8 +546,7 @@ void test_process_5() {
 	*block = 0;
 
 	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 
 	if (order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 11 OK\n\r");
@@ -568,8 +560,7 @@ void test_process_5() {
 	*block2 = 0;
 
 	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
-	actual_run_order[cur_index] = 5;
-	cur_index++;
+	actual_run_order[cur_index++] = 5;
 
 	if (order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 12 OK\n\r");

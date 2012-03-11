@@ -55,7 +55,7 @@ uint32_t timer_init(uint8_t n_timer)
     // Step 4: Interrupts configuration
 
     // Step 4.1: Prescale Register PR setting
-    pTimer->PR = 12499 / CLOCK_MULTIPLIER;  // CCLK = 100 MHZ, PCLK = CCLK/4 = 25 MHZ
+    pTimer->PR = 12499;  // CCLK = 100 MHZ, PCLK = CCLK/4 = 25 MHZ
                          // 2*(12499 + 1)*(1/25) * 10^(-6) s = 10^(-3) s = 1 ms
 						 // TC (Timer Counter) toggles b/w 0 and 1 every 12500 PCLKs
 						 // see MR setting below 

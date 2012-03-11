@@ -95,15 +95,15 @@ int get_index_of_matching_command(){
 void keyboard_command_decoder(){
 
 	while (1) {
-		int sender_id = -1;
+		int* sender_id;
 		int destination = -1;
 
 		// Get our new message
-		Envelope* message = (Envelope*)receive_message(&sender_id);
+		Envelope* message = (Envelope*)receive_message(sender_id);
 		char * pChar = get_message_data(message);
 		destination = get_destination_PID(message);
 
-		assert(sender_id == message->sender_pid,
+		assert(*sender_id == message->sender_pid,
 			 "ERROR: receive_message did not supply sender_id");
 		assert(destination == kcd_pcb.processId,
 			 "ERROR: Message destination did not match with KCD pid");
@@ -135,7 +135,7 @@ void keyboard_command_decoder(){
 				current_command_length = 0;
 			}
 		}
-		k_release_memory_block(message);
+		release_memory_block(message);
 	}
 
 		
@@ -143,15 +143,15 @@ void keyboard_command_decoder(){
 
 void crt_display(){
 	while (1) {
-		int sender_id = -1;
+		int* sender_id;
 		int destination = -1;
 
-		Envelope* message = (Envelope*) receive_message(&sender_id);
+		Envelope* message = (Envelope*)receive_message(sender_id);
 		uint8_t * current_character = get_message_data(message);
 		assert(message != NULL, "ERROR: CRT received a NULL message");
 		destination = get_destination_PID(message);
 
-		assert(sender_id == message->sender_pid,
+		assert(*sender_id == message->sender_pid,
 			 "ERROR: receive_message did not supply sender_id");
 		assert(destination == crt_pcb.processId,
 			"ERROR: Message destination did not match with CRT pid");
@@ -170,7 +170,7 @@ void crt_display(){
 		    }
 			
 			// We don't want that memory block anymore
-			k_release_memory_block(message);
+			release_memory_block(message);
 		}		
 	}
 }
@@ -183,7 +183,7 @@ void wall_clock() {
 	Envelope * env;
 
 	while(1) {
-		env = (Envelope *)k_receive_message(sender_id);
+		env = (Envelope *)receive_message(sender_id);
 
 		switch(env->message_type) {
 			case CLOCK_TICK:
@@ -194,7 +194,7 @@ void wall_clock() {
 						char* time_string = get_formatted_time_from_seconds(clock_time);
 
 						release_memory_block(env);
-						env = (Envelope *)k_request_memory_block();
+						env = (Envelope *)request_memory_block();
 
 						set_sender_PID(env, 14);
 						set_destination_PID(env, 13);

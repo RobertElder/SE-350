@@ -7,6 +7,7 @@
 #include "memory.h"
 #include "uart.h"
 
+#define SECOND 50
 
 LinkedList delayed_messages;
 ProcessControlBlock i_uart_pcb;
@@ -76,6 +77,7 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 
 void timeout_i_process() {
 	while(1) {
+		int time;
 		int* senderId;
 		ProcessControlBlock* interrupted_proc = get_interrupted_process();
 		
@@ -100,10 +102,12 @@ void timeout_i_process() {
 				receiver_pid = envelope->receiver_pid;
 				k_send_message( receiver_pid, envelope ); //forward msg to destination
 			}						
-		} 	 
-
-		if(get_current_time() % 1000 == 0) {
-			int time = get_current_time() % 1000;
+		} 
+		
+			 
+		time = get_current_time();
+		if(time % SECOND == 0) {
+			time = time % SECOND;
 
 		 	//send wall_clock a message to tick
 			env = (Envelope *)k_request_memory_block();

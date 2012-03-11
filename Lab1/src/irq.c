@@ -24,8 +24,8 @@ void irq_handler(irq_type type) {
 			break;
 		
 	}
-	k_release_processor();
 
+	k_release_processor();
 }
 
 

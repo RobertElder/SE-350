@@ -395,7 +395,7 @@ void test_process_3() {
 
 	send_message(4, env_test15);
 
-	// This will get preempted by proc4 some time in the loop
+	// Comes in here from test process 4. Will loop until proc4 gets his message. (does this twice)
 	while (1) {}
 
 }
@@ -408,7 +408,7 @@ void test_process_4() {
 	char message_test15;
 	int test_passed = 1;
 	
-	// NOTE, STARTING TEST CASE 15 
+	// STARTING TEST CASE 14 
 	actual_run_order[cur_index++] = 4;
 
 	// This blocks (process 3 takes over)
@@ -427,6 +427,8 @@ void test_process_4() {
 	//Send msg 1
 	delay_time = get_current_time();
 	delayed_send(4, env, 0);
+
+	// This will block until the message comes. Proc 3 will run in his while loop
 	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
 
 	//Check message contents
@@ -447,8 +449,12 @@ void test_process_4() {
 
 	//Send msg 1
 	delay_time = get_current_time();
+
+	// Send message to self. Will receive later
 	delayed_send(4, env, 10);
-	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
+
+	// Blocks until message to self is received.
+	env = (Envelope *)receive_message(sender_id);
 
 	//(too late) || (too early) || (Check message contents)
 	if(get_current_time() > (delay_time + 10 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, 5, 'c')) {
@@ -466,8 +472,10 @@ void test_process_4() {
 
 	//Send msg 1
 	delay_time = get_current_time();
+	// sends msg to self
 	delayed_send(4, env, 50);
-	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
+	// blocks on receive, proc3 will run in the meantime
+	env = (Envelope *)receive_message(sender_id);
 
 	//(too late) || (too early) || (Check message contents)
 	if(get_current_time() > (delay_time + 50 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, 5, 'd')) {

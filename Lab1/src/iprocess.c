@@ -35,6 +35,7 @@ void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 	if(currentNode == NULL) {
 	 	(* listHead).head = node;
 		(* listHead).tail = node;
+		node->next = NULL;
 	} else if (((DelayedMessage *)currentNode->data)->expiry_time > node_expiry) {
 		(*node).next = listHead->head;
 		(* listHead).head = node;		 
@@ -44,6 +45,7 @@ void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 			if(currentNode->next == NULL) {
 			 	(* currentNode).next = node;
 				(* listHead).tail = node;
+				node->next = NULL;
 				return;
 			} 
 			else if (((DelayedMessage *)currentNode->next->data)->expiry_time > node_expiry) 

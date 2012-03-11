@@ -37,6 +37,7 @@ extern unsigned int free_mem;
 //TODO: might need to consider system processes here as well 
 #define START_OF_MEMORY_ALLOCATION_TABLE             START_STACKS + (NUM_PROCESSES) * STACKS_SIZE
 #define START_OF_ALLOCATABLE_MEMORY                  START_OF_MEMORY_ALLOCATION_TABLE + MAX_ALLOWED_MEMORY_BLOCKS
+#define DEFAULT_ALLOCATED_STATUS_BYTE	             0x01
 
 
 // ----------------------------------------------------------------

@@ -102,15 +102,15 @@ int get_index_of_matching_command(){
 void keyboard_command_decoder(){
 
 	while (1) {
-		int* sender_id;
+		int sender_id = -1;
 		int destination = -1;
 
 		// Get our new message
-		Envelope* message = (Envelope*)receive_message(sender_id);
+		Envelope* message = (Envelope*)receive_message(&sender_id);
 		char * pChar = get_message_data(message);
 		destination = get_destination_PID(message);
 
-		assert(*sender_id == message->sender_pid,
+		assert(sender_id == message->sender_pid,
 			 "ERROR: receive_message did not supply sender_id");
 		assert(destination == kcd_pcb.processId,
 			 "ERROR: Message destination did not match with KCD pid");

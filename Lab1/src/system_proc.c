@@ -37,9 +37,14 @@ ProcessControlBlock* get_waiting_sys_proc() {
 	return NULL;
 }
 
+typedef struct cmd {
+	uint32_t registered_pid;
+	char command_string[MAX_COMMAND_LENGTH] ;
+	uint32_t message_type;
+} RegisteredCommand;
+
 int number_of_registered_commands = 0;
-char registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS][MAX_COMMAND_LENGTH];
-int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
+RegisteredCommand registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
 
 char current_command_buffer[MAX_COMMAND_LENGTH];
 int current_command_length = 0;
@@ -55,19 +60,22 @@ void unregister_all_commands(){
 void register_command(char * s, int process_id) {
 	int i = 0;
 
-	registered_processes[number_of_registered_commands] = process_id;
+	registered_commands[number_of_registered_commands].registered_pid = process_id;
+	registered_commands[number_of_registered_commands].message_type = COMMAND_MATCHED;
+
 	for(i = 0; i < MAX_COMMAND_LENGTH; i++){
 		assert(i < MAX_COMMAND_LENGTH, "Invalid attempt to register a command that is too long.");
 
-		registered_commands[number_of_registered_commands][i]  = s[i];
+		registered_commands[number_of_registered_commands].command_string[i]  = s[i];
+
 		//  We want to copy everything up to and including the null
 		if(s[i] == 0)
 			break;
 
 	}
 	assert(number_of_registered_commands < MAX_NUMBER_OF_REGISTERABLE_COMMANDS, "ERROR: Too many commands registered");
-	number_of_registered_commands++;
-								
+
+	number_of_registered_commands++;								
 }
 
 int get_index_of_matching_command(){
@@ -76,19 +84,19 @@ int get_index_of_matching_command(){
 	 */
 	int i = 0;
 	int j = 0;
+
  	for(i = 0; i < number_of_registered_commands; i++){
-		for(j = 0; j < MAX_NUMBER_OF_REGISTERABLE_COMMANDS; j++){
-			if(registered_commands[i][j] == 0){
+		for(j = 0; j < MAX_COMMAND_LENGTH; j++){
+			char c = registered_commands[i].command_string[j];
+			if(c == 0){
 				//  We are at the end of the command so it must have matched so far.
 				assert(j > 0,"We just matched an empty command.  This is probably not right.");
+
 				return i;
-			}else if(j >= current_command_length){
-				//  We reached the end of the command buffer, there is nothing to check
-				break;
-			}else if(!(registered_commands[i][j] == current_command_buffer[j])){
-				// This command did not match
-				break;
-			}	
+			} else if(c != current_command_buffer[j] || j >= current_command_length) {
+				//No match
+				return -1;
+			}
 		}
 	}
 	//  No matching command found
@@ -117,7 +125,8 @@ void keyboard_command_decoder(){
 
 		switch(message_type) {
 			case COMMAND_REGISTRATION:
-				register_command(pChar, destination); 
+				register_command(pChar, destination);
+				release_memory_block(message); 
 				break;
 			case COMMAND_INPUT:
 				/* If the buffer is full, they are not part of any valid command so 
@@ -131,15 +140,27 @@ void keyboard_command_decoder(){
 			
 				// Did they type a carriage return?
 				if(*pChar == 0xD){
-					int matched_command = get_index_of_matching_command();
-			
+					int indexOfMatchedCommand = get_index_of_matching_command();
+
 					//  Does the thing in the buffer match a command that was registered? 
-					if(matched_command > -1){
-					 	//  The user type a command that we recognized
+					if(indexOfMatchedCommand > -1) {
+						RegisteredCommand registeredCommand = registered_commands[indexOfMatchedCommand];
+						Envelope * responseEnvelope = (Envelope *)request_memory_block();
+
 						current_command_buffer[current_command_length] = 0;
+
 						uart0_put_string("A command was matched:\r\n");
 						uart0_put_string((unsigned char *)&current_command_buffer);
 						uart0_put_string("\r\n");
+
+					   	//Send a message to the registered process
+						set_sender_PID(responseEnvelope, get_kcd_pcb()->processId);
+						set_destination_PID(responseEnvelope, registeredCommand.registered_pid);
+						set_message_type(responseEnvelope, registeredCommand.message_type);
+						set_message_bytes(responseEnvelope, &current_command_buffer, current_command_length * sizeof(char)); //Current buffer
+
+						send_message(registeredCommand.registered_pid, responseEnvelope); //to registered process
+
 					}
 			
 					// Reset the buffer for new commands
@@ -218,7 +239,7 @@ void wall_clock() {
 						set_message_type(env, OUTPUT_STRING);
 						set_message_bytes(env, time_string, sizeof(time_string));
 
-						k_send_message(get_kcd_pcb()->processId, env); //to KCD for display
+						send_message(get_kcd_pcb()->processId, env); //to KCD for display
 					}
 				}
 				break;

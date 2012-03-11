@@ -163,8 +163,9 @@ void execute_uart() {
 
 		if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS - 2) {
 			message = k_request_memory_block();
+			message->message_type = KEYBOARD_INPUT;
 			message->sender_pid = get_uart_pcb()->processId;
-			message->receiver_pid = get_crt_pcb()->processId;
+			message->receiver_pid = get_kcd_pcb()->processId;
 
 			// get data from the buffer 
 			//set_message_bytes(message,&c,1);

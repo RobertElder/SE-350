@@ -434,7 +434,7 @@ void test_process_4() {
 	//Check message contents
 	//Add 1 to delay_time in order to account for context switches and stuff
 	//(too late) || (too early) || (Check message contents)
-	if(get_current_time() > delay_time + 1 || get_current_time() < delay_time || !message_checker(env, 4, 4, 5, 'b')) {
+	if(get_current_time() > delay_time + 1 || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'b')) {
 		test_passed = 0;
 	}
 
@@ -457,7 +457,7 @@ void test_process_4() {
 	env = (Envelope *)receive_message(sender_id);
 
 	//(too late) || (too early) || (Check message contents)
-	if(get_current_time() > (delay_time + 10 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, 5, 'c')) {
+	if(get_current_time() > (delay_time + 10 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'c')) {
 		test_passed = 0;
 	}
 
@@ -478,7 +478,7 @@ void test_process_4() {
 	env = (Envelope *)receive_message(sender_id);
 
 	//(too late) || (too early) || (Check message contents)
-	if(get_current_time() > (delay_time + 50 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, 5, 'd')) {
+	if(get_current_time() > (delay_time + 50 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'd')) {
 		test_passed = 0;
 	}
 

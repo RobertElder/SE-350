@@ -14,9 +14,20 @@ int numMessagesReceived = 0;
 Envelope recentlySentMessages[NUM_MESSAGES_TO_TRACK];
 Envelope recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK];
 
+void copyEnvelope(Envelope * toCopy, Envelope * fromCopy) {
+	toCopy->sender_pid = fromCopy->sender_pid;
+	toCopy->receiver_pid = fromCopy->receiver_pid;
+	toCopy->message_type = fromCopy->message_type;
+	toCopy->message_data = fromCopy->message_data;
+}
+
 void trackSentMessage(Envelope * env) {
+	if(env == NULL) {
+		return;
+	}
+
 	if(numMessagesSent < NUM_MESSAGES_TO_TRACK) {
-		recentlySentMessages[numMessagesSent] = *(env);
+		copyEnvelope(&recentlySentMessages[numMessagesSent], env);
 	 	numMessagesSent++;
 	} else {
 		int i;
@@ -25,22 +36,26 @@ void trackSentMessage(Envelope * env) {
 			recentlySentMessages[i - 1] = recentlySentMessages[i]; //Shift all left	
 		}
 
-		recentlySentMessages[NUM_MESSAGES_TO_TRACK - 1] = *(env); //Append new message
+		copyEnvelope(&recentlySentMessages[NUM_MESSAGES_TO_TRACK - 1], env); //Append new message
 	}	
 }	
 
 void trackReceivedMessage(Envelope * env) {
+	if(env == NULL) {
+		return;
+	}
+
 	if(numMessagesReceived < NUM_MESSAGES_TO_TRACK) {
-		recentlySentMessages[numMessagesReceived] = *(env);
+		copyEnvelope(&recentlyReceivedMessages[numMessagesReceived], env);
 	 	numMessagesReceived++;
 	} else {
 		int i;
 
 		for(i = 1; i < NUM_MESSAGES_TO_TRACK; ++i) {
-			recentlySentMessages[i - 1] = recentlySentMessages[i]; //Shift all left	
+			recentlyReceivedMessages[i - 1] = recentlyReceivedMessages[i]; //Shift all left	
 		}
 
-		recentlySentMessages[NUM_MESSAGES_TO_TRACK - 1] = *(env); //Append new message
+		copyEnvelope(&recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK - 1], env); //Append new message
 	}	
 }
 

@@ -150,7 +150,7 @@ void keyboard_command_decoder(){
 //			set_sender_PID(message, 13);
 //			set_destination_PID(message, 12);
 //			
-//			k_send_message(get_crt_pcb()->processId, message); //to CRT for display
+//			k_send_message(get_crt_pcb()->processId, message); //to CRT for display aaa
 		}
 	}
 

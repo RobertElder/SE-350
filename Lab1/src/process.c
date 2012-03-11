@@ -107,6 +107,10 @@ int is_usr_proc(int process_id) {
  	return process_id < NUM_USR_PROCESSES;
 }
 
+uint8_t is_sys_proc(int proc_id) {
+ 	return proc_id == get_kcd_pcb()->processId || proc_id == get_crt_pcb()->processId;
+}
+
 int is_process_blocked(int processId){
 	//  Right now this is the only blocking state
 	return (pcb_array[processId].currentState == BLOCKED_ON_MEMORY);

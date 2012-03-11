@@ -154,6 +154,7 @@ void execute_uart() {
 		message = k_request_memory_block_debug(0xc);
 		message->sender_pid = get_uart_pcb()->processId;
 		message->receiver_pid = get_kcd_pcb()->processId;
+		message->message_type = KEYBOARD_INPUT;
 		set_message_bytes(message, &c, 1);
 		// send with a delay of 5 (might be able to send directly here...)
 		k_delayed_send(message->receiver_pid, message, 5);

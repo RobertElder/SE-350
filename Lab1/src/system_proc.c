@@ -76,16 +76,16 @@ int get_index_of_matching_command(){
 	 */
 	int i = 0;
 	int j = 0;
- 	for(i = 0; i < number_of_registered_commands; i++){
-		for(j = 0; j < MAX_NUMBER_OF_REGISTERABLE_COMMANDS; j++){
+ 	for (i = 0; i < number_of_registered_commands; i++) {
+		for (j = 0; j < MAX_NUMBER_OF_REGISTERABLE_COMMANDS; j++) {
 			if(registered_commands[i][j] == 0){
 				//  We are at the end of the command so it must have matched so far.
 				assert(j > 0,"We just matched an empty command.  This is probably not right.");
 				return i;
-			}else if(j >= current_command_length){
+			} else if(j >= current_command_length) {
 				//  We reached the end of the command buffer, there is nothing to check
 				break;
-			}else if(!(registered_commands[i][j] == current_command_buffer[j])){
+			} else if(!(registered_commands[i][j] == current_command_buffer[j])) {
 				// This command did not match
 				break;
 			}	
@@ -116,7 +116,7 @@ void keyboard_command_decoder(){
 		assert(destination == kcd_pcb.processId,
 			 "ERROR: Message destination did not match with KCD pid");
 	   
-		if (message_type == COMMAND_INPUT){
+		if (message_type == KEYBOARD_INPUT){
 			/* If the buffer is full, they are not part of any valid command so 
 				we don't care (also < because we want space for the terminating null)
 			*/

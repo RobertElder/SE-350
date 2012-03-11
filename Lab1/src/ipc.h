@@ -5,7 +5,6 @@
 #include "rtx.h"
 
 #define COMMAND_REGISTRATION 1
-#define COMMAND_INPUT 2
 #define KEYBOARD_INPUT 3
 #define OUTPUT_STRING 4
 #define DELAYED_SEND 5

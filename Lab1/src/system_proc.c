@@ -102,12 +102,13 @@ int get_index_of_matching_command(){
 void keyboard_command_decoder(){
 
 	while (1) {
-		int* sender_id;
+		int sender_id;
 		int destination = -1;
 
 		// Get our new message
-		Envelope* message = (Envelope*)receive_message(sender_id);
+		Envelope* message = (Envelope*)receive_message(&sender_id);
 		char * pChar = get_message_data(message);
+		int message_type = get_message_type(message);
 		destination = get_destination_PID(message);
 
 		assert(*sender_id == message->sender_pid,
@@ -115,7 +116,7 @@ void keyboard_command_decoder(){
 		assert(destination == kcd_pcb.processId,
 			 "ERROR: Message destination did not match with KCD pid");
 	   
-		if (get_message_type(message) == COMMAND_INPUT){
+		if (message_type == COMMAND_INPUT){
 			/* If the buffer is full, they are not part of any valid command so 
 				we don't care (also < because we want space for the terminating null)
 			*/
@@ -141,8 +142,15 @@ void keyboard_command_decoder(){
 				// Reset the buffer for new commands
 				current_command_length = 0;
 			}
+
+			release_memory_block(message);
+		} else if (message_type == OUTPUT_STRING) {
+
+//			set_sender_PID(message, 13);
+//			set_destination_PID(message, 12);
+//			
+//			k_send_message(12, message); //to CRT for display
 		}
-		release_memory_block(message);
 	}
 
 		
@@ -150,10 +158,10 @@ void keyboard_command_decoder(){
 
 void crt_display(){
 	while (1) {
-		int* sender_id;
+		int sender_id;
 		int destination = -1;
 
-		Envelope* message = (Envelope*)receive_message(sender_id);
+		Envelope* message = (Envelope*)receive_message(&sender_id);
 		uint8_t * current_character = get_message_data(message);
 		assert(message != NULL, "ERROR: CRT received a NULL message");
 		destination = get_destination_PID(message);
@@ -183,8 +191,8 @@ void crt_display(){
 }
 
 void wall_clock() {
-	int doCount = 0;
-	int displayClock = 0;
+	int doCount = 1;
+	int displayClock = 1;
 	int clock_time = 0;
 	int* sender_id;
 	Envelope * env;
@@ -208,7 +216,7 @@ void wall_clock() {
 						set_message_type(env, OUTPUT_STRING);
 						set_message_bytes(env, time_string, sizeof(time_string));
 
-						k_send_message(13, env); //display
+						k_send_message(13, env); //to KCD for display
 					}
 				}
 				break;

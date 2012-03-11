@@ -254,7 +254,7 @@ void process_init()
  	for (i = 0; i < NUM_USR_PROCESSES; ++i) {
 		ListNode *node = &node_array[i];
 		priority = pcb_array[i].processPriority;
-		// Pass the priority's head node and theLlistNode that contains a pcb
+		// Pass the priority's head node and theListNode that contains a pcb
 		node->data = &(pcb_array[i]);
 		node->next = NULL;
 	 	enqueue(&(ready_queue[priority]), node);
@@ -425,8 +425,6 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 	
 		   if (pCurrentProcessPCB->currentState == NEW) {
 		   		pCurrentProcessPCB->currentState = RUN;
-
-
 
 				if (!is_i_proc(pCurrentProcessPCB->processId)) {
 					__rte();

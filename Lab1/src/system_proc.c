@@ -228,6 +228,8 @@ void wall_clock() {
 			default:
 				break;
 		}
+
+		release_memory_block(env);
 	}
 }
 
@@ -250,8 +252,7 @@ void init_sys_procs() {
 	sys_procs[1] = &kcd_pcb;
 	sys_procs[2] = &clock_pcb;
 
-	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES)
-		 * STACKS_SIZE + STACKS_SIZE);
+	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES) * STACKS_SIZE + STACKS_SIZE);
 	stacks_start[1] = stacks_start[0] + (STACKS_SIZE) / sizeof(uint32_t);
 	stacks_start[2] = stacks_start[1] + (STACKS_SIZE) / sizeof(uint32_t);
 

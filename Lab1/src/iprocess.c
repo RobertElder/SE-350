@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "memory.h"
 #include "uart.h"
+#include "system_proc.h"
 
 #define SECOND 50
 
@@ -64,13 +65,13 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 	m.expiry_time = get_current_time() + delay; //Delay is in ms
 
 	set_sender_PID(env, pid);  //sender should be original sender
-	set_destination_PID(env, 11);
+	set_destination_PID(env, get_timer_pcb()->processId);
 	set_message_type(env, DELAYED_SEND);
 	set_message_words(env, &m, sizeof(m) / sizeof(uint32_t));
 
 	//add node containing m to timeoutProcess message queue
 	//expiry_sorted_enqueue(&delayed_messages, node);
-	k_send_message(11, env); //send message to timeout_i_process
+	k_send_message(get_timer_pcb()->processId, env); //send message to timeout_i_process
 
 	return 0; //What should the return value be?
 }
@@ -111,11 +112,11 @@ void timeout_i_process() {
 
 		 	//send wall_clock a message to tick
 			env = (Envelope *)k_request_memory_block();
-			set_sender_PID(env, 11);
-			set_destination_PID(env, 14);
+			set_sender_PID(env, get_timer_pcb()->processId);
+			set_destination_PID(env, get_clock_pcb()->processId);
 			set_message_type(env, CLOCK_TICK);
 
-			k_send_message(14, env);
+			k_send_message(get_clock_pcb()->processId, env);
 		}		
 
 		context_switch(pCurrentProcessPCB, interrupted_proc);

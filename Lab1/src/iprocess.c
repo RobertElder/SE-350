@@ -114,9 +114,11 @@ void timeout_i_process() {
 			while (((DelayedMessage *)(delayed_messages.head->data))->expiry_time
 				 <= get_current_time())
 			{
-				Envelope* envelope = ((DelayedMessage *)dequeue(&delayed_messages)->data)->envelope;
+				ListNode* node = dequeue(&delayed_messages);
+				Envelope* envelope = ((DelayedMessage *)node->data)->envelope;
 				receiver_pid = envelope->receiver_pid;
 				k_send_message( receiver_pid, envelope ); //forward msg to destination
+				k_release_memory_block(node);
 			}						
 		} 
 		

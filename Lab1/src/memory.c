@@ -4,7 +4,7 @@
 
 int maxNumberOfMemoryBlocksEverAllocatedAtOnce = 0;
 extern int numberOfMemoryBlocksCurrentlyAllocated = 0;
-
+char allocated_status_value = DEFAULT_ALLOCATED_STATUS_BYTE;
 
 void * get_address_of_memory_block_at_index(int memoryBlockIndex){
 	//  taken up by pMaxNumberOfMemoryBlocksEverAllocated plus the offset of the byte for that memory block
@@ -19,7 +19,7 @@ void * allocate_memory_block_at_index(int memoryBlockIndex){
 	// memoryBlockIndex is the 0-based index addressing the block of memory
 	char * pAllocationStatusByte = get_address_of_memory_block_allocation_status_at_index(memoryBlockIndex);
 	// Set the status of this block to allocated (1)
-	*pAllocationStatusByte = 1;
+	*pAllocationStatusByte = allocated_status_value;
 	return get_address_of_memory_block_at_index(memoryBlockIndex);
 }
 
@@ -44,6 +44,14 @@ void request_mem_block_helper() {
 		}
 
 	}
+}
+
+void * k_request_memory_block_debug(char c){
+	void * p = NULL;
+	allocated_status_value = c;
+	p = k_request_memory_block();
+	allocated_status_value = DEFAULT_ALLOCATED_STATUS_BYTE;
+	return p;
 }
 
 void * k_request_memory_block (){
@@ -121,6 +129,7 @@ int k_release_memory_block (void * MemoryBlock){
 
 	// Now everything should be k, lets set this block as un-allocated
 	pAllocationStatusByte = get_address_of_memory_block_allocation_status_at_index(memoryBlockIndex);
+	assert(*pAllocationStatusByte,"Allocation status byte indicated deallocaton of unallocated memory.");
 	// Set the status of this block to unallocated (0)
 	*pAllocationStatusByte = 0;
 

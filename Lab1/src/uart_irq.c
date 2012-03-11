@@ -19,9 +19,6 @@ volatile uint32_t g_UART0_count = 0;
 
 int i = 0;
 char buffer[100];
-char* loc = buffer;
-int chars_to_output = 0;
-int total_outputted = 0;
 
 /**
  * @brief: initialize the n_uart
@@ -133,8 +130,7 @@ void c_UART0_IRQHandler(void)
 }
 
 void execute_uart() {
- 
-	int max_chars = 10;
+
 	char c;
 	/*
 	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
@@ -241,7 +237,7 @@ void uart0_put_string(unsigned char * c){
 	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;	// Disable IER_Receive_Data_Available 
 	while(lenSoFar < totalStringLen){
 		nextOutOfBoundsIndex = lenSoFar + BUFSIZE > totalStringLen ? totalStringLen : lenSoFar + BUFSIZE;
-		currentBufferPos = 0;
+		currentBufferPos = 0;																																	 
 
 		for(i = lenSoFar; i < nextOutOfBoundsIndex; i++){
 			g_UART0_buffer[currentBufferPos] = c[i];

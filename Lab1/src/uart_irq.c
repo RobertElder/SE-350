@@ -154,7 +154,7 @@ void execute_uart() {
 	//	keyboard_command_decoder(message);	   //TODO change to delayed_send
 
 		// Now send a message to echo that character back to the screen.
-		message = k_request_memory_block();
+		message = k_request_memory_block_debug(0xc);
 		message->sender_pid = get_uart_pcb()->processId;
 		message->receiver_pid = get_crt_pcb()->processId;
 		set_message_bytes(message,&c,1);

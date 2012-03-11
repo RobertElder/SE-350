@@ -78,7 +78,7 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 		all the message functions and re-factor them into to use 
 		consistent data structures properly. 
 	*/
-	Envelope * env = (Envelope *)k_request_memory_block();
+	Envelope * env = (Envelope *)k_request_memory_block_debug(0xe);
 
 	m.pid = pid;
 	m.envelope = envelope;

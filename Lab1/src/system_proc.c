@@ -201,7 +201,7 @@ void wall_clock() {
 						char* time_string = get_formatted_time_from_seconds(clock_time);
 
 						release_memory_block(env);
-						env = (Envelope *)request_memory_block();
+						env = (Envelope *)request_memory_block_debug(0xd);
 
 						set_sender_PID(env, 14);
 						set_destination_PID(env, 13);

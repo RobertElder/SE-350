@@ -62,7 +62,7 @@ void do_print_processes(){
 	int i = 0;
 	uart0_put_string("-- Ready processes by priority --");
 	for(i = 0; i < NUM_PRIORITIES; i++){
-		ListNode * current_ready_queue_node = ready_queue[i]->head;
+		ListNode * current_ready_queue_node = 0;//ready_queue[i]->head;
 	    print_unsigned_integer(i);
 		uart0_put_string(".\r\n");
 		while(current_ready_queue_node){

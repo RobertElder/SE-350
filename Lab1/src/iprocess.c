@@ -39,25 +39,28 @@ void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 	} else if (((DelayedMessage *)currentNode->data)->expiry_time > node_expiry) {
 		(*node).next = listHead->head;
 		(* listHead).head = node;		 
-		return;
+		goto expiry_sorted_enqueue_error_check;
 	} else {
 	 	while(currentNode != NULL) {
 			if(currentNode->next == NULL) {
 			 	(* currentNode).next = node;
 				(* listHead).tail = node;
 				node->next = NULL;
-				return;
+				goto expiry_sorted_enqueue_error_check;
 			} 
 			else if (((DelayedMessage *)currentNode->next->data)->expiry_time > node_expiry) 
 			{
 				(* node).next = currentNode->next;
 				(* currentNode).next = node;	
-				return;			
+				goto expiry_sorted_enqueue_error_check;			
 			}		 	
 
 			currentNode = currentNode->next;
 		}		
 	}
+
+expiry_sorted_enqueue_error_check:
+	assert(node != node->next,"ERROR node that was enqueued had a circular reference.");
 
 	return;
 }

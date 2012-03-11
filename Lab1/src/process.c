@@ -399,37 +399,7 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		Switching from an interrupted process to an iprocess
 		or to a higher priority process	 */
 		if (pOldProcessPCB->currentState == INTERRUPTED) {
-
-			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-
-			// check if new process is a user process
-			if (pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
-			 	pOldProcessPCB->currentState = RDY;
-				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-					get_node_of_process(pOldProcessPCB->processId));	
-			}
-
-		   __set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-
-		   if (is_ready_or_new(pCurrentProcessPCB->currentState) && 
-		   		pCurrentProcessPCB->processId < NUM_USR_PROCESSES) 
-			{
-				// We remove processes from the ready queue
-				pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
-				assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");	
-			}
-	
-		   if (pCurrentProcessPCB->currentState == NEW) {
-				if (is_i_proc(pCurrentProcessPCB->processId)) {
-					pCurrentProcessPCB->currentState = RUN;
-					__new_iproc_return();
-				} else {
-					goto set_to_run_and_rte;
-				}
-		   }
-		   pCurrentProcessPCB->currentState = RUN;
-
-
+			goto on_current_state_interrupted;
 		} else {
 			// "default" switch case (no interrupted processes to consider)
 
@@ -473,15 +443,47 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 
 	goto exit_function;
 
+	on_current_state_interrupted:
+		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		
+		// check if new process is a user process
+		if (pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
+			pOldProcessPCB->currentState = RDY;
+			enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
+			get_node_of_process(pOldProcessPCB->processId));	
+		}
+		
+		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+		
+		if (
+			is_ready_or_new(pCurrentProcessPCB->currentState) && 
+			pCurrentProcessPCB->processId < NUM_USR_PROCESSES) 
+		{
+			// We remove processes from the ready queue
+			pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
+			assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");	
+		}
+		
+		if (pCurrentProcessPCB->currentState == NEW) {
+			if (is_i_proc(pCurrentProcessPCB->processId)) {
+			pCurrentProcessPCB->currentState = RUN;
+			__new_iproc_return();
+			} else {
+			goto set_to_run_and_rte;
+			}
+		}
+		pCurrentProcessPCB->currentState = RUN;
+		goto exit_function;
+
 	save_old_and_set_new_MSP:
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 		goto exit_function;
-
+	
 	set_to_run_and_rte:
 		pCurrentProcessPCB->currentState = RUN;
 		__rte();
-
+	
 	exit_function:
 		return;
 }

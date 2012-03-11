@@ -102,7 +102,6 @@ int get_index_of_matching_command(){
 void keyboard_command_decoder(){
 
 	while (1) {
-		int sender_id;
 		int sender_id = -1;
 		int destination = -1;
 
@@ -143,15 +142,8 @@ void keyboard_command_decoder(){
 				// Reset the buffer for new commands
 				current_command_length = 0;
 			}
-
-			release_memory_block(message);
-		} else if (message_type == OUTPUT_STRING) {
-
-//			set_sender_PID(message, 13);
-//			set_destination_PID(message, 12);
-//			
-//			k_send_message(get_crt_pcb()->processId, message); //to CRT for display aaa
 		}
+		release_memory_block(message);
 	}
 
 		

@@ -389,17 +389,10 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 	// Context switch due to release memory
 	} else if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY){
 		assert(pOldProcessPCB->currentState == RUN, "Error: The old process is not in a running state.");
-		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-		// Set to MSP to the process' stack which is about to run.
-		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-
+		goto save_old_and_set_new_MSP;
 	// We are switching from an iprocess to an interrupted process
 	} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
-		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-		
-		// Set to MSP to the process' stack which is about to run.
-		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-
+		goto save_old_and_set_new_MSP;
 	// Otherwise, we must switch from the old process to the new one
 	} else {
 		// Switching from an interrupted process to an iprocess
@@ -474,7 +467,14 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 	     }
 	}
 
+
+
 	goto exit_function;
+
+	save_old_and_set_new_MSP:
+		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+		goto exit_function;
 
 	set_to_run_and_rte:
 		pCurrentProcessPCB->currentState = RUN;

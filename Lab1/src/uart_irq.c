@@ -17,6 +17,12 @@ volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
 volatile uint32_t g_UART0_count = 0;
 
+int i = 0;
+char buffer[100];
+char* loc = buffer;
+int chars_to_output = 0;
+int total_outputted = 0;
+
 /**
  * @brief: initialize the n_uart
  * NOTES: only fully supports uart0 so far, but can be easily extended to other uarts.
@@ -127,7 +133,8 @@ void c_UART0_IRQHandler(void)
 }
 
 void execute_uart() {
-	
+ 
+	int max_chars = 10;
 	char c;
 	/*
 	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
@@ -154,11 +161,22 @@ void execute_uart() {
 	//	keyboard_command_decoder(message);	   //TODO change to delayed_send
 
 		// Now send a message to echo that character back to the screen.
-		message = k_request_memory_block();
-		message->sender_pid = get_uart_pcb()->processId;
-		message->receiver_pid = get_crt_pcb()->processId;
-		set_message_bytes(message,&c,1);
-		k_delayed_send(message->receiver_pid, message, 5);
+		buffer[i] = c;
+		i++;
+		buffer[i] = 0;
+
+		if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS - 2) {
+			message = k_request_memory_block();
+			message->sender_pid = get_uart_pcb()->processId;
+			message->receiver_pid = get_crt_pcb()->processId;
+
+			// get data from the buffer 
+			//set_message_bytes(message,&c,1);
+			set_message_bytes(message, &buffer, i + 1);
+			i = 0;
+
+			k_delayed_send(message->receiver_pid, message, 5);
+		} 
 	//TODO	crt_display(message);			   //change to delayed_send
 
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty

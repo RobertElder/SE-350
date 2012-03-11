@@ -70,7 +70,9 @@ void* k_receive_message(int* sender_ID) {
 		if (sender_ID != NULL) {
 			*sender_ID = env->sender_pid;
 		}
+		k_release_memory_block(node);
 	}
+
 
 	//atomic(off)
 	return env;	

@@ -150,16 +150,6 @@ void execute_uart() {
 		// Note: read RBR will clear the interrupt
 		c =   pUart->RBR; // read from the uart
 
-		// Read commands
-		message = k_request_memory_block();
-		
-		message->sender_pid = get_uart_pcb()->processId;
-		message->receiver_pid = get_kcd_pcb()->processId;
-		message->message_type = COMMAND_INPUT;
-		set_message_bytes(message,&c,1);
-		
-		k_delayed_send(message->receiver_pid, message, 5);
-
 	//	send_message(get_kcd_pcb(), message);
 	//	keyboard_command_decoder(message);	   //TODO change to delayed_send
 

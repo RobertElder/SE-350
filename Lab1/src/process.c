@@ -282,6 +282,7 @@ void process_init()
 
 
 void block_current_process() {
+	//TODO  make sure that we are not trying to block a process that is not allowed to block!!!!
 	ListNode *node = get_node_of_process(pCurrentProcessPCB->processId);
  	assert(pCurrentProcessPCB->currentState == RUN, "Error: Attempted to block a non-running process");
 

@@ -10,6 +10,8 @@ int get_seconds_from_formatted_time(char *);
 void register_command(char *, int);
 void unregister_all_commands(void);
 
+ProcessControlBlock* get_waiting_sys_proc(void);
+
 //-SYS PROCS-
 void keyboard_command_decoder(void);
 void crt_display(void);

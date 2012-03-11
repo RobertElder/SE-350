@@ -14,7 +14,7 @@ void irq_handler(irq_type type) {
 			// TODO: Seems like if a timer interrupt fires and a process gets preempted (because a
 			// delayed_send fired and a higher priority process preempts, then if ever we try to print,
 			// the uart process messes up if we put k_release_processor at the end of irq_handler.
-			// We should fix this 
+			// We should fix this if it is still a problem. 
 
 			break;
 		case UART0_IRQ:

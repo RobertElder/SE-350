@@ -483,6 +483,8 @@ void test_process_4() {
 	} else {
 		uart0_put_string("G015_test: test 14 FAIL\n\r");
 	}
+   
+	uart0_put_string("G015_test: END\n\r");
 
 	while (1) {
 		release_processor();

@@ -64,6 +64,7 @@ extern ProcessControlBlock * pCurrentProcessPCB;  // always point to the current
 // Public routines
 // -----------------------------------------------------
 int is_ready_or_new(proc_state_t state );
+int is_usr_proc(int process_id);
 uint8_t is_i_proc(int proc_id);
 ProcessControlBlock * get_process_pointer_from_id(int);
 ProcessControlBlock * get_interrupted_process(void);

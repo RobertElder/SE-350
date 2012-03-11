@@ -11,6 +11,7 @@
 #include "irq.h"
 #include "ipc.h"
 #include "system_proc.h"
+#include "iprocess.h"
 
 volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
@@ -126,7 +127,7 @@ void c_UART0_IRQHandler(void)
 }
 
 void execute_uart() {
-	void * message = 0;
+	
 	char c;
 	/*
 	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
@@ -145,18 +146,29 @@ void execute_uart() {
 	IIR_IntId = (pUart->IIR) >> 1 ; // skip pending bit in IIR
 
 	if (IIR_IntId & IIR_Receive_Data_Available) {  // Receive Data Available
+		Envelope * message = 0;
 		// Note: read RBR will clear the interrupt
 		c =   pUart->RBR; // read from the uart
 
 		// Read commands
 		message = k_request_memory_block();
+		
+		message->sender_pid = get_uart_pcb()->processId;
+		message->receiver_pid = get_kcd_pcb()->processId;
+		message->message_type = COMMAND_INPUT;
 		set_message_bytes(message,&c,1);
-		set_message_type(message,COMMAND_INPUT);
+		
+		k_delayed_send(message->receiver_pid, message, 5);
+
+	//	send_message(get_kcd_pcb(), message);
 	//	keyboard_command_decoder(message);	   //TODO change to delayed_send
 
 		// Now send a message to echo that character back to the screen.
 		message = k_request_memory_block();
+		message->sender_pid = get_uart_pcb()->processId;
+		message->receiver_pid = get_crt_pcb()->processId;
 		set_message_bytes(message,&c,1);
+		k_delayed_send(message->receiver_pid, message, 5);
 	//TODO	crt_display(message);			   //change to delayed_send
 
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty

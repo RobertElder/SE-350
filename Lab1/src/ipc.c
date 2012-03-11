@@ -30,19 +30,25 @@ int k_send_message(int target_pid, void* envelope) {
 
 	//add envelope to the message queue of Target Process
 	node->data = env;
-	enqueue(&targetProcess->waitingMessages, node);
+	enqueue(&(targetProcess->waitingMessages), node);
 
 	if (targetProcess->currentState == BLOCKED_ON_RECEIVE) {
 	 	targetProcess->currentState = RDY;
 		//TODO remove process from BLOCKED_ON_RECEIVE queue
-		enqueue(&ready_queue[targetProcess->processPriority],
-			get_node_of_process(targetProcess->processId));
+		if(is_usr_proc(targetProcess->processId)){
+			enqueue(
+				&ready_queue[targetProcess->processPriority],
+				get_node_of_process(targetProcess->processId)
+			);
+		}
 	}
 
 	//atomic(off);
 	// Prempt to a user proc if he has higher priority OR prempt to a proc if coming from a system proc.
-	if (((targetProcess->processPriority < pCurrentProcessPCB->processPriority && targetProcess->processId < NUM_USR_PROCESSES)
-		) && is_ready_or_new(targetProcess->currentState)) {
+	if (
+		(targetProcess->processPriority < pCurrentProcessPCB->processPriority && targetProcess->processId < NUM_USR_PROCESSES)
+		&& is_ready_or_new(targetProcess->currentState)
+	) {
 		context_switch(pCurrentProcessPCB, targetProcess);
 	}
 	return 0;

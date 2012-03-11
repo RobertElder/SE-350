@@ -111,7 +111,7 @@ void keyboard_command_decoder(){
 		int message_type = get_message_type(message);
 		destination = get_destination_PID(message);
 
-		assert(*sender_id == message->sender_pid,
+		assert(sender_id == message->sender_pid,
 			 "ERROR: receive_message did not supply sender_id");
 		assert(destination == kcd_pcb.processId,
 			 "ERROR: Message destination did not match with KCD pid");

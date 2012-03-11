@@ -9,9 +9,6 @@
 #include "system_proc.h"
 
 
-
-
-
 int message_api_tests_passed(){
 
 	void * p = request_memory_block();

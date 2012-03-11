@@ -133,7 +133,7 @@ void timeout_i_process() {
 			time = 0;
 
 		 	//send wall_clock a message to tick
-			env = (Envelope *)k_request_memory_block();
+			env = (Envelope *)k_request_memory_block_debug(0xa);
 			set_sender_PID(env, get_timer_pcb()->processId);
 			set_destination_PID(env, get_clock_pcb()->processId);
 			set_message_type(env, CLOCK_TICK);

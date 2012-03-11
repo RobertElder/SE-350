@@ -147,13 +147,14 @@ void keyboard_command_decoder(){
 					current_command_length = 0;
 				}
 	
-				release_memory_block(message);
+				//edit msg and forward to crt to echo
+				message->sender_pid = get_kcd_pcb()->processId;
+				message->receiver_pid = get_crt_pcb()->processId;
+				message->message_type = OUTPUT_STRING;
+				send_message(get_crt_pcb()->processId, message);
 				break;
 			default:
-//				set_sender_PID(message, get_kcd_pcb()->processId);
-//				set_destination_PID(message, get_crt_pcb()->processId);
-//				
-//				k_send_message(get_crt_pcb()->processId, message); //to CRT for display
+				assert(0, "ERROR, invalid message sent to KCD");
 				break;		
 		}
 	}		
@@ -178,6 +179,7 @@ void crt_display(){
 		assert(destination == crt_pcb.processId,
 			"ERROR: Message destination did not match with CRT pid");
 
+		LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;
 		// Our message data should be a null terminated string
 	    while ( *current_character != 0 ) {
 		    // THRE status, contain valid data  
@@ -187,7 +189,8 @@ void crt_display(){
 			g_UART0_TX_empty = 0;  // not empty in the THR until it shifts out
 		    current_character++;
 	    }
-		
+		LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable IER_Receive_Data_Available		
+
 		// We don't want that memory block anymore
 		release_memory_block(message);
 	}
@@ -201,8 +204,9 @@ void wall_clock() {
 	Envelope * env;
 
 	while(1) {
+	// TODO: RELEASE ME PROPERLY (after uncommenting and fixing clock_tick case)
 		env = (Envelope *)receive_message(sender_id);
-
+		release_memory_block(env); // temporary fix. Remove this line once proc is fixed
 		switch(env->message_type) {
 			case CLOCK_TICK:
 				if(doCount) {
@@ -211,15 +215,15 @@ void wall_clock() {
 					if(displayClock) {
 						char* time_string = get_formatted_time_from_seconds(clock_time);
 
-						release_memory_block(env);
-						env = (Envelope *)request_memory_block_debug(0xd);
+						//release_memory_block(env);
+						/*env = (Envelope *)request_memory_block_debug(0xd);
 
 						set_sender_PID(env, get_clock_pcb()->processId);
 						set_destination_PID(env, get_kcd_pcb()->processId);
 						set_message_type(env, OUTPUT_STRING);
 						set_message_bytes(env, time_string, sizeof(time_string));
 
-						k_send_message(get_kcd_pcb()->processId, env); //to KCD for display
+						k_send_message(get_kcd_pcb()->processId, env); //to KCD for display	  */
 					}
 				}
 				break;
@@ -240,7 +244,7 @@ void wall_clock() {
 				break;
 		}
 
-		release_memory_block(env);
+		//release_memory_block(env); //commented until this proc is fixed
 	}
 }
 

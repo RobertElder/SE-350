@@ -338,10 +338,10 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 	// If there is an interrupted process with higher priority, it should run next
 	interruptedPCB  = get_interrupted_process();
 	
-	// If there is a new sys proc, we should schedule it
+	// Otherwise, if there is a new sys proc, we should schedule it
 	newSysProc = get_new_sys_proc();
 
-	// If there are any system procs that need to run (have waiting messages), they have priority
+	// Otherwise, if there are any system procs that need to run (have waiting messages), they have priority
 	waitingSysProc = get_waiting_sys_proc();
 
 	if (interruptedPCB != NULL && pNewPCB->processPriority >= interruptedPCB->processPriority) {

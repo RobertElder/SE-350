@@ -128,7 +128,7 @@ void keyboard_command_decoder(){
 				register_command(pChar, destination);
 				release_memory_block(message); 
 				break;
-			case COMMAND_INPUT:
+			case KEYBOARD_INPUT:
 				/* If the buffer is full, they are not part of any valid command so 
 				   we don't care (also < because we want space for the terminating null)
 				*/

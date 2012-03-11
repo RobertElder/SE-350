@@ -1,0 +1,95 @@
+#include "system_proc.h"
+#include "rtx.h"
+#include "uart.h"
+#include "utils.h"
+#include "memory.h"
+#include "process.h"
+#include "hot_keys.h"
+
+/*
+  As well, the UART i-process is used to provide debugging services which will be used during the demonstration. Upon receiving
+specific characters (hot keys - your choice, e.g., !) as input, the UART i-process will print the following to the RTX system
+console:
+1. The processes currently on the ready queue(s) and their priority.
+2. The processes currently on the blocked on memory queue(s) and their priorities.
+3. The processes currently on the blocked on receive queue(s) and their priorities.
+As well, you are free to implement other hot keys to help in debugging. For example, a hot key which lists the processes, their
+priorities, their states; or another which prints out the number of memory blocks available. Like all other debug prints, the hot
+key implementation should be wrapped in
+#ifdef _DEBUG_HOTKEYS
+...
+#endif
+preprocessor statements and should be turned off during automated testing. If the automated test processes fail, you may be
+asked to turn the hot keys on again in determining why the test processes are failing.
+Another hotkey debug printout may be used to display recent interprocess message passing. A (circular) log buffer keeps track
+of the 10 most recent send_message and receive_message invocations made by the processes; upon receiving a specific
+hotkey, these most recent10 sent and 10 received messages are printed to the debug console. The number 10 is used only
+as an example. The information printed could contain information such as:
+1. Sender process id
+2. Destination process id
+3. Message type
+4. First 16 bytes of the message text
+5. The time stamp of the transaction (using the RTX clock)
+
+
+
+*/
+
+//1. The processes currently on the ready queue(s) and their priority.
+/*
+extern LinkedList ready_queue[NUM_PRIORITIES];
+extern LinkedList blocked_memory_queue[NUM_PRIORITIES];
+extern LinkedList blocked_receive_queue[NUM_PRIORITIES];
+
+typedef struct pcb {
+  LinkedList waitingMessages;
+
+  // stack pointer of the process
+  uint32_t* processStackPointer;
+
+  // process id      
+  uint32_t processId;
+
+  // state of the process 		
+  proc_state_t currentState;
+
+  //Priority of the process  
+  uint32_t processPriority;      
+
+} ProcessControlBlock;
+*/
+void do_print_processes(){
+	int i = 0;
+	uart0_put_string("-- Ready processes by priority --");
+	for(i = 0; i < NUM_PRIORITIES; i++){
+		ListNode * current_ready_queue_node = ready_queue[i]->head;
+	    print_unsigned_integer(i);
+		uart0_put_string(".\r\n");
+		while(current_ready_queue_node){
+			ProcessControlBlock* currentPCB = current_ready_queue_node->data;
+			uart0_put_string("Process id: ");
+			print_unsigned_integer(currentPCB->processId);
+			uart0_put_string(", Current state: ");
+			print_unsigned_integer(currentPCB->currentState);
+			uart0_put_string(", Process Priority: ");
+			print_unsigned_integer(currentPCB->processPriority);
+			current_ready_queue_node = current_ready_queue_node->next;
+		}
+	}	
+
+
+}
+
+void do_hot_key(char c){
+#ifdef _DEBUG_HOTKEYS
+	switch(c){
+		case '!' :{
+			do_print_processes();
+			break;
+		}
+		default:{
+			assert(0,"ERROR, unknown unmatched hot key.");
+		}
+	}
+#endif
+}

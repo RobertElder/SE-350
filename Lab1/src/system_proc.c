@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "process.h"
 #include "ipc.h"
+#include "hot_keys.h"
 
 
 ProcessControlBlock crt_pcb;
@@ -116,6 +117,8 @@ void keyboard_command_decoder(){
 		assert(destination == kcd_pcb.processId,
 			 "ERROR: Message destination did not match with KCD pid");
 	   
+		do_hot_key('!');
+
 		if (message_type == COMMAND_INPUT){
 			/* If the buffer is full, they are not part of any valid command so 
 				we don't care (also < because we want space for the terminating null)

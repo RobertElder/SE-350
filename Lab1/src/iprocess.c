@@ -114,13 +114,13 @@ void timeout_i_process() {
 		if(time % SECOND == 0) {
 			time = time % SECOND;
 
-		 	//send wall_clock a message to tick
-			env = (Envelope *)k_request_memory_block();
-			set_sender_PID(env, get_timer_pcb()->processId);
-			set_destination_PID(env, get_clock_pcb()->processId);
-			set_message_type(env, CLOCK_TICK);
-
-			k_send_message(get_clock_pcb()->processId, env);
+//		 	//send wall_clock a message to tick
+//			env = (Envelope *)k_request_memory_block();
+//			set_sender_PID(env, get_timer_pcb()->processId);
+//			set_destination_PID(env, get_clock_pcb()->processId);
+//			set_message_type(env, CLOCK_TICK);
+//
+//			k_send_message(get_clock_pcb()->processId, env);
 		}		
 
 		context_switch(pCurrentProcessPCB, interrupted_proc);

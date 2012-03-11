@@ -121,6 +121,7 @@ int k_release_memory_block (void * MemoryBlock){
 
 	// Now everything should be k, lets set this block as un-allocated
 	pAllocationStatusByte = get_address_of_memory_block_allocation_status_at_index(memoryBlockIndex);
+	assert(*pAllocationStatusByte,"Allocation status byte indicated deallocaton of unallocated memory.");
 	// Set the status of this block to unallocated (0)
 	*pAllocationStatusByte = 0;
 

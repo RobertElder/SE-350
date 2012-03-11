@@ -17,6 +17,9 @@ volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
 volatile uint32_t g_UART0_count = 0;
 
+int i = 0;
+char buffer[100];
+
 /**
  * @brief: initialize the n_uart
  * NOTES: only fully supports uart0 so far, but can be easily extended to other uarts.
@@ -127,7 +130,7 @@ void c_UART0_IRQHandler(void)
 }
 
 void execute_uart() {
-	
+
 	char c;
 	/*
 	IER - Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential UART interrupts.
@@ -150,14 +153,27 @@ void execute_uart() {
 		// Note: read RBR will clear the interrupt
 		c =   pUart->RBR; // read from the uart
 
-		// Now send a message to parse and echo that character back to the screen.
-		message = k_request_memory_block_debug(0xc);
-		message->sender_pid = get_uart_pcb()->processId;
-		message->receiver_pid = get_kcd_pcb()->processId;
-		message->message_type = KEYBOARD_INPUT;
-		set_message_bytes(message, &c, 1);
-		// send with a delay of 5 (might be able to send directly here...)
-		k_delayed_send(message->receiver_pid, message, 5);
+	//	send_message(get_kcd_pcb(), message);
+	//	keyboard_command_decoder(message);	   //TODO change to delayed_send
+
+		// Now send a message to echo that character back to the screen.
+		buffer[i] = c;
+		i++;
+		buffer[i] = 0;
+
+		if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS - 2) {
+			message = k_request_memory_block();
+			message->sender_pid = get_uart_pcb()->processId;
+			message->receiver_pid = get_crt_pcb()->processId;
+
+			// get data from the buffer 
+			//set_message_bytes(message,&c,1);
+			set_message_bytes(message, &buffer, i + 1);
+			i = 0;
+
+			k_delayed_send(message->receiver_pid, message, 5);
+		} 
+	//TODO	crt_display(message);			   //change to delayed_send
 
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;

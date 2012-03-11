@@ -150,16 +150,16 @@ void keyboard_command_decoder(){
 
 void crt_display(){
 	while (1) {
-		int* sender_id;
+		int sender_id = -1;
 		int destination = -1;
 
-		Envelope* message = (Envelope*)receive_message(sender_id);
+		Envelope* message = (Envelope*)receive_message(&sender_id);
 		uint8_t * current_character = get_message_data(message);
 		assert(message != NULL, "ERROR: CRT received a NULL message");
 		destination = get_destination_PID(message);
 
-		assert(*sender_id == message->sender_pid,
-			 "ERROR: receive_message did not supply sender_id");
+		assert(sender_id == message->sender_pid,
+			 "ERROR(crt): receive_message did not supply sender_id");
 		assert(destination == crt_pcb.processId,
 			"ERROR: Message destination did not match with CRT pid");
 

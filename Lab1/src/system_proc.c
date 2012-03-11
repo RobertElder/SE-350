@@ -149,7 +149,7 @@ void keyboard_command_decoder(){
 //			set_sender_PID(message, 13);
 //			set_destination_PID(message, 12);
 //			
-//			k_send_message(12, message); //to CRT for display
+//			k_send_message(get_crt_pcb()->processId, message); //to CRT for display
 		}
 	}
 
@@ -211,12 +211,12 @@ void wall_clock() {
 						release_memory_block(env);
 						env = (Envelope *)request_memory_block();
 
-						set_sender_PID(env, 14);
-						set_destination_PID(env, 13);
+						set_sender_PID(env, get_clock_pcb()->processId);
+						set_destination_PID(env, get_kcd_pcb()->processId);
 						set_message_type(env, OUTPUT_STRING);
 						set_message_bytes(env, time_string, sizeof(time_string));
 
-						k_send_message(13, env); //to KCD for display
+						k_send_message(get_kcd_pcb()->processId, env); //to KCD for display
 					}
 				}
 				break;

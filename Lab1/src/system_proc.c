@@ -103,6 +103,7 @@ void keyboard_command_decoder(){
 
 	while (1) {
 		int sender_id;
+		int sender_id = -1;
 		int destination = -1;
 
 		// Get our new message
@@ -209,7 +210,7 @@ void wall_clock() {
 						char* time_string = get_formatted_time_from_seconds(clock_time);
 
 						release_memory_block(env);
-						env = (Envelope *)request_memory_block();
+						env = (Envelope *)request_memory_block_debug(0xd);
 
 						set_sender_PID(env, get_clock_pcb()->processId);
 						set_destination_PID(env, get_kcd_pcb()->processId);

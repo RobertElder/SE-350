@@ -150,26 +150,13 @@ void execute_uart() {
 		// Note: read RBR will clear the interrupt
 		c =   pUart->RBR; // read from the uart
 
-		// Read commands
-		message = k_request_memory_block();
-		
+		// Now send a message to parse and echo that character back to the screen.
+		message = k_request_memory_block_debug(0xc);
 		message->sender_pid = get_uart_pcb()->processId;
 		message->receiver_pid = get_kcd_pcb()->processId;
-		message->message_type = COMMAND_INPUT;
-		set_message_bytes(message,&c,1);
-		
+		set_message_bytes(message, &c, 1);
+		// send with a delay of 5 (might be able to send directly here...)
 		k_delayed_send(message->receiver_pid, message, 5);
-
-	//	send_message(get_kcd_pcb(), message);
-	//	keyboard_command_decoder(message);	   //TODO change to delayed_send
-
-		// Now send a message to echo that character back to the screen.
-		message = k_request_memory_block();
-		message->sender_pid = get_uart_pcb()->processId;
-		message->receiver_pid = get_crt_pcb()->processId;
-		set_message_bytes(message,&c,1);
-		k_delayed_send(message->receiver_pid, message, 5);
-	//TODO	crt_display(message);			   //change to delayed_send
 
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;
@@ -233,7 +220,7 @@ void uart0_put_string(unsigned char * c){
 	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;	// Disable IER_Receive_Data_Available 
 	while(lenSoFar < totalStringLen){
 		nextOutOfBoundsIndex = lenSoFar + BUFSIZE > totalStringLen ? totalStringLen : lenSoFar + BUFSIZE;
-		currentBufferPos = 0;
+		currentBufferPos = 0;																																	 
 
 		for(i = lenSoFar; i < nextOutOfBoundsIndex; i++){
 			g_UART0_buffer[currentBufferPos] = c[i];

@@ -72,6 +72,7 @@ void* k_receive_message(int* sender_ID) {
 		}
 	}
 
+
 	//atomic(off)
 	return env;	
 }

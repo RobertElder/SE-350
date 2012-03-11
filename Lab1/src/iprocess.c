@@ -35,34 +35,50 @@ void expiry_sorted_enqueue(LinkedList* listHead, ListNode* node) {
 	if(currentNode == NULL) {
 	 	(* listHead).head = node;
 		(* listHead).tail = node;
+		node->next = NULL;
 	} else if (((DelayedMessage *)currentNode->data)->expiry_time > node_expiry) {
 		(*node).next = listHead->head;
 		(* listHead).head = node;		 
-		return;
+		goto expiry_sorted_enqueue_error_check;
 	} else {
 	 	while(currentNode != NULL) {
 			if(currentNode->next == NULL) {
 			 	(* currentNode).next = node;
 				(* listHead).tail = node;
-				return;
+				node->next = NULL;
+				goto expiry_sorted_enqueue_error_check;
 			} 
 			else if (((DelayedMessage *)currentNode->next->data)->expiry_time > node_expiry) 
 			{
 				(* node).next = currentNode->next;
 				(* currentNode).next = node;	
-				return;			
+				goto expiry_sorted_enqueue_error_check;			
 			}		 	
 
 			currentNode = currentNode->next;
 		}		
 	}
 
+expiry_sorted_enqueue_error_check:
+	assert(node != node->next,"ERROR node that was enqueued had a circular reference.");
+
 	return;
 }
 
 int k_delayed_send(int pid, Envelope * envelope, int delay) {
 	DelayedMessage m;
-	Envelope * env = (Envelope *)k_request_memory_block();
+	/* TODO	Figure out how the hell all this message passing works
+		The block below that is allocated, never gets de-allocated
+		which is why we fail with out of memory problems, since we
+		allocate one extra block for every character typed.
+
+		It looks like the concepts of memory blocks, enveolpes, nodes
+		ListNotes and DelayedMessages are being confised which is 
+		resulting in circular references in some places.  Check  
+		all the message functions and re-factor them into to use 
+		consistent data structures properly. 
+	*/
+	Envelope * env = (Envelope *)k_request_memory_block_debug(0xe);
 
 	m.pid = pid;
 	m.envelope = envelope;
@@ -103,9 +119,11 @@ void timeout_i_process() {
 			while (((DelayedMessage *)(delayed_messages.head->data))->expiry_time
 				 <= get_current_time())
 			{
-				Envelope* envelope = ((DelayedMessage *)dequeue(&delayed_messages)->data)->envelope;
+				ListNode* node = dequeue(&delayed_messages);
+				Envelope* envelope = ((DelayedMessage *)node->data)->envelope;
 				receiver_pid = envelope->receiver_pid;
 				k_send_message( receiver_pid, envelope ); //forward msg to destination
+				k_release_memory_block(node);
 			}						
 		} 
 		
@@ -115,12 +133,14 @@ void timeout_i_process() {
 			time = 0;
 
 		 	//send wall_clock a message to tick
+			/*
 			env = (Envelope *)k_request_memory_block();
 			set_sender_PID(env, get_timer_pcb()->processId);
 			set_destination_PID(env, get_clock_pcb()->processId);
 			set_message_type(env, CLOCK_TICK);
 
 			k_send_message(get_clock_pcb()->processId, env);
+			*/
 		}		
 
 		context_switch(pCurrentProcessPCB, interrupted_proc);

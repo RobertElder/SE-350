@@ -175,7 +175,7 @@ void test_process_1() {
 
 	int * block;
 
-	assert(unit_tests_passed(), "Unit tests failed.");
+	assert(unit_tests_passed() && memory_tests_passed(), "Unit tests failed.");
 
 	uart0_put_string("G015_test: START\n\r");
 	actual_run_order[cur_index] = 1;

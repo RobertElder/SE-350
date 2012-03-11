@@ -167,13 +167,12 @@ void keyboard_command_decoder(){
 					current_command_length = 0;
 				}
 	
-				release_memory_block(message);
+				set_sender_PID(message, get_kcd_pcb()->processId);
+				set_destination_PID(message, get_crt_pcb()->processId);				
+				k_send_message(get_crt_pcb()->processId, message); //to CRT for display
+
 				break;
 			default:
-//				set_sender_PID(message, get_kcd_pcb()->processId);
-//				set_destination_PID(message, get_crt_pcb()->processId);
-//				
-//				k_send_message(get_crt_pcb()->processId, message); //to CRT for display
 				break;		
 		}
 	}		

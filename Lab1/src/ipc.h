@@ -16,6 +16,8 @@
 #define PAUSE_CLOCK 10
 #define UNPAUSE_CLOCK 11
 
+#define NUM_MESSAGES_TO_TRACK 10
+
 typedef struct env {
 	ListNode dummyVar; // DO NOT USE ME.
 	uint32_t sender_pid;

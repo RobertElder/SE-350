@@ -439,17 +439,18 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 	}
 
 
-	//  Don't delete this return even through it is tempting
+	//  Don't delete this return even though it is tempting
 	return;
 
 	on_current_state_interrupted:
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		
 		// check if new process is a user process
-		if (pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
+		if (!is_i_proc(pCurrentProcessPCB->processId)) {
 			pOldProcessPCB->currentState = RDY;
+			assert(is_usr_proc(pOldProcessPCB->processId), "ERROR: Unexpected interrupted sys proc");
 			enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-			get_node_of_process(pOldProcessPCB->processId));	
+				get_node_of_process(pOldProcessPCB->processId));	
 		}
 		
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);

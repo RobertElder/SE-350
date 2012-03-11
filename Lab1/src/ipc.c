@@ -45,11 +45,8 @@ int k_send_message(int target_pid, void* envelope) {
 
 	//atomic(off);
 	// Prempt to a user proc if he has higher priority OR if it is a user proc
-	if (
-		((targetProcess->processPriority < pCurrentProcessPCB->processPriority && is_usr_proc(targetProcess->processId))
-		|| is_sys_proc(targetProcess->processId))
-		&& is_ready_or_new(targetProcess->currentState)
-		&& is_i_proc(env->sender_pid))
+	if (((targetProcess->processPriority < pCurrentProcessPCB->processPriority && is_usr_proc(targetProcess->processId)))
+		&& is_ready_or_new(targetProcess->currentState))
 	{
 		context_switch(pCurrentProcessPCB, targetProcess);
 	}

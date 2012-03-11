@@ -33,6 +33,7 @@ ProcessControlBlock* get_new_sys_proc() {
 ProcessControlBlock* get_waiting_sys_proc() {
  	if (kcd_pcb.waitingMessages.head != NULL) return &kcd_pcb;
 	if (crt_pcb.waitingMessages.head != NULL) return &crt_pcb;
+	if (clock_pcb.waitingMessages.head != NULL) return &clock_pcb;
 	return NULL;
 }
 

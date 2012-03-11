@@ -391,7 +391,7 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		// Set to MSP to the process' stack which is about to run.
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 
-	// We are switching from an iprocess to an iinterrupted process
+	// We are switching from an iprocess to an interrupted process
 	} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		
@@ -472,10 +472,9 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 				pCurrentProcessPCB->currentState = RUN;
 				
 				// pop exception stack frame from the stack for new processes (assembly function in hal.c)
-				__rte(); //EXITTING CALL
+				__rte(); //EXITING CALL
 			}
 			pCurrentProcessPCB->currentState = RUN;
-
 	     }
 	}
 }
@@ -501,7 +500,7 @@ int k_release_processor(void){
 	pNewProcessPCB = scheduler(pOldProcessPCB, pNewProcessPCB);
 
 	//  Make sure we are not deadlocked
-	assert(!(is_deadlocked()),"Deadlock:  All processes are in blocked state.");
+	assert(!(is_deadlocked()), "Deadlock:  All processes are in blocked state.");
 
 	// The Context Switch
 	context_switch(pOldProcessPCB, pNewProcessPCB);

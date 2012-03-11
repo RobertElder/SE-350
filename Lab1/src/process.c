@@ -374,14 +374,14 @@ __asm void __new_iproc_return(void) {
 }
 
 void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
+	
 	pCurrentProcessPCB = pNewProcessPCB;
 
 	// If the scheduler decided to run the same process,
 	// set state to RUN if it's NEW
 	if (pCurrentProcessPCB == pOldProcessPCB) {
 		if (pCurrentProcessPCB->currentState == NEW) {
-			pCurrentProcessPCB->currentState = RUN;
-			__rte(); 	
+			goto set_to_run_and_rte; 	
 		} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
 		 	pCurrentProcessPCB->currentState = RUN;
 		}
@@ -471,14 +471,20 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 			
 			// NOTE: __rte() exits. That is why we assign RUN twice.
 			if (pCurrentProcessPCB->currentState == NEW) {
-				pCurrentProcessPCB->currentState = RUN;
-				
-				// pop exception stack frame from the stack for new processes (assembly function in hal.c)
-				__rte(); //EXITING CALL
+				goto set_to_run_and_rte;
 			}
 			pCurrentProcessPCB->currentState = RUN;
 	     }
 	}
+
+	goto exit_function;
+
+	set_to_run_and_rte:
+		pCurrentProcessPCB->currentState = RUN;
+		__rte();
+
+	exit_function:
+		return;
 }
 
 	

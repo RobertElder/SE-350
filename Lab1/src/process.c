@@ -75,14 +75,14 @@ ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 	if (process_ID < NUM_USR_PROCESSES) {
 		return (process_ID >= 0) ? &pcb_array[process_ID] : NULL;
 	} else {
-		if (process_ID == 0xA) return get_uart_pcb();
-		if (process_ID == 0xB) return get_timer_pcb();
-		if (process_ID == 0xC) return get_crt_pcb();
-		if (process_ID == 0xD) return get_kcd_pcb();
-		if (process_ID == 0xE) return get_clock_pcb();
+		if (process_ID == get_uart_pcb()->processId) return get_uart_pcb();
+		if (process_ID == get_timer_pcb()->processId) return get_timer_pcb();
+		if (process_ID == get_crt_pcb()->processId) return get_crt_pcb();
+		if (process_ID == get_kcd_pcb()->processId) return get_kcd_pcb();
+		if (process_ID == get_clock_pcb()->processId) return get_clock_pcb();
+		assert(0,"error invalid process id.");
 		return NULL;
 	}
-	
 }
 
 ProcessControlBlock* get_interrupted_process() {
@@ -101,6 +101,10 @@ ListNode* get_node_of_process(int process_ID) {
 		"ERROR: list node does not contain the right process"); 	
 
 	return node;
+}
+
+int is_usr_proc(int process_id) {
+ 	return process_id < NUM_USR_PROCESSES;
 }
 
 int is_process_blocked(int processId){
@@ -317,6 +321,7 @@ ProcessControlBlock* getRunningProcess() {
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
 	ProcessControlBlock* interruptedPCB = NULL;
 	ProcessControlBlock * newSysProc = NULL;
+	ProcessControlBlock * waitingSysProc = NULL;
 	
 	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Attempted to schedule NULL");
 
@@ -332,11 +337,20 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 	// If there is a new sys proc, we should schedule it
 	newSysProc = get_new_sys_proc();
 
+	// If there are any system procs that need to run (have waiting messages), they have priority
+	waitingSysProc = get_waiting_sys_proc();
+
 	if (interruptedPCB != NULL && pNewPCB->processPriority >= interruptedPCB->processPriority) {
 		return interruptedPCB;
  	} else if (newSysProc != NULL) {
 		assert(newSysProc->currentState == NEW, "ERROR: New sys proc was not new.");
 		return newSysProc;
+	} else if (waitingSysProc != NULL) { 
+		assert(
+			waitingSysProc->currentState == RDY || waitingSysProc->currentState == NEW,
+			"ERROR: New sys proc was not new."
+		);
+		return waitingSysProc;
 	} else if (pNewPCB->processPriority <= pOldPCB->processPriority) {
 		return pNewPCB;
 	} else {

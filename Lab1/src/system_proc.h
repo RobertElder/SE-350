@@ -11,6 +11,8 @@ char* get_formatted_time_from_seconds(int);
 void register_command(char *, int);
 void unregister_all_commands(void);
 
+ProcessControlBlock* get_waiting_sys_proc(void);
+
 //-SYS PROCS-
 void keyboard_command_decoder(void);
 void crt_display(void);

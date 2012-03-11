@@ -41,8 +41,6 @@ int message_api_tests_passed(){
 
 int command_tests_passed(){
 	int i = 0;
-	void * p;
-	char cmd[] = "%WS12:45:00\r";
 
    	for(i = 0; i < 100; i++){
 		register_command("afdsasd",1);
@@ -61,11 +59,6 @@ int command_tests_passed(){
 	register_command("%WS",1);
 	register_command("%WT",1);
 
-	for(i = 0; i < 12; i++){
-		//p = k_request_memory_block();
-	//	set_message_bytes(p , &(cmd[i]) , 1);
-	//	keyboard_command_decoder(p);
-	}
 	return 1;
 }
 

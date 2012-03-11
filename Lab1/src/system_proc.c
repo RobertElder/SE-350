@@ -30,6 +30,12 @@ ProcessControlBlock* get_new_sys_proc() {
 	return NULL;
 }
 
+ProcessControlBlock* get_waiting_sys_proc() {
+ 	if (kcd_pcb.waitingMessages.head != NULL) return &kcd_pcb;
+	if (crt_pcb.waitingMessages.head != NULL) return &crt_pcb;
+	return NULL;
+}
+
 int number_of_registered_commands = 0;
 char registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS][MAX_COMMAND_LENGTH];
 int registered_processes[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];

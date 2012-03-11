@@ -2,29 +2,23 @@
 #define _USR_PROC_H_
 
 
-
-#include "rtx.h"
-#include "uart_polling.h"
-#include "usr_proc.h"
-#include "utils.h"
-
 #ifdef DEBUG_0
 #include <stdio.h>
 #endif // DEBUG_0
 
 
-extern int get_process_priority(int);
-extern int set_process_priority(int, int);
-
 void nullProc(void);
 
-void proc1(void);
+void test_process_1(void);
 
-void proc2(void);
+void test_process_2(void);
 
-void run_memory_tests(void);
+void test_process_3(void);
 
-void run_priority_tests(void);
+void test_process_4(void);
 
+void test_process_5(void);
+
+void test_process_6(void);
 
 #endif 

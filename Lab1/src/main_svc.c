@@ -14,15 +14,16 @@
 #else
 #define NULL 0
 #endif // DEBUG_0
-#include "uart_polling.h"
-#include "rtx.h"
+#include "process.h"
+#include "uart.h"
+#include "timer.h"
+#include "memory.h"
 #include "utils.h" 
 #include "usr_proc.h"
+#include "iprocess.h"
+#include "system_proc.h"
 
-
-extern void process_init(void);
-extern int get_process_priority(int);
-extern int set_process_priority(int, int);
+//extern void process_init(void);
 
 void print_some_numbers(){
 	int i;
@@ -40,28 +41,35 @@ void print_some_numbers(){
 	uart0_put_string("\n\rPrint stuff test passed. \n\r");
 }
 
+
+extern volatile uint32_t g_timer_count;
+
+
 int main(){
-	 
 	volatile unsigned int ret_val = 1234;
-	
 	SystemInit();	// initialize the system
 
 	// Disable interrupt requests
 	__disable_irq();
-
+	/* Lower the priority of the svn calls so that 
+	 we can handle UART interrupts inside SVC calls */
+	//NVIC_SetPriority(SVCall_IRQn, 1);
 	// Initialize UART output
+	timer_init(0);
 	uart0_init();   
-
 	// Initialize stack and PCB for processes
 	process_init();
+	init_i_processes();
+	init_sys_procs();
+
+	//  Set up memory
+	init_memory_allocation_table();
+
 	// Enable interrupt requests
 	__enable_irq();
 	
 	// transit to unprivileged level, default MSP is used
 	__set_CONTROL(__get_CONTROL() | BIT(0));  
-
-	//  Set up memory
-	init_memory_allocation_table();
 
 	ret_val = release_processor();
 	uart0_put_string("\nShould never reach here!!!\n\r");

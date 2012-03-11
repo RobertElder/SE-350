@@ -2,7 +2,7 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
-#include "uart_polling.h"
+#include "uart.h"
 
 void assert(int, unsigned char *);
  

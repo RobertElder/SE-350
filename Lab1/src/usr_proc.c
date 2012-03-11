@@ -495,7 +495,10 @@ void test_process_4() {
 	uart0_put_string("G015_test: END\n\r");
 
 	while (1) {
+		int i = 999999;
+		while (i) { i--; }
 		release_processor();
+		
 	}
 
 }

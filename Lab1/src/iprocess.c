@@ -73,7 +73,7 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 		allocate one extra block for every character typed.
 
 		It looks like the concepts of memory blocks, enveolpes, nodes
-		ListNotes and DelayedMessages are being confised which is 
+		ListNotes and DelayedMessages are being confused which is 
 		resulting in circular references in some places.  Check  
 		all the message functions and re-factor them into to use 
 		consistent data structures properly. 
@@ -133,14 +133,12 @@ void timeout_i_process() {
 			time = 0;
 
 		 	//send wall_clock a message to tick
-			/*
-			env = (Envelope *)k_request_memory_block();
+			env = (Envelope *)k_request_memory_block_debug(0xa);
 			set_sender_PID(env, get_timer_pcb()->processId);
 			set_destination_PID(env, get_clock_pcb()->processId);
 			set_message_type(env, CLOCK_TICK);
 
 			k_send_message(get_clock_pcb()->processId, env);
-			*/
 		}		
 
 		context_switch(pCurrentProcessPCB, interrupted_proc);

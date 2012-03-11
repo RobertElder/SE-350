@@ -36,25 +36,25 @@ int is_valid_priority(int priority){
 	return priority >= 0 && priority < NUM_PRIORITIES - 1;
 }
 
-int k_set_process_priority (int process_ID, int priority) {	
+int k_set_process_priority (int process_ID, int newPriority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
 	assert(!has_more_important_process(pCurrentProcessPCB->processPriority), "Error: running process is not of highest priority");
 	assert(process != NULL, "Invalid process ID in set process priority.");
 	assert(process_ID != 0, "Error: cannot change the priority of the NULL process.");
-	assert(is_valid_priority(priority),"Error: the set priority is invalid.");
+	assert(is_valid_priority(newPriority),"Error: the set priority is invalid.");
 
 	if (is_ready_or_new(process->currentState)) {
 	 	 ListNode *node = remove_node(&ready_queue[process->processPriority], (void*)process);
-		 enqueue(&ready_queue[priority], node);
+		 enqueue(&ready_queue[newPriority], node);
 	} else if (process->currentState == BLOCKED_ON_MEMORY) {
 		 ListNode *node = remove_node(&blocked_memory_queue[process->processPriority], (void*)process);
-		 enqueue(&blocked_memory_queue[priority], node);
+		 enqueue(&blocked_memory_queue[newPriority], node);
 	} // TODO: need an else if for BLOCKED_ON_RECEIVE queue
-	process->processPriority = priority;
+	process->processPriority = newPriority;
 	if (
-		(has_more_important_process(priority) && pCurrentProcessPCB->processId == process_ID) ||
-		(priority < pCurrentProcessPCB->processPriority && is_ready_or_new(process->currentState))
+		(has_more_important_process(newPriority) && pCurrentProcessPCB->processId == process_ID) ||
+		(newPriority < pCurrentProcessPCB->processPriority && is_ready_or_new(process->currentState))
 	){
 	  	k_release_processor();
 	}

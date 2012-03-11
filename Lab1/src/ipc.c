@@ -9,6 +9,59 @@
 #define MESSAGE_TYPE_OFFSET                   DESTINATION_PID_OFFSET + sizeof(int)
 #define MESSAGE_DATA_OFFSET                   MESSAGE_TYPE_OFFSET + sizeof(int)
 
+int numMessagesSent = 0;
+int numMessagesReceived = 0;
+Envelope recentlySentMessages[NUM_MESSAGES_TO_TRACK];
+Envelope recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK];
+
+void copyEnvelope(Envelope * toCopy, Envelope * fromCopy) {
+	toCopy->sender_pid = fromCopy->sender_pid;
+	toCopy->receiver_pid = fromCopy->receiver_pid;
+	toCopy->message_type = fromCopy->message_type;
+	toCopy->message_data = fromCopy->message_data;
+}
+
+void trackSentMessage(Envelope * env) {
+	if(env == NULL) {
+		return;
+	}
+
+	if(numMessagesSent < NUM_MESSAGES_TO_TRACK) {
+		copyEnvelope(&recentlySentMessages[numMessagesSent], env);
+	 	numMessagesSent++;
+	} else {
+		int i;
+
+		for(i = 1; i < NUM_MESSAGES_TO_TRACK; ++i) {
+			recentlySentMessages[i - 1] = recentlySentMessages[i]; //Shift all left	
+		}
+
+		copyEnvelope(&recentlySentMessages[NUM_MESSAGES_TO_TRACK - 1], env); //Append new message
+	}	
+}	
+
+void trackReceivedMessage(Envelope * env) {
+	if(env == NULL) {
+		return;
+	}
+
+	if(numMessagesReceived < NUM_MESSAGES_TO_TRACK) {
+		copyEnvelope(&recentlyReceivedMessages[numMessagesReceived], env);
+	 	numMessagesReceived++;
+	} else {
+		int i;
+
+		for(i = 1; i < NUM_MESSAGES_TO_TRACK; ++i) {
+			recentlyReceivedMessages[i - 1] = recentlyReceivedMessages[i]; //Shift all left	
+		}
+
+		copyEnvelope(&recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK - 1], env); //Append new message
+	}	
+}
+
+
+
+
 // ------------------------------------------------------------
 //                 Kernel primitives (user-facing API)
 // ------------------------------------------------------------
@@ -50,6 +103,9 @@ int k_send_message(int target_pid, void* envelope) {
 	{
 		context_switch(pCurrentProcessPCB, targetProcess);
 	}
+
+	trackSentMessage(env);
+
 	return 0;
 }
 
@@ -72,6 +128,7 @@ void* k_receive_message(int* sender_ID) {
 		}
 	}
 
+	trackReceivedMessage(env);
 
 	//atomic(off)
 	return env;	
@@ -150,5 +207,3 @@ void set_message_words(void* p_message, void* data_to_copy, int words_to_copy){
 		*destination = *source;
 	}
 }
-
-

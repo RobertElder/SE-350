@@ -27,7 +27,7 @@ extern unsigned int free_mem;
 #define STACKS_SIZE 0x200
 #define NUM_USR_PROCESSES 7
 #define NUM_I_PROCESSES 2
-#define NUM_SYS_PROCESSES 2
+#define NUM_SYS_PROCESSES 3
 #define NUM_PROCESSES (NUM_USR_PROCESSES + NUM_I_PROCESSES + NUM_SYS_PROCESSES)
 
 // dynamic heap for user processes

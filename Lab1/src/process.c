@@ -92,6 +92,11 @@ ProcessControlBlock* get_interrupted_process() {
 	for(i = 0; i < NUM_USR_PROCESSES; i++){	
 	 	if (pcb_array[i].currentState == INTERRUPTED) return &pcb_array[i];
 	}
+	//  These are other process that can be interrupted
+	if (get_crt_pcb()->currentState == INTERRUPTED) return get_crt_pcb();
+	if (get_kcd_pcb()->currentState == INTERRUPTED) return get_kcd_pcb();
+	if (get_clock_pcb()->currentState == INTERRUPTED) return get_clock_pcb();
+
 	return NULL;
 }
 

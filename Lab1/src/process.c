@@ -400,43 +400,42 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		or to a higher priority process	 */
 		if (pOldProcessPCB->currentState == INTERRUPTED) {
 			goto on_current_state_interrupted;
-		} else {
-			// "default" switch case (no interrupted processes to consider)
+		} 
 
-			/* -- Updating old process -- */
-			
-			if (pOldProcessPCB->currentState == RUN) {
-				pOldProcessPCB->currentState = RDY;
-				if (pOldProcessPCB->processId < NUM_USR_PROCESSES) {
-					// Put old process back in his appropriate priority queue
-					enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-						get_node_of_process(pOldProcessPCB->processId)); 
-				}
+		// "default" switch case (no interrupted processes to consider)
+		
+		if (pOldProcessPCB->currentState == RUN) {
+			pOldProcessPCB->currentState = RDY;
+			if (pOldProcessPCB->processId < NUM_USR_PROCESSES) {
+				// Put old process back in his appropriate priority queue
+				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
+				get_node_of_process(pOldProcessPCB->processId)); 
 			}
-	
-			// Don't save the MSP if the process is NEW because it was not running,
-			// so there should be nowhere it sensibly returns to
-			if (pOldProcessPCB->currentState != NEW) {
-				pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-			}
-	
-			/* -- Updating new process -- */
-			if (is_ready_or_new(pCurrentProcessPCB->currentState) && 
-				pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
-			   // We remove running processes from the ready queue
-				pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
-				assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");
-			}
-	
-			// Set to MSP to the process' stack which is about to run.
-			__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-			
-			// NOTE: __rte() exits. That is why we assign RUN twice.
-			if (pCurrentProcessPCB->currentState == NEW) {
-				goto set_to_run_and_rte;
-			}
-			pCurrentProcessPCB->currentState = RUN;
-	     }
+		}
+		
+		// Don't save the MSP if the process is NEW because it was not running,
+		// so there should be nowhere it sensibly returns to
+		if (pOldProcessPCB->currentState != NEW) {
+			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		}
+		
+		/* -- Updating new process -- */
+		if (is_ready_or_new(pCurrentProcessPCB->currentState) && 
+			pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
+			// We remove running processes from the ready queue
+			pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
+			assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");
+		}
+		
+		// Set to MSP to the process' stack which is about to run.
+		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+		
+		// NOTE: __rte() exits. That is why we assign RUN twice.
+		if (pCurrentProcessPCB->currentState == NEW) {
+			goto set_to_run_and_rte;
+		}
+		pCurrentProcessPCB->currentState = RUN;
+
 	}
 
 

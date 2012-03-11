@@ -112,7 +112,7 @@ void timeout_i_process() {
 			 
 		time = get_current_time();
 		if(time % SECOND == 0) {
-			time = time % SECOND;
+			time = 0;
 
 		 	//send wall_clock a message to tick
 			env = (Envelope *)k_request_memory_block();

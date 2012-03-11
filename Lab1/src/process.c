@@ -377,26 +377,27 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 	
 	pCurrentProcessPCB = pNewProcessPCB;
 
-	// If the scheduler decided to run the same process,
-	// set state to RUN if it's NEW
 	if (pCurrentProcessPCB == pOldProcessPCB) {
+		// If the scheduler decided to run the same process,
+		// set state to RUN if it's NEW
 		if (pCurrentProcessPCB->currentState == NEW) {
 			goto set_to_run_and_rte; 	
 		} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
 		 	pCurrentProcessPCB->currentState = RUN;
 		}
-
-	// Context switch due to release memory
 	} else if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY){
+		// Context switch due to release memory
 		assert(pOldProcessPCB->currentState == RUN, "Error: The old process is not in a running state.");
 		goto save_old_and_set_new_MSP;
-	// We are switching from an iprocess to an interrupted process
+
 	} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
+		// We are switching from an iprocess to an interrupted process
 		goto save_old_and_set_new_MSP;
-	// Otherwise, we must switch from the old process to the new one
+
 	} else {
-		// Switching from an interrupted process to an iprocess
-		// or to a higher priority process
+		/* Otherwise, we must switch from the old process to the new one
+		Switching from an interrupted process to an iprocess
+		or to a higher priority process	 */
 		if (pOldProcessPCB->currentState == INTERRUPTED) {
 
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
@@ -428,8 +429,9 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		   }
 		   pCurrentProcessPCB->currentState = RUN;
 
-		// "default" switch case (no interrupted processes to consider)
+
 		} else {
+			// "default" switch case (no interrupted processes to consider)
 
 			/* -- Updating old process -- */
 			

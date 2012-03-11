@@ -49,7 +49,8 @@ int k_send_message(int target_pid, void* envelope) {
 		((targetProcess->processPriority < pCurrentProcessPCB->processPriority && is_usr_proc(targetProcess->processId))
 		|| is_sys_proc(targetProcess->processId))
 		&& is_ready_or_new(targetProcess->currentState)
-	) {
+		&& is_i_proc(env->sender_pid))
+	{
 		context_switch(pCurrentProcessPCB, targetProcess);
 	}
 	return 0;

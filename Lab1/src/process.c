@@ -108,7 +108,7 @@ int is_usr_proc(int process_id) {
 }
 
 uint8_t is_sys_proc(int proc_id) {
- 	return proc_id == get_kcd_pcb()->processId || proc_id == get_crt_pcb()->processId;
+ 	return proc_id == get_kcd_pcb()->processId || proc_id == get_crt_pcb()->processId || proc_id == get_clock_pcb()->processId;
 }
 
 int is_process_blocked(int processId){

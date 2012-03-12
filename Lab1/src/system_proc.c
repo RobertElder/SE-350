@@ -133,8 +133,6 @@ void keyboard_command_decoder(){
 				   we don't care (also < because we want space for the terminating null)
 				*/
 
-				do_hot_key(*pChar);
-
 				if(current_command_length < MAX_COMMAND_LENGTH){
 					//  Put the character we received into the buffer
 					current_command_buffer[current_command_length] = *pChar;

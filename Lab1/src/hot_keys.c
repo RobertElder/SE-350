@@ -61,26 +61,26 @@ typedef struct pcb {
 */
 void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 	int i = 0;
-	uart0_put_string("-- ");
+	uart0_put_string("\n-- ");
 	uart0_put_string(queueName);
-	uart0_put_string(" process queues by priority --\r\n");
+	uart0_put_string(" process queues (by priority) --\r\n");
 	for(i = 0; i < NUM_PRIORITIES; i++){
 		ListNode * current_ready_queue_node = linkedListArray[i].head;
 		uart0_put_string("Priority ");
 	    print_unsigned_integer(i);
-		uart0_put_string(".  ");
+		uart0_put_string("->  ");
 		while(current_ready_queue_node){
 			ProcessControlBlock* currentPCB = current_ready_queue_node->data;
 			uart0_put_string("Id: ");
 			print_unsigned_integer(currentPCB->processId);
-			uart0_put_string(", State: ");
+			uart0_put_string(" .. State: ");
 			print_unsigned_integer(currentPCB->currentState);
-			uart0_put_string(", Priority: ");
+			uart0_put_string(" .. Priority: ");
 			print_unsigned_integer(currentPCB->processPriority);
-			uart0_put_string("  ");
+			uart0_put_string(" || ");
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
-		uart0_put_string("\r\n");
+		uart0_put_string("\r\n__________________________________________\r\n");
 	}	
 
 }

@@ -239,7 +239,7 @@ void wall_clock() {
 	int clock_time = 0;
 	int sender_id = 0;
 		  
-	Envelope* registerMessage = (Envelope*)request_memory_block_debug(0x2);
+	Envelope* registerMessage = (Envelope*)request_memory_block();
 	uint8_t CMD_SIZE = 4;//bytes
 	char* cmd = "%WS";
 	char* cmd2 = "%WT";
@@ -250,7 +250,7 @@ void wall_clock() {
 	set_message_bytes(registerMessage, cmd, CMD_SIZE);
 	send_message(registerMessage->receiver_pid, registerMessage);
 	
-	registerMessage = (Envelope*)request_memory_block_debug(0x2);	
+	registerMessage = (Envelope*)request_memory_block();	
 	registerMessage->sender_pid = get_clock_pcb()->processId;
 	registerMessage->receiver_pid = get_kcd_pcb()->processId;
 	registerMessage->message_type = COMMAND_REGISTRATION;
@@ -272,7 +272,7 @@ void wall_clock() {
 						uint8_t TIME_LEN = 12; //bytes
 						char* time_string = get_formatted_time_from_seconds(clock_time);
 
-						Envelope* timeEnv = (Envelope *)request_memory_block_debug(0xd);
+						Envelope* timeEnv = (Envelope *)request_memory_block();
 						
 					 	timeEnv->sender_pid = get_clock_pcb()->processId;
 						timeEnv->receiver_pid = get_crt_pcb()->processId;

@@ -78,7 +78,7 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 		all the message functions and re-factor them into to use 
 		consistent data structures properly. 
 	*/
-	Envelope * env = (Envelope *)k_request_memory_block_debug(0xe);
+	Envelope * env = (Envelope *)k_request_memory_block();
 
 	m.pid = pid;
 	m.envelope = envelope;
@@ -133,7 +133,7 @@ void timeout_i_process() {
 			time = 0;
 
 		 	//send wall_clock a message to tick
-			env = (Envelope *)k_request_memory_block_debug(0xa);
+			env = (Envelope *)k_request_memory_block();
 			set_sender_PID(env, get_timer_pcb()->processId);
 			set_destination_PID(env, get_clock_pcb()->processId);
 			set_message_type(env, CLOCK_TICK);

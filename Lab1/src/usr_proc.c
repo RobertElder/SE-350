@@ -309,7 +309,7 @@ void test_process_2() {
 
 void test_process_3() {
 
-	int* sender_id;
+	int sender_id = 0;
 	Envelope * env_test15;
 	char message_test15;
 
@@ -406,7 +406,7 @@ void test_process_3() {
 
 	// Comes in here from test process 4.
 	// Gets blocked on receive until proc 4 sends it a message
-	env_test15 = (Envelope *)receive_message(sender_id);
+	env_test15 = (Envelope *)receive_message(&sender_id);
 
 	// comes here after proc 4 releases processor
 	actual_run_order[cur_index++] = 3;

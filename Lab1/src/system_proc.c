@@ -50,7 +50,7 @@ RegisteredCommand registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
 char current_command_buffer[MAX_COMMAND_LENGTH];
 int current_command_length = 0;
 
-char time[] = "00:00:00";
+char time[] = "\r\n00:00:00\r\n";
 
 volatile extern uint8_t g_UART0_TX_empty;
 
@@ -95,7 +95,7 @@ int get_index_of_matching_command(){
 				return i;
 			} else if(c != current_command_buffer[j] || j >= current_command_length) {
 				//No match
-				return -1;
+				break;
 			}
 		}
 	}
@@ -125,13 +125,20 @@ void keyboard_command_decoder(){
 
 		switch(message_type) {
 			case COMMAND_REGISTRATION:
-				register_command(pChar, destination);
+				register_command(pChar, get_sender_PID(message));
 				release_memory_block(message); 
 				break;
-			case KEYBOARD_INPUT:
+			case KEYBOARD_INPUT:{
+				//Init message to wall clock
+				Envelope * clockMsg = (Envelope *)request_memory_block();
+				set_sender_PID(clockMsg, get_kcd_pcb()->processId);
+				set_destination_PID(clockMsg, get_clock_pcb()->processId);
+
 				/* If the buffer is full, they are not part of any valid command so 
 				   we don't care (also < because we want space for the terminating null)
 				*/
+
+
 
 				if(current_command_length < MAX_COMMAND_LENGTH){
 					//  Put the character we received into the buffer
@@ -158,12 +165,21 @@ void keyboard_command_decoder(){
 						set_message_bytes(responseEnvelope, &current_command_buffer, current_command_length * sizeof(char)); //Current buffer
 
 						send_message(registeredCommand->registered_pid, responseEnvelope); //to registered process
-
 					}
 			
 					// Reset the buffer for new commands
 					current_command_length = 0;
+
+					set_message_type(clockMsg, UNPAUSE_CLOCK);
+				} else {
+					set_message_type(clockMsg, PAUSE_CLOCK);
 				}
+
+				//Pause or resume clock
+				send_message(get_clock_pcb()->processId, clockMsg);
+
+			   	//Null terminate
+				current_command_buffer[current_command_length] = 0;
 	
 				// edit msg and forward to crt to echo
 				message->sender_pid = get_kcd_pcb()->processId;
@@ -172,6 +188,7 @@ void keyboard_command_decoder(){
 				send_message(get_crt_pcb()->processId, message);
 
 				break;
+			}
 			default:
 				assert(0, "ERROR, invalid message sent to KCD");
 				break;		
@@ -217,18 +234,27 @@ void crt_display(){
 
 
 void wall_clock() {
-	int doCount = 1;
-	int displayClock = 1;
+	int doCount = 0;
+	int displayClock = 0;
 	int clock_time = 0;
 	int* sender_id;
 		  
 	Envelope* registerMessage = (Envelope*)request_memory_block_debug(0x2);
 	uint8_t CMD_SIZE = 4;//bytes
 	char* cmd = "%WS";
+	char* cmd2 = "%WT";
+
 	registerMessage->sender_pid = get_clock_pcb()->processId;
 	registerMessage->receiver_pid = get_kcd_pcb()->processId;
 	registerMessage->message_type = COMMAND_REGISTRATION;
 	set_message_bytes(registerMessage, cmd, CMD_SIZE);
+	send_message(registerMessage->receiver_pid, registerMessage);
+	
+	registerMessage = (Envelope*)request_memory_block_debug(0x2);	
+	registerMessage->sender_pid = get_clock_pcb()->processId;
+	registerMessage->receiver_pid = get_kcd_pcb()->processId;
+	registerMessage->message_type = COMMAND_REGISTRATION;
+	set_message_bytes(registerMessage, cmd2, CMD_SIZE);
 	send_message(registerMessage->receiver_pid, registerMessage);	 
 
 	while(1) {
@@ -243,7 +269,7 @@ void wall_clock() {
 					}
 
 					if(displayClock) {
-						uint8_t TIME_LEN = 8; //bytes
+						uint8_t TIME_LEN = 12; //bytes
 						char* time_string = get_formatted_time_from_seconds(clock_time);
 
 						Envelope* timeEnv = (Envelope *)request_memory_block_debug(0xd);
@@ -273,6 +299,21 @@ void wall_clock() {
 			case UNPAUSE_CLOCK:
 				displayClock = 1;
 				break;
+			case COMMAND_MATCHED: {
+				char* msg = get_message_data(env);
+
+				if(*(msg + 2) == 'S') {
+					clock_time = get_seconds_from_formatted_time((msg + 3));
+					doCount = 1;
+					displayClock = 1;	
+				} else if(*(msg + 2) == 'T') {
+					clock_time = 0;
+					doCount = 0;
+					displayClock = 0;		
+				}
+
+				break;
+			}
 			default:
 				break;
 		}
@@ -351,12 +392,12 @@ char* get_formatted_time_from_seconds(int seconds) {
 	seconds -= (m * 60);
 	s = seconds;
 
-	time[0] = (h / 10) + 0x30;
-	time[1] = (h % 10) + 0x30;
-	time[3] = (m / 10) + 0x30;
-	time[4] = (m % 10) + 0x30;
-	time[6] = (s / 10) + 0x30;
-	time[7] = (s % 10) + 0x30;
+	time[2] = (h / 10) + 0x30;
+	time[3] = (h % 10) + 0x30;
+	time[5] = (m / 10) + 0x30;
+	time[6] = (m % 10) + 0x30;
+	time[8] = (s / 10) + 0x30;
+	time[9] = (s % 10) + 0x30;
 	
 	return time; 
 }

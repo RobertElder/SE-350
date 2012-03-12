@@ -1,8 +1,3 @@
-/* @brief: rtx.c kernel API implementations, this is a skeleton only
- * @author: Yiqing Huang
- * @date: 2012/01/08
- */
-
 #include "rtx.h"
 #include "utils.h"
 

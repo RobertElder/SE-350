@@ -1,8 +1,4 @@
-/**
- * @brief: uart.h 
- * @author: Yiqing Huang
- * @date: 2012/01/20
- */
+
 
 #ifndef _UART_H_
 #define _UART_H_

@@ -1,10 +1,4 @@
-/**
- * @brief timer.c - Timer example code. Tiemr IRQ is invoked every 1ms
- * @author T. Reidemeister
- * @author Y. Huang
- * @author NXP Semiconductors
- * @date 02/15/2012
- */
+
 
 #include <LPC17xx.h>
 #include "timer.h"

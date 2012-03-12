@@ -78,7 +78,7 @@ void do_print_processes(){
 			uart0_put_string("\nCurrent State: ");
 			print_unsigned_integer(currentPCB->currentState);
 
-			uart0_put_string("\n__________________________________________");
+			uart0_put_string("\n__________________________________________\n");
 
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
@@ -98,7 +98,7 @@ void do_print_processes(){
 			uart0_put_string("\nCurrent State: ");
 			print_unsigned_integer(currentPCB->currentState);
 
-			uart0_put_string("\n__________________________________________");
+			uart0_put_string("\n__________________________________________\n");
 
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
@@ -118,7 +118,7 @@ void do_print_processes(){
 			uart0_put_string("\nCurrent State: ");
 			print_unsigned_integer(currentPCB->currentState);
 
-			uart0_put_string("\n__________________________________________");
+			uart0_put_string("\n__________________________________________\n");
 
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
@@ -138,7 +138,7 @@ void do_print_messages() {
 		uart0_put_string("\nMessage type: ");
 		print_unsigned_integer(recentlySentMessages[i].message_type);
 
-		uart0_put_string("\n__________________________________________");
+		uart0_put_string("\n__________________________________________\n");
 	}
 
 	uart0_put_string("\n-- Recently received messages --");
@@ -152,7 +152,7 @@ void do_print_messages() {
 		uart0_put_string("\nMessage type: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
 
-	   	uart0_put_string("\n__________________________________________");
+	   	uart0_put_string("\n__________________________________________\n");
 	}
 }
 

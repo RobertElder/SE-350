@@ -99,10 +99,10 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 void timeout_i_process() {
 	while(1) {
 		int time;
-		int* senderId;
+		int senderId = 0;
 		ProcessControlBlock* interrupted_proc = get_interrupted_process();
 		
-		Envelope * env = k_receive_message(senderId);
+		Envelope * env = k_receive_message(&senderId);
 		ListNode * node = &env->dummyVar;
 		int receiver_pid;
 	
@@ -112,7 +112,7 @@ void timeout_i_process() {
 	
 		 	expiry_sorted_enqueue(&delayed_messages, node);
 	
-			env = k_receive_message(senderId);
+			env = k_receive_message(&senderId);
 		}
 	
 		if(delayed_messages.head != NULL) {

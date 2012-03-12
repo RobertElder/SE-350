@@ -237,7 +237,7 @@ void wall_clock() {
 	int doCount = 0;
 	int displayClock = 0;
 	int clock_time = 0;
-	int* sender_id;
+	int sender_id = 0;
 		  
 	Envelope* registerMessage = (Envelope*)request_memory_block_debug(0x2);
 	uint8_t CMD_SIZE = 4;//bytes
@@ -259,7 +259,7 @@ void wall_clock() {
 
 	while(1) {
 	// TODO: RELEASE ME PROPERLY (after uncommenting and fixing clock_tick case)
-		Envelope * env = (Envelope *)receive_message(sender_id);
+		Envelope * env = (Envelope *)receive_message(&sender_id);
 		//release_memory_block(env); // temporary fix. Remove this line once proc is fixed
 		switch(env->message_type) {
 			case CLOCK_TICK:

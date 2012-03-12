@@ -424,7 +424,7 @@ void test_process_3() {
 
 void test_process_4() {
 
-	int* sender_id;
+	int sender_id = 0;
 	Envelope * env;
 	int delay_time;
 	char message_test15;
@@ -434,7 +434,7 @@ void test_process_4() {
 	actual_run_order[cur_index++] = 4;
 
 	// This blocks (process 3 takes over)
-	env = (Envelope *)receive_message(sender_id);
+	env = (Envelope *)receive_message(&sender_id);
 	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
    	
 	// Comes in from proc3
@@ -458,7 +458,7 @@ void test_process_4() {
 	delayed_send(4, env, 0);
 
 	// This will block until the message comes.
-	env = (Envelope *)receive_message(sender_id);
+	env = (Envelope *)receive_message(&sender_id);
 	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//Check message contents
@@ -482,7 +482,7 @@ void test_process_4() {
 	delayed_send(4, env, 10);
 
 	// Blocks until message to self is received.
-	env = (Envelope *)receive_message(sender_id);
+	env = (Envelope *)receive_message(&sender_id);
 	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//(too late) || (too early) || (Check message contents)
@@ -503,7 +503,7 @@ void test_process_4() {
 	delayed_send(4, env, 50);
 
 	// blocks on receive
-	env = (Envelope *)receive_message(sender_id); 
+	env = (Envelope *)receive_message(&sender_id); 
 	//assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//(too late) || (too early) || (Check message contents)

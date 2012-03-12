@@ -58,9 +58,12 @@ int expected_run_order[] =
 ///	TODO: document this test case
 3,
 // Test case 14: Proc4 blocks on receive_msg, proc3 executes and sends a message with a delay of 0
-// This means proc4 should be unblocked right away and continue executing (Basic delayed_send preemption test)
-// proc4 sends itself delayed messages with delays 0, 10, 50
-4, 3, 4, 4, 4, 4
+// This means proc4 should be unblocked right away and continue executing (Basic send_message preemption test)
+4, 3, 4,
+// Test case 15: proc4 sends itself delayed messages with delays 0, 10, 50 (Basic delayed_send test)
+4, 4, 4,
+// Test case 16: proc 4 sends message to proc 3, which has the same priority, no preemption occurs
+4, 3
 };
 // Further test TODOs: test if all processes are blocked, null process should run (keep as last test)
 int actual_run_order[ORDER_LENGTH];
@@ -217,7 +220,10 @@ void test_process_1() {
 	//request mem block number 32 - will get blocked
 	block = request_memory_block();
 	*block = 0;
-	assert(0,"Should not reach this point. End of proc 1");
+
+	while(1) {}
+
+	//assert(0,"Should not reach this point. End of proc 1");
 }
 
 void test_process_2() {
@@ -297,10 +303,13 @@ void test_process_2() {
 
 	//should switch to test_proc_6
 	release_processor();
+
 	assert(0,"Should not reach this point. End of proc 2");
 }
 
 void test_process_3() {
+
+	int* sender_id;
 	Envelope * env_test15;
 	char message_test15;
 
@@ -395,9 +404,22 @@ void test_process_3() {
 
 	send_message(4, env_test15);
 
-	// Comes in here from test process 4. Will loop until proc4 gets his message. (does this twice)
-	while (1) {}
+	// Comes in here from test process 4.
+	// Gets blocked on receive until proc 4 sends it a message
+	env_test15 = (Envelope *)receive_message(sender_id);
 
+	// comes here after proc 4 releases processor
+	actual_run_order[cur_index++] = 3;
+
+	if (order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 16 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 16 FAIL\n\r");
+	}
+
+	while (1) {
+		release_processor();
+	}
 }
 
 void test_process_4() {
@@ -413,11 +435,18 @@ void test_process_4() {
 
 	// This blocks (process 3 takes over)
 	env = (Envelope *)receive_message(sender_id);
-
-   	// Comes in from proc3
+	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
+   	
+	// Comes in from proc3
 	actual_run_order[cur_index++] = 4;
 
-	//Set up message 1 (delay 0)
+	if (order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 14 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 14 FAIL\n\r");
+	}
+
+	//Set up message 1: delay 0 ms
 	message_test15 = 'b';	
 	set_sender_PID(env, 4);
 	set_destination_PID(env, 4);
@@ -428,8 +457,9 @@ void test_process_4() {
 	delay_time = get_current_time();
 	delayed_send(4, env, 0);
 
-	// This will block until the message comes. Proc 3 will run in his while loop
-	env = (Envelope *)receive_message(sender_id); //Send message to itself, receive later
+	// This will block until the message comes.
+	env = (Envelope *)receive_message(sender_id);
+	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//Check message contents
 	//Add 1 to delay_time in order to account for context switches and stuff
@@ -437,45 +467,44 @@ void test_process_4() {
 	if(get_current_time() > delay_time + 1 || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'b')) {
 		test_passed = 0;
 	}
-
+	
 	actual_run_order[cur_index++] = 4;
 
-	//Set up message 1 (delay 10)
+	//Set up message 2: delay 10 ms
 	message_test15 = 'c';	
 	set_sender_PID(env, 4);
 	set_destination_PID(env, 4);
 	set_message_type(env, DELAYED_SEND);
 	set_message_bytes(env, &message_test15, sizeof(char));
 
-	//Send msg 1
+	//Send msg 2
 	delay_time = get_current_time();
-
-	// Send message to self. Will receive later
 	delayed_send(4, env, 10);
 
 	// Blocks until message to self is received.
 	env = (Envelope *)receive_message(sender_id);
+	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//(too late) || (too early) || (Check message contents)
 	if(get_current_time() > (delay_time + 10 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'c')) {
 		test_passed = 0;
 	}
-
 	actual_run_order[cur_index++] = 4;
 
-	//Set up message 1 (delay 50)
+	//Set up message 3: delay 50 ms
 	message_test15 = 'd';	
 	set_sender_PID(env, 4);
 	set_destination_PID(env, 4);
 	set_message_type(env, DELAYED_SEND);
 	set_message_bytes(env, &message_test15, sizeof(char));
 
-	//Send msg 1
+	//Send msg 3
 	delay_time = get_current_time();
-	// sends msg to self
 	delayed_send(4, env, 50);
-	// blocks on receive, proc3 will run in the meantime
-	env = (Envelope *)receive_message(sender_id);
+
+	// blocks on receive
+	env = (Envelope *)receive_message(sender_id); 
+	//assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//(too late) || (too early) || (Check message contents)
 	if(get_current_time() > (delay_time + 50 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'd')) {
@@ -484,26 +513,35 @@ void test_process_4() {
 
 	actual_run_order[cur_index++] = 4;
 
-	
-	// TODO check message is good
 	if (order_checker(cur_index) && test_passed) {
-		uart0_put_string("G015_test: test 14 OK\n\r");
+		uart0_put_string("G015_test: test 15 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 14 FAIL\n\r");
+		uart0_put_string("G015_test: test 15 FAIL\n\r");
 	}
-   
+
+	set_process_priority(4, 1);
+
+	message_test15 = 'e';	
+	set_sender_PID(env, 4);
+	set_destination_PID(env, 3);
+	set_message_type(env, DELAYED_SEND);
+	set_message_bytes(env, &message_test15, sizeof(char));
+
+	send_message(3, env);
+	// proc 3 should unblock on receive but should not preempt proc 4 since they are same priority
+	actual_run_order[cur_index++] = 4;
+	
+	release_processor();
+
 	uart0_put_string("G015_test: END\n\r");
 
 	while (1) {
-//		int i = 999999;
+	//	int i = 999999;
 	//	while (i) { i--; }
+
 		release_processor();
-		
 	}
-
 }
-
-
 
 void test_process_5() {
 
@@ -584,6 +622,7 @@ void test_process_5() {
 	set_process_priority(5, 1);
 	actual_run_order[cur_index] = 5;
 	set_process_priority(3, 0);
+
 	assert(0,"Should not reach this point. End of proc 5");
 }
 
@@ -653,12 +692,13 @@ void test_process_6() {
 	}
 	
 	set_process_priority(4, 0);
-	set_process_priority(1, 3);
+	set_process_priority(1, 2);
 	set_process_priority(2, 3);
 	set_process_priority(3, 1);
 	set_process_priority(5, 3);
 	set_process_priority(6, 3);
 	release_processor();
+
 	assert(0,"Should not reach this point. End of proc 6");
 }
 

@@ -59,29 +59,35 @@ typedef struct pcb {
 
 } ProcessControlBlock;
 */
-void do_print_processes(){
+void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 	int i = 0;
-	uart0_put_string("-- Ready processes by priority --");
+	uart0_put_string("\n-- ");
+	uart0_put_string(queueName);
+	uart0_put_string(" process queues (by priority) --\r\n");
 	for(i = 0; i < NUM_PRIORITIES; i++){
-		ListNode * current_ready_queue_node = 0;//ready_queue[i]->head;
+		ListNode * current_ready_queue_node = linkedListArray[i].head;
+		uart0_put_string("Priority ");
 	    print_unsigned_integer(i);
-		uart0_put_string(".\r\n");
+		uart0_put_string("->  ");
 		while(current_ready_queue_node){
 			ProcessControlBlock* currentPCB = current_ready_queue_node->data;
-			uart0_put_string("Process id: ");
+			uart0_put_string("Id: ");
 			print_unsigned_integer(currentPCB->processId);
-			uart0_put_string(", Current state: ");
+			uart0_put_string(" .. State: ");
 			print_unsigned_integer(currentPCB->currentState);
-			uart0_put_string(", Process Priority: ");
+			uart0_put_string(" .. Priority: ");
 			print_unsigned_integer(currentPCB->processPriority);
+			uart0_put_string(" || ");
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
+		uart0_put_string("\r\n__________________________________________\r\n");
 	}	
+
 }
 
 void do_print_messages() {
 	int i = 0;
-	uart0_put_string("-- Recently send messages --");
+	uart0_put_string("\n-- Recently sent messages --");
 	for(i = 0; i < numMessagesSent; ++i) {
 		uart0_put_string("\nSender ID: ");
 		print_unsigned_integer(recentlySentMessages[i].sender_pid);
@@ -92,9 +98,10 @@ void do_print_messages() {
 		uart0_put_string("\nMessage type: ");
 		print_unsigned_integer(recentlySentMessages[i].message_type);
 
+		uart0_put_string("\n__________________________________________\n");
 	}
 
-	uart0_put_string("-- Recently received messages --");
+	uart0_put_string("\n-- Recently received messages --");
 	for(i = 0; i < numMessagesReceived; ++i) {
 		uart0_put_string("\nSender ID: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].sender_pid);
@@ -105,23 +112,33 @@ void do_print_messages() {
 		uart0_put_string("\nMessage type: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
 
+	   	uart0_put_string("\n__________________________________________\n");
 	}
+
 }
 
 void do_hot_key(char c){
-#ifdef _DEBUG_HOTKEYS
+	#ifdef _DEBUG_HOTKEYS
 	switch(c){
+
 		case '!' :{
-			do_print_processes();
+			do_print_processes(ready_queue,"Ready");
+			break;
+		}case '@' :{
+			do_print_processes(blocked_memory_queue,"Blocked On Memory");
+			break;
+		}case '#' :{
+			do_print_processes(blocked_receive_queue,"Blocked On Receive");
 			break;
 		}
-		case '~' :{
+		case '~' : {
 			do_print_messages();
 			break;
 		}
-		default:{
-			assert(0,"ERROR, unknown unmatched hot key.");
+		default: {
+			return;
+
 		}
 	}
-#endif
+	#endif
 }

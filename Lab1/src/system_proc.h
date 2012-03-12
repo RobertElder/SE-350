@@ -4,6 +4,11 @@
 #define	MAX_NUMBER_OF_REGISTERABLE_COMMANDS             10
 #define	MAX_COMMAND_LENGTH                              15
 
+
+#define CRT_START_STACK ((uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES) * STACKS_SIZE + STACKS_SIZE))
+#define KCD_START_STACK (CRT_START_STACK + (STACKS_SIZE) / sizeof(uint32_t))
+#define CLOCK_START_STACK (KCD_START_STACK + (STACKS_SIZE) / sizeof(uint32_t))
+
 #include "rtx.h"
 
 int get_seconds_from_formatted_time(char *);

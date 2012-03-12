@@ -132,12 +132,14 @@ void keyboard_command_decoder(){
 				/* If the buffer is full, they are not part of any valid command so 
 				   we don't care (also < because we want space for the terminating null)
 				*/
+
 				if(current_command_length < MAX_COMMAND_LENGTH){
 					//  Put the character we received into the buffer
 					current_command_buffer[current_command_length] = *pChar;
 					current_command_length++;
 				}
-			
+
+				do_hot_key(*pChar);
 				// Did they type a carriage return?
 				if(*pChar == 0xD){
 					int indexOfMatchedCommand = get_index_of_matching_command();
@@ -168,6 +170,7 @@ void keyboard_command_decoder(){
 				message->receiver_pid = get_crt_pcb()->processId;
 				message->message_type = OUTPUT_STRING;
 				send_message(get_crt_pcb()->processId, message);
+
 				break;
 			default:
 				assert(0, "ERROR, invalid message sent to KCD");
@@ -235,7 +238,9 @@ void wall_clock() {
 		switch(env->message_type) {
 			case CLOCK_TICK:
 				if(doCount) {
-					clock_time++; //tick
+					if(++clock_time >= 86400) { //tick
+						clock_time = 0;
+					}
 
 					if(displayClock) {
 						uint8_t TIME_LEN = 8; //bytes
@@ -295,9 +300,9 @@ void init_sys_procs() {
 	sys_procs[1] = &kcd_pcb;
 	sys_procs[2] = &clock_pcb;
 
-	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES) * STACKS_SIZE + STACKS_SIZE);
-	stacks_start[1] = stacks_start[0] + (STACKS_SIZE) / sizeof(uint32_t);
-	stacks_start[2] = stacks_start[1] + (STACKS_SIZE) / sizeof(uint32_t);
+	stacks_start[0] = CRT_START_STACK;
+	stacks_start[1] = KCD_START_STACK;
+	stacks_start[2] = CLOCK_START_STACK;
 
 	for (procIndex = 0; procIndex < 3; procIndex++) {
 		int i;

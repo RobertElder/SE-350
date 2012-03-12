@@ -2,7 +2,7 @@
 #define _SYSTEM_PROC_H_
 
 #define	MAX_NUMBER_OF_REGISTERABLE_COMMANDS             10
-#define	MAX_COMMAND_LENGTH                              500
+#define	MAX_COMMAND_LENGTH                              15
 
 #include "rtx.h"
 

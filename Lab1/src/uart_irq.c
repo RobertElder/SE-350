@@ -12,6 +12,7 @@
 #include "ipc.h"
 #include "system_proc.h"
 #include "iprocess.h"
+#include "process.h"
 
 volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
@@ -224,22 +225,31 @@ void uart0_put_string(unsigned char * c){
 	int currentBufferPos = 0;
 	int i = 0;
 
-	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;	// Disable IER_Receive_Data_Available 
 	while(lenSoFar < totalStringLen){
+		Envelope * message = NULL;
 		nextOutOfBoundsIndex = lenSoFar + BUFSIZE > totalStringLen ? totalStringLen : lenSoFar + BUFSIZE;
-		currentBufferPos = 0;																																	 
-
+		currentBufferPos = 0;
+		
 		for(i = lenSoFar; i < nextOutOfBoundsIndex; i++){
 			g_UART0_buffer[currentBufferPos] = c[i];
 			g_UART0_count++;
 			currentBufferPos++;
 		}
-		uart_send_string( g_UART0_count );
+		g_UART0_buffer[currentBufferPos] = 0;
+		g_UART0_count++;
+
+		message = k_request_memory_block_debug(0xfe);
+		message->sender_pid = pCurrentProcessPCB->processId;
+		message->receiver_pid = get_crt_pcb()->processId;
+		message->message_type = OUTPUT_STRING;
+		set_message_bytes(message, &g_UART0_buffer, g_UART0_count);
+		k_send_message(message->receiver_pid, message);
+
 		g_UART0_count = 0;
 		// We have advanced at most one buffersize in the string
 		lenSoFar += BUFSIZE;
 	}
-	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable IER_Receive_Data_Available
+
 }
 
 

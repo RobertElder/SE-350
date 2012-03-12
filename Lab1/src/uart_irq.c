@@ -1,9 +1,4 @@
-/**
- * @brief: uart_irq.c 
- * @author: NXP Semiconductors
- * @author: Y. Huang
- * @date: 2012/01/20
- */
+
 
 #include <LPC17xx.h>
 #include "uart.h"

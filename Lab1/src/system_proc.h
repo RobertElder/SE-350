@@ -8,7 +8,7 @@
 
 int get_seconds_from_formatted_time(char *);
 char* get_formatted_time_from_seconds(int);
-void register_command(char *, int);
+void register_command(char * s, int process_id);
 void unregister_all_commands(void);
 
 ProcessControlBlock* get_waiting_sys_proc(void);

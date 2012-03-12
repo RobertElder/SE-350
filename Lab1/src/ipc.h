@@ -5,14 +5,18 @@
 #include "rtx.h"
 
 #define COMMAND_REGISTRATION 1
-#define KEYBOARD_INPUT 3
-#define OUTPUT_STRING 4
-#define DELAYED_SEND 5
-#define START_CLOCK	6
-#define STOP_CLOCK 7
-#define CLOCK_TICK 8
-#define PAUSE_CLOCK 9
-#define UNPAUSE_CLOCK 10
+#define COMMAND_MATCHED 2
+#define COMMAND_INPUT 3
+#define KEYBOARD_INPUT 4
+#define OUTPUT_STRING 5
+#define DELAYED_SEND 6
+#define START_CLOCK	7
+#define STOP_CLOCK 8
+#define CLOCK_TICK 9
+#define PAUSE_CLOCK 10
+#define UNPAUSE_CLOCK 11
+
+#define NUM_MESSAGES_TO_TRACK 10
 
 typedef struct env {
 	ListNode dummyVar; // DO NOT USE ME.

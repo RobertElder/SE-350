@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "process.h"
 #include "hot_keys.h"
+#include "ipc.h"
 
 /*
   As well, the UART i-process is used to provide debugging services which will be used during the demonstration. Upon receiving
@@ -81,11 +82,45 @@ void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 		}
 		uart0_put_string("\r\n");
 	}	
+
+}
+
+void do_print_messages() {
+	int i = 0;
+	uart0_put_string("\n-- Recently sent messages --");
+	for(i = 0; i < numMessagesSent; ++i) {
+		uart0_put_string("\nSender ID: ");
+		print_unsigned_integer(recentlySentMessages[i].sender_pid);
+		
+		uart0_put_string("\nReceiver ID: ");
+		print_unsigned_integer(recentlySentMessages[i].receiver_pid);
+
+		uart0_put_string("\nMessage type: ");
+		print_unsigned_integer(recentlySentMessages[i].message_type);
+
+		uart0_put_string("\n__________________________________________\n");
+	}
+
+	uart0_put_string("\n-- Recently received messages --");
+	for(i = 0; i < numMessagesReceived; ++i) {
+		uart0_put_string("\nSender ID: ");
+		print_unsigned_integer(recentlyReceivedMessages[i].sender_pid);
+		
+		uart0_put_string("\nReceiver ID: ");
+		print_unsigned_integer(recentlyReceivedMessages[i].receiver_pid);
+
+		uart0_put_string("\nMessage type: ");
+		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
+
+	   	uart0_put_string("\n__________________________________________\n");
+	}
+
 }
 
 void do_hot_key(char c){
 	#ifdef _DEBUG_HOTKEYS
 	switch(c){
+
 		case '!' :{
 			do_print_processes(ready_queue,"Ready");
 			break;
@@ -96,8 +131,13 @@ void do_hot_key(char c){
 			do_print_processes(blocked_receive_queue,"Blocked On Receive");
 			break;
 		}
-		default:{
-			//  We don't give a fuck about this character.
+		case '~' : {
+			do_print_messages();
+			break;
+		}
+		default: {
+			return;
+
 		}
 	}
 	#endif

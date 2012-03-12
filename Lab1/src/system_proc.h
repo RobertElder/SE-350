@@ -2,7 +2,7 @@
 #define _SYSTEM_PROC_H_
 
 #define	MAX_NUMBER_OF_REGISTERABLE_COMMANDS             10
-#define	MAX_COMMAND_LENGTH                              500
+#define	MAX_COMMAND_LENGTH                              15
 
 
 #define CRT_START_STACK ((uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES) * STACKS_SIZE + STACKS_SIZE))

@@ -22,6 +22,11 @@ main_svc.c - contains our main function, initiates processes and memory then run
 Compilation procedure:
 
 
+Hotkeys:
+! - List all processes
+~ - List recent messages sent/received
+
+
 
 
 

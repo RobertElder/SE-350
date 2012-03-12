@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "process.h"
 #include "hot_keys.h"
+#include "ipc.h"
 
 /*
   As well, the UART i-process is used to provide debugging services which will be used during the demonstration. Upon receiving
@@ -76,8 +77,35 @@ void do_print_processes(){
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
 	}	
+}
 
+void do_print_messages() {
+	int i = 0;
+	uart0_put_string("-- Recently send messages --");
+	for(i = 0; i < numMessagesSent; ++i) {
+		uart0_put_string("\nSender ID: ");
+		print_unsigned_integer(recentlySentMessages[i].sender_pid);
+		
+		uart0_put_string("\nReceiver ID: ");
+		print_unsigned_integer(recentlySentMessages[i].receiver_pid);
 
+		uart0_put_string("\nMessage type: ");
+		print_unsigned_integer(recentlySentMessages[i].message_type);
+
+	}
+
+	uart0_put_string("-- Recently received messages --");
+	for(i = 0; i < numMessagesReceived; ++i) {
+		uart0_put_string("\nSender ID: ");
+		print_unsigned_integer(recentlyReceivedMessages[i].sender_pid);
+		
+		uart0_put_string("\nReceiver ID: ");
+		print_unsigned_integer(recentlyReceivedMessages[i].receiver_pid);
+
+		uart0_put_string("\nMessage type: ");
+		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
+
+	}
 }
 
 void do_hot_key(char c){
@@ -85,6 +113,10 @@ void do_hot_key(char c){
 	switch(c){
 		case '!' :{
 			do_print_processes();
+			break;
+		}
+		case '~' :{
+			do_print_messages();
 			break;
 		}
 		default:{

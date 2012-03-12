@@ -78,7 +78,11 @@ void process_init(void);
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				
 int k_release_processor(void);		// kernel release_process API
 // Switch contexts from the passed-in PCB to the pCurrentPCB
+
 void context_switch(ProcessControlBlock*, ProcessControlBlock*);
+//void popstuff(void);
+//void pushstuff(void); 
+void c_context_switch(ProcessControlBlock*, ProcessControlBlock*);
 
 int has_blocked_processes(void); // check if there are blocked processes
 void block_current_process(void); // Put current process in a blocking state, as well as enqueue in the blocked queue

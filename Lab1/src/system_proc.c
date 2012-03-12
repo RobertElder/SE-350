@@ -110,7 +110,7 @@ int get_index_of_matching_command(){
 void keyboard_command_decoder(){
 	while (1) {
 		int sender_id = -1;
-		int destination = -1;
+		int destination = -1;	  
 
 		// Get our new message
 		Envelope* message = (Envelope*)receive_message(&sender_id);
@@ -165,7 +165,7 @@ void keyboard_command_decoder(){
 					current_command_length = 0;
 				}
 	
-				//edit msg and forward to crt to echo
+				// edit msg and forward to crt to echo
 				message->sender_pid = get_kcd_pcb()->processId;
 				message->receiver_pid = get_crt_pcb()->processId;
 				message->message_type = OUTPUT_STRING;
@@ -215,17 +215,26 @@ void crt_display(){
 	}
 }
 
+
 void wall_clock() {
 	int doCount = 1;
 	int displayClock = 1;
 	int clock_time = 0;
 	int* sender_id;
-	Envelope * env;
+		  
+	Envelope* registerMessage = (Envelope*)request_memory_block_debug(0x2);
+	uint8_t CMD_SIZE = 4;//bytes
+	char* cmd = "%WS";
+	registerMessage->sender_pid = get_clock_pcb()->processId;
+	registerMessage->receiver_pid = get_kcd_pcb()->processId;
+	registerMessage->message_type = COMMAND_REGISTRATION;
+	set_message_bytes(registerMessage, cmd, CMD_SIZE);
+	send_message(registerMessage->receiver_pid, registerMessage);	 
 
 	while(1) {
 	// TODO: RELEASE ME PROPERLY (after uncommenting and fixing clock_tick case)
-		env = (Envelope *)receive_message(sender_id);
-		release_memory_block(env); // temporary fix. Remove this line once proc is fixed
+		Envelope * env = (Envelope *)receive_message(sender_id);
+		//release_memory_block(env); // temporary fix. Remove this line once proc is fixed
 		switch(env->message_type) {
 			case CLOCK_TICK:
 				if(doCount) {
@@ -234,17 +243,19 @@ void wall_clock() {
 					}
 
 					if(displayClock) {
+						uint8_t TIME_LEN = 8; //bytes
 						char* time_string = get_formatted_time_from_seconds(clock_time);
 
-//						release_memory_block(env);
-//						env = (Envelope *)request_memory_block_debug(0xd);
-//
-//						set_sender_PID(env, get_clock_pcb()->processId);
-//						set_destination_PID(env, get_kcd_pcb()->processId);
-//						set_message_type(env, OUTPUT_STRING);
-//						set_message_bytes(env, time_string, sizeof(time_string));
-//
-//						send_message(get_kcd_pcb()->processId, env); //to KCD for display
+						Envelope* timeEnv = (Envelope *)request_memory_block_debug(0xd);
+						
+					 	timeEnv->sender_pid = get_clock_pcb()->processId;
+						timeEnv->receiver_pid = get_crt_pcb()->processId;
+						timeEnv->message_type = OUTPUT_STRING;
+
+						set_message_bytes(timeEnv, time_string, TIME_LEN + 1);
+					//	((char*)&timeEnv->message_data)[TIME_LEN] = 0; //null terminate
+
+						send_message(timeEnv->receiver_pid, timeEnv); //to CRT for display
 
 					}
 				}
@@ -266,7 +277,7 @@ void wall_clock() {
 				break;
 		}
 
-		//release_memory_block(env); //commented until this proc is fixed
+		release_memory_block(env); //commented until this proc is fixed
 	}
 }
 

@@ -51,9 +51,7 @@ int main(){
 
 	// Disable interrupt requests
 	__disable_irq();
-	/* Lower the priority of the svn calls so that 
-	 we can handle UART interrupts inside SVC calls */
-	//NVIC_SetPriority(SVCall_IRQn, 1);
+
 	// Initialize UART output
 	timer_init(0);
 	uart0_init();   

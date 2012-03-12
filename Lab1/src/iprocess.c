@@ -167,8 +167,8 @@ void init_i_processes() {
 
 	iproc[0] = &i_uart_pcb;
 	iproc[1] = &i_timer_pcb;
-	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES) * STACKS_SIZE + STACKS_SIZE);
-	stacks_start[1] = stacks_start[0] + (STACKS_SIZE) / sizeof(uint32_t);
+	stacks_start[0] = UART_START_STACK;
+	stacks_start[1] = TIMER_START_STACK;
 
 	//get_process_pointer_from_id(NUM_USR_PROCESSES - 1)->processStackPointer;
 

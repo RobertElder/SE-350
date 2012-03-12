@@ -159,16 +159,16 @@ void do_print_messages() {
 void do_hot_key(char c){
 #ifdef _DEBUG_HOTKEYS
 	switch(c){
-		case '!' :{
+		case '!' : {
 			do_print_processes();
 			break;
 		}
-		case '~' :{
+		case '~' : {
 			do_print_messages();
 			break;
 		}
-		default:{
-			assert(0,"ERROR, unknown unmatched hot key.");
+		default: {
+			return;
 		}
 	}
 #endif

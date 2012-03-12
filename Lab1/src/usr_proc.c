@@ -500,10 +500,7 @@ void test_process_4() {
 		release_processor();
 		
 	}
-
 }
-
-
 
 void test_process_5() {
 

@@ -112,7 +112,6 @@ void keyboard_command_decoder(){
 	while (1) {
 		int sender_id = -1;
 		int destination = -1;
-		RegisteredCommand * registeredCommand;
 
 		// Get our new message
 		Envelope* message = (Envelope*)receive_message(&sender_id);
@@ -147,7 +146,7 @@ void keyboard_command_decoder(){
 					//  Does the thing in the buffer match a command that was registered? 
 					if(indexOfMatchedCommand > -1) {
 						Envelope * responseEnvelope = (Envelope *)request_memory_block();
-						registeredCommand = &registered_commands[indexOfMatchedCommand];
+						RegisteredCommand * registeredCommand = &registered_commands[indexOfMatchedCommand];
 
 						current_command_buffer[current_command_length] = 0;
 

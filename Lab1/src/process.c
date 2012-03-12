@@ -379,7 +379,16 @@ __asm void __new_iproc_return(void) {
 	POP {r0-r4,r12,pc}	;needed to pop what was pushed in i-proc initialisation
 }
 
-void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
+__asm void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB)
+{
+	PRESERVE8
+	IMPORT c_context_switch
+	PUSH{r0-r11, lr}
+	BL c_context_switch
+	POP{r0-r11, pc}
+} 
+
+void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
 	
 	pCurrentProcessPCB = pNewProcessPCB;
 

@@ -288,7 +288,7 @@ void test_process_2() {
 	actual_run_order[cur_index] = 2;
 	cur_index++;
 
-	//should switch to test_proc_1
+	//should switch to test_proc_6
 	release_processor();
 
 	//comes here after test_proc_1 is blocked on memory

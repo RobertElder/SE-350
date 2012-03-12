@@ -112,6 +112,7 @@ void keyboard_command_decoder(){
 	while (1) {
 		int sender_id = -1;
 		int destination = -1;
+		RegisteredCommand * registeredCommand;
 
 		// Get our new message
 		Envelope* message = (Envelope*)receive_message(&sender_id);
@@ -145,22 +146,18 @@ void keyboard_command_decoder(){
 
 					//  Does the thing in the buffer match a command that was registered? 
 					if(indexOfMatchedCommand > -1) {
-						RegisteredCommand registeredCommand = registered_commands[indexOfMatchedCommand];
 						Envelope * responseEnvelope = (Envelope *)request_memory_block();
+						registeredCommand = &registered_commands[indexOfMatchedCommand];
 
 						current_command_buffer[current_command_length] = 0;
 
-						uart0_put_string("A command was matched:\r\n");
-						uart0_put_string((unsigned char *)&current_command_buffer);
-						uart0_put_string("\r\n");
-
 					   	//Send a message to the registered process
 						set_sender_PID(responseEnvelope, get_kcd_pcb()->processId);
-						set_destination_PID(responseEnvelope, registeredCommand.registered_pid);
-						set_message_type(responseEnvelope, registeredCommand.message_type);
+						set_destination_PID(responseEnvelope, registeredCommand->registered_pid);
+						set_message_type(responseEnvelope, registeredCommand->message_type);
 						set_message_bytes(responseEnvelope, &current_command_buffer, current_command_length * sizeof(char)); //Current buffer
 
-						send_message(registeredCommand.registered_pid, responseEnvelope); //to registered process
+						send_message(registeredCommand->registered_pid, responseEnvelope); //to registered process
 
 					}
 			

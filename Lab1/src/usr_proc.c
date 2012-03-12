@@ -380,9 +380,9 @@ void test_process_3() {
 	}
 
 	if(i == testCases && order_checker(cur_index)){
-		uart0_put_string("G015_test: test 13 OK\n\r");
+		//uart0_put_string("G015_test: test 13 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 13 FAIL\n\r");
+		//uart0_put_string("G015_test: test 13 FAIL\n\r");
 	}
 
 	//GOTO process 6
@@ -507,7 +507,7 @@ void test_process_4() {
 	//assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//(too late) || (too early) || (Check message contents)
-	if(get_current_time() > (delay_time + 50 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'd')) {
+	if(get_current_time() > (delay_time + 50 + 1 + 200) || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'd')) {
 		test_passed = 0;
 	}
 
@@ -600,9 +600,9 @@ void test_process_5() {
 	actual_run_order[cur_index++] = 5;
 
 	if (order_checker(cur_index)) {
-		uart0_put_string("G015_test: test 11 OK\n\r");
+		//uart0_put_string("G015_test: test 11 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 11 FAIL\n\r");
+		//uart0_put_string("G015_test: test 11 FAIL\n\r");
 	}
 
 	//requested block number 31 - will get blocked
@@ -614,9 +614,9 @@ void test_process_5() {
 	actual_run_order[cur_index++] = 5;
 
 	if (order_checker(cur_index)) {
-		uart0_put_string("G015_test: test 12 OK\n\r");
+		//uart0_put_string("G015_test: test 12 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 12 FAIL\n\r");
+		//uart0_put_string("G015_test: test 12 FAIL\n\r");
 	}
 
 	set_process_priority(5, 1);
@@ -657,9 +657,9 @@ void test_process_6() {
 	cur_index++;
 
 	if(order_checker(cur_index)){
-		uart0_put_string("G015_test: test 9 OK\n\r");
+		//uart0_put_string("G015_test: test 9 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 9 FAIL\n\r");
+		//uart0_put_string("G015_test: test 9 FAIL\n\r");
 	}
 
 	// test_proc_5 is now of highest priority - but it is blocked - should not preempt here
@@ -669,9 +669,9 @@ void test_process_6() {
 	cur_index++;
 
 	if(order_checker(cur_index)){
-		uart0_put_string("G015_test: test 10 OK\n\r");
+		//uart0_put_string("G015_test: test 10 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 10 FAIL\n\r");
+		//uart0_put_string("G015_test: test 10 FAIL\n\r");
 	}
 
 	// should be preempted after release - test_proc_5 has a higher priority

@@ -61,19 +61,65 @@ typedef struct pcb {
 */
 void do_print_processes(){
 	int i = 0;
-	uart0_put_string("-- Ready processes by priority --");
+	ListNode * current_ready_queue_node;
+	ProcessControlBlock* currentPCB;
+
+	uart0_put_string("\n-- Ready processes (by priority) --");
 	for(i = 0; i < NUM_PRIORITIES; i++){
-		ListNode * current_ready_queue_node = 0;//ready_queue[i]->head;
-	    print_unsigned_integer(i);
-		uart0_put_string(".\r\n");
+		current_ready_queue_node = ready_queue[i].head;
+	   	uart0_put_string("\n---- Priority: ");
+		print_unsigned_integer(i);
+		
 		while(current_ready_queue_node){
-			ProcessControlBlock* currentPCB = current_ready_queue_node->data;
-			uart0_put_string("Process id: ");
+
+			currentPCB = current_ready_queue_node->data;
+			uart0_put_string("\nProcess ID: ");
 			print_unsigned_integer(currentPCB->processId);
-			uart0_put_string(", Current state: ");
+			uart0_put_string("\nCurrent State: ");
 			print_unsigned_integer(currentPCB->currentState);
-			uart0_put_string(", Process Priority: ");
-			print_unsigned_integer(currentPCB->processPriority);
+
+			uart0_put_string("\n__________________________________________");
+
+			current_ready_queue_node = current_ready_queue_node->next;
+		}
+	}
+	
+	uart0_put_string("\n-- Processes blocked on memory (by priority)  --");
+	for(i = 0; i < NUM_PRIORITIES; i++){
+		current_ready_queue_node = blocked_memory_queue[i].head;
+		uart0_put_string("\n---- Priority: ");
+		print_unsigned_integer(i);
+
+		while(current_ready_queue_node){
+
+			currentPCB = current_ready_queue_node->data;
+			uart0_put_string("\nProcess ID: ");
+			print_unsigned_integer(currentPCB->processId);
+			uart0_put_string("\nCurrent State: ");
+			print_unsigned_integer(currentPCB->currentState);
+
+			uart0_put_string("\n__________________________________________");
+
+			current_ready_queue_node = current_ready_queue_node->next;
+		}
+	}
+	
+	uart0_put_string("\n-- Processes blocked on receive (by priority) --");
+	for(i = 0; i < NUM_PRIORITIES; i++){
+		current_ready_queue_node = blocked_receive_queue[i].head;
+		uart0_put_string("\n---- Priority: ");
+		print_unsigned_integer(i);
+
+		while(current_ready_queue_node){
+
+			currentPCB = current_ready_queue_node->data;
+			uart0_put_string("\nProcess ID: ");
+			print_unsigned_integer(currentPCB->processId);
+			uart0_put_string("\nCurrent State: ");
+			print_unsigned_integer(currentPCB->currentState);
+
+			uart0_put_string("\n__________________________________________");
+
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
 	}	
@@ -81,7 +127,7 @@ void do_print_processes(){
 
 void do_print_messages() {
 	int i = 0;
-	uart0_put_string("-- Recently send messages --");
+	uart0_put_string("\n-- Recently sent messages --");
 	for(i = 0; i < numMessagesSent; ++i) {
 		uart0_put_string("\nSender ID: ");
 		print_unsigned_integer(recentlySentMessages[i].sender_pid);
@@ -92,9 +138,10 @@ void do_print_messages() {
 		uart0_put_string("\nMessage type: ");
 		print_unsigned_integer(recentlySentMessages[i].message_type);
 
+		uart0_put_string("\n__________________________________________");
 	}
 
-	uart0_put_string("-- Recently received messages --");
+	uart0_put_string("\n-- Recently received messages --");
 	for(i = 0; i < numMessagesReceived; ++i) {
 		uart0_put_string("\nSender ID: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].sender_pid);
@@ -105,6 +152,7 @@ void do_print_messages() {
 		uart0_put_string("\nMessage type: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
 
+	   	uart0_put_string("\n__________________________________________");
 	}
 }
 

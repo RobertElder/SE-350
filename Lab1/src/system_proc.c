@@ -132,6 +132,9 @@ void keyboard_command_decoder(){
 				/* If the buffer is full, they are not part of any valid command so 
 				   we don't care (also < because we want space for the terminating null)
 				*/
+
+				do_hot_key(*pChar);
+
 				if(current_command_length < MAX_COMMAND_LENGTH){
 					//  Put the character we received into the buffer
 					current_command_buffer[current_command_length] = *pChar;
@@ -168,6 +171,7 @@ void keyboard_command_decoder(){
 				message->receiver_pid = get_crt_pcb()->processId;
 				message->message_type = OUTPUT_STRING;
 				send_message(get_crt_pcb()->processId, message);
+
 				break;
 			default:
 				assert(0, "ERROR, invalid message sent to KCD");
@@ -226,7 +230,9 @@ void wall_clock() {
 		switch(env->message_type) {
 			case CLOCK_TICK:
 				if(doCount) {
-					clock_time++; //tick
+					if(++clock_time >= 86400) { //tick
+						clock_time = 0;
+					}
 
 					if(displayClock) {
 						char* time_string = get_formatted_time_from_seconds(clock_time);

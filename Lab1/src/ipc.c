@@ -9,8 +9,8 @@
 #define MESSAGE_TYPE_OFFSET                   DESTINATION_PID_OFFSET + sizeof(int)
 #define MESSAGE_DATA_OFFSET                   MESSAGE_TYPE_OFFSET + sizeof(int)
 
-int numMessagesSent = 0;
-int numMessagesReceived = 0;
+extern int numMessagesSent = 0;
+extern int numMessagesReceived = 0;
 Envelope recentlySentMessages[NUM_MESSAGES_TO_TRACK];
 Envelope recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK];
 

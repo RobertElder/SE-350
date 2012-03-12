@@ -151,6 +151,30 @@ uint8_t is_i_proc(int proc_id) {
  	return proc_id == get_timer_pcb()->processId || proc_id == get_uart_pcb()->processId;
 }
 
+uint32_t * get_start_stack(int proc_id){
+	if(proc_id < NUM_USR_PROCESSES){
+		return proc_init_table[proc_id].start_sp;
+	}
+
+ 	if(proc_id == get_kcd_pcb()->processId)
+		return KCD_START_STACK;
+		
+	if(proc_id == get_crt_pcb()->processId)
+		return CRT_START_STACK;
+		
+	if(proc_id == get_clock_pcb()->processId)
+		return CLOCK_START_STACK;
+
+	if(proc_id == get_timer_pcb()->processId)
+		return TIMER_START_STACK;
+		
+	if(proc_id == get_uart_pcb()->processId)
+		return UART_START_STACK;
+
+
+	return (uint32_t *)0;
+}
+
 // --------------------------------------------------------------------------------------
 //
 //                       Initialize process management
@@ -381,6 +405,7 @@ __asm void __new_iproc_return(void) {
 
 void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
 	
+
 	pCurrentProcessPCB = pNewProcessPCB;
 
 	if (pCurrentProcessPCB == pOldProcessPCB) {
@@ -482,6 +507,10 @@ void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pN
 		return;
 
 	save_old_and_set_new_MSP:
+		assert((
+			(uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
+			(uint32_t *) __get_MSP() > get_start_stack(pOldProcessPCB->processId) - (STACKS_SIZE/ sizeof(int))
+		),"Process has stack overflow.");
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 		return;

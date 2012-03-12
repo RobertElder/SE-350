@@ -70,8 +70,7 @@ void register_command(char * s, int process_id) {
 		registered_commands[number_of_registered_commands].command_string[i]  = s[i];
 
 		//  We want to copy everything up to and including the null
-		if(s[i] == 0)
-			break;
+		if(s[i] == 0) break;
 
 	}
 	assert(number_of_registered_commands < MAX_NUMBER_OF_REGISTERABLE_COMMANDS, "ERROR: Too many commands registered");
@@ -133,34 +132,32 @@ void keyboard_command_decoder(){
 				/* If the buffer is full, they are not part of any valid command so 
 				   we don't care (also < because we want space for the terminating null)
 				*/
+
 				if(current_command_length < MAX_COMMAND_LENGTH){
 					//  Put the character we received into the buffer
 					current_command_buffer[current_command_length] = *pChar;
 					current_command_length++;
 				}
-			
+
+				do_hot_key(*pChar);
 				// Did they type a carriage return?
 				if(*pChar == 0xD){
 					int indexOfMatchedCommand = get_index_of_matching_command();
 
 					//  Does the thing in the buffer match a command that was registered? 
 					if(indexOfMatchedCommand > -1) {
-						RegisteredCommand registeredCommand = registered_commands[indexOfMatchedCommand];
 						Envelope * responseEnvelope = (Envelope *)request_memory_block();
+						RegisteredCommand * registeredCommand = &registered_commands[indexOfMatchedCommand];
 
 						current_command_buffer[current_command_length] = 0;
 
-						uart0_put_string("A command was matched:\r\n");
-						uart0_put_string((unsigned char *)&current_command_buffer);
-						uart0_put_string("\r\n");
-
 					   	//Send a message to the registered process
 						set_sender_PID(responseEnvelope, get_kcd_pcb()->processId);
-						set_destination_PID(responseEnvelope, registeredCommand.registered_pid);
-						set_message_type(responseEnvelope, registeredCommand.message_type);
+						set_destination_PID(responseEnvelope, registeredCommand->registered_pid);
+						set_message_type(responseEnvelope, registeredCommand->message_type);
 						set_message_bytes(responseEnvelope, &current_command_buffer, current_command_length * sizeof(char)); //Current buffer
 
-						send_message(registeredCommand.registered_pid, responseEnvelope); //to registered process
+						send_message(registeredCommand->registered_pid, responseEnvelope); //to registered process
 
 					}
 			
@@ -173,6 +170,7 @@ void keyboard_command_decoder(){
 				message->receiver_pid = get_crt_pcb()->processId;
 				message->message_type = OUTPUT_STRING;
 				send_message(get_crt_pcb()->processId, message);
+
 				break;
 			default:
 				assert(0, "ERROR, invalid message sent to KCD");
@@ -231,7 +229,9 @@ void wall_clock() {
 		switch(env->message_type) {
 			case CLOCK_TICK:
 				if(doCount) {
-					clock_time++; //tick
+					if(++clock_time >= 86400) { //tick
+						clock_time = 0;
+					}
 
 					if(displayClock) {
 						char* time_string = get_formatted_time_from_seconds(clock_time);
@@ -289,9 +289,9 @@ void init_sys_procs() {
 	sys_procs[1] = &kcd_pcb;
 	sys_procs[2] = &clock_pcb;
 
-	stacks_start[0] = (uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_I_PROCESSES) * STACKS_SIZE + STACKS_SIZE);
-	stacks_start[1] = stacks_start[0] + (STACKS_SIZE) / sizeof(uint32_t);
-	stacks_start[2] = stacks_start[1] + (STACKS_SIZE) / sizeof(uint32_t);
+	stacks_start[0] = CRT_START_STACK;
+	stacks_start[1] = KCD_START_STACK;
+	stacks_start[2] = CLOCK_START_STACK;
 
 	for (procIndex = 0; procIndex < 3; procIndex++) {
 		int i;

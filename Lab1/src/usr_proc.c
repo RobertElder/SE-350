@@ -223,7 +223,7 @@ void test_process_1() {
 
 	while(1) {}
 
-	assert(0,"Should not reach this point. End of proc 1");
+	//assert(0,"Should not reach this point. End of proc 1");
 }
 
 void test_process_2() {
@@ -536,11 +536,12 @@ void test_process_4() {
 	uart0_put_string("G015_test: END\n\r");
 
 	while (1) {
+	//	int i = 999999;
+	//	while (i) { i--; }
+
 		release_processor();
 	}
 }
-
-
 
 void test_process_5() {
 

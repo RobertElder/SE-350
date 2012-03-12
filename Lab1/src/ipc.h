@@ -26,6 +26,11 @@ typedef struct env {
 	uint32_t message_data; 
 } Envelope;
 
+extern int numMessagesSent;
+extern int numMessagesReceived;
+extern Envelope recentlySentMessages[NUM_MESSAGES_TO_TRACK];
+extern Envelope recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK];
+
 extern int k_send_message(int target_pid, void* envelope);
 #define send_message(pid, env) _send_message((U32)k_send_message, pid, env)
 extern int _send_message(U32 p_func, int pid, void* env) __SVC_0;

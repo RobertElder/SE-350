@@ -149,32 +149,22 @@ void execute_uart() {
 	IIR_IntId = (pUart->IIR) >> 1 ; // skip pending bit in IIR
 
 	if (IIR_IntId & IIR_Receive_Data_Available) {  // Receive Data Available
-		Envelope * message = 0;
+		 Envelope * message = 0;
 		// Note: read RBR will clear the interrupt
 		c =   pUart->RBR; // read from the uart
 
-	//	send_message(get_kcd_pcb(), message);
-	//	keyboard_command_decoder(message);	   //TODO change to delayed_send
-
-		// Now send a message to echo that character back to the screen.
-		buffer[i] = c;
+		buffer[0] = c;
 		i++;
-		buffer[i] = 0;
+		buffer[1] = 0;
 
-		if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS - 2) {
-			message = k_request_memory_block();
-			message->sender_pid = get_uart_pcb()->processId;
-			message->receiver_pid = get_crt_pcb()->processId;
 
-			// get data from the buffer 
-			//set_message_bytes(message,&c,1);
-			set_message_bytes(message, &buffer, i + 1);
-			i = 0;
-
-			k_delayed_send(message->receiver_pid, message, 5);
-		} 
-	//TODO	crt_display(message);			   //change to delayed_send
-
+			// If we have space, parse and echo the buffer contents
+		message = k_request_memory_block_debug(0x3);
+		message->sender_pid = get_uart_pcb()->processId;
+		message->receiver_pid = get_kcd_pcb()->processId;
+		message->message_type = KEYBOARD_INPUT;
+		set_message_bytes(message, &buffer, 2);
+		k_send_message(message->receiver_pid, message);
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;
 	    if(LSR_Val & LSR_THR_Empty) {

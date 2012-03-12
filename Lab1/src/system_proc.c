@@ -70,8 +70,7 @@ void register_command(char * s, int process_id) {
 		registered_commands[number_of_registered_commands].command_string[i]  = s[i];
 
 		//  We want to copy everything up to and including the null
-		if(s[i] == 0)
-			break;
+		if(s[i] == 0) break;
 
 	}
 	assert(number_of_registered_commands < MAX_NUMBER_OF_REGISTERABLE_COMMANDS, "ERROR: Too many commands registered");

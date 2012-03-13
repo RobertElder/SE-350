@@ -481,8 +481,8 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		
 		if (
 			is_ready_or_new(pCurrentProcessPCB->currentState) && 
-			pCurrentProcessPCB->processId < NUM_USR_PROCESSES) 
-		{
+			is_usr_proc(pCurrentProcessPCB->processId)
+		){
 			// We remove processes from the ready queue
 			assert(
 				pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,

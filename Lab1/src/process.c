@@ -472,13 +472,6 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_up_next_ready_process;
 	set_up_next_ready_process:
-		// Don't save the MSP if the process is NEW because it was not running,
-		// so there should be nowhere it sensibly returns to
-		if (pOldProcessPCB->currentState != NEW) {
-			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-		}
-		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-		
 		if (
 			is_ready_or_new(pCurrentProcessPCB->currentState) && 
 			is_usr_proc(pCurrentProcessPCB->processId)
@@ -489,6 +482,15 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 				"ERROR: ready queue and process priorities not in sync"
 			);	
 		}
+
+		// Don't save the MSP if the process is NEW because it was not running,
+		// so there should be nowhere it sensibly returns to
+		if (pOldProcessPCB->currentState != NEW) {
+			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		}
+		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
+		
+
 		
 		if (pCurrentProcessPCB->currentState == NEW) {
 			if (is_i_proc(pCurrentProcessPCB->processId)) {

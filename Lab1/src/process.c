@@ -453,11 +453,6 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 			}
 		}
 		
-		// Don't save the MSP if the process is NEW because it was not running,
-		// so there should be nowhere it sensibly returns to
-		if (pOldProcessPCB->currentState != NEW) {
-			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-		}
 		goto set_up_next_ready_process;
 	}
 
@@ -477,6 +472,11 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_up_next_ready_process;
 	set_up_next_ready_process:
+		// Don't save the MSP if the process is NEW because it was not running,
+		// so there should be nowhere it sensibly returns to
+		if (pOldProcessPCB->currentState != NEW) {
+			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+		}
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 		
 		if (

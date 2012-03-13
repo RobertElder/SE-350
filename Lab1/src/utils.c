@@ -3,8 +3,8 @@
 void assert(int value, unsigned char * message){
 	if(value == 0){
 		//uart0_put_string("\nTHERE WAS AN ASSERTION FAILURE!!!\n");
-		uart0_put_string(message);
-		uart0_put_string("\nAbnormal program termination.\n");
+		uart0_put_string_emergency(message);
+		uart0_put_string_emergency("\nAbnormal program termination.\n");
 		// I can't figure out any other way to get it to stop executing.
 		while (1) {}
 	}

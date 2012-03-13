@@ -212,6 +212,32 @@ int string_len(unsigned char * c){
 	return i;
 }
 
+void uart0_put_string_emergency(unsigned char * c){
+	//  Needs to be able to handle string longer than the buffer size
+	int totalStringLen = string_len(c);
+	int lenSoFar = 0;
+	int nextOutOfBoundsIndex = 0;
+	int currentBufferPos = 0;
+	int i = 0;
+
+	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;	// Disable IER_Receive_Data_Available 
+	while(lenSoFar < totalStringLen){
+		nextOutOfBoundsIndex = lenSoFar + BUFSIZE > totalStringLen ? totalStringLen : lenSoFar + BUFSIZE;
+		currentBufferPos = 0;																																	 
+
+		for(i = lenSoFar; i < nextOutOfBoundsIndex; i++){
+			g_UART0_buffer[currentBufferPos] = c[i];
+			g_UART0_count++;
+			currentBufferPos++;
+		}
+		uart_send_string( g_UART0_count );
+		g_UART0_count = 0;
+		// We have advanced at most one buffersize in the string
+		lenSoFar += BUFSIZE;
+	}
+	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable IER_Receive_Data_Available
+}
+
 void uart0_put_string(unsigned char * c){
 	//  Needs to be able to handle string longer than the buffer size
 	int totalStringLen = string_len(c);

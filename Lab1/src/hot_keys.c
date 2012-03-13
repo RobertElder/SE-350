@@ -61,58 +61,58 @@ typedef struct pcb {
 */
 void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 	int i = 0;
-	uart0_put_string("\n-- ");
-	uart0_put_string(queueName);
-	uart0_put_string(" process queues (by priority) --\r\n");
+	uart0_put_string_emergency("\n-- ");
+	uart0_put_string_emergency(queueName);
+	uart0_put_string_emergency(" process queues (by priority) --\r\n");
 	for(i = 0; i < NUM_PRIORITIES; i++){
 		ListNode * current_ready_queue_node = linkedListArray[i].head;
-		uart0_put_string("Priority ");
+		uart0_put_string_emergency("Priority ");
 	    print_unsigned_integer(i);
-		uart0_put_string("->  ");
+		uart0_put_string_emergency("->  ");
 		while(current_ready_queue_node){
 			ProcessControlBlock* currentPCB = current_ready_queue_node->data;
-			uart0_put_string("Id: ");
+			uart0_put_string_emergency("Id: ");
 			print_unsigned_integer(currentPCB->processId);
-			uart0_put_string(" .. State: ");
+			uart0_put_string_emergency(" .. State: ");
 			print_unsigned_integer(currentPCB->currentState);
-			uart0_put_string(" .. Priority: ");
+			uart0_put_string_emergency(" .. Priority: ");
 			print_unsigned_integer(currentPCB->processPriority);
-			uart0_put_string(" || ");
+			uart0_put_string_emergency(" || ");
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
-		uart0_put_string("\r\n__________________________________________\r\n");
+		uart0_put_string_emergency("\r\n__________________________________________\r\n");
 	}	
 
 }
 
 void do_print_messages() {
 	int i = 0;
-	uart0_put_string("\n-- Recently sent messages --");
+	uart0_put_string_emergency("\n-- Recently sent messages --");
 	for(i = 0; i < numMessagesSent; ++i) {
-		uart0_put_string("\nSender ID: ");
+		uart0_put_string_emergency("\nSender ID: ");
 		print_unsigned_integer(recentlySentMessages[i].sender_pid);
 		
-		uart0_put_string("\nReceiver ID: ");
+		uart0_put_string_emergency("\nReceiver ID: ");
 		print_unsigned_integer(recentlySentMessages[i].receiver_pid);
 
-		uart0_put_string("\nMessage type: ");
+		uart0_put_string_emergency("\nMessage type: ");
 		print_unsigned_integer(recentlySentMessages[i].message_type);
 
-		uart0_put_string("\n__________________________________________\n");
+		uart0_put_string_emergency("\n__________________________________________\n");
 	}
 
-	uart0_put_string("\n-- Recently received messages --");
+	uart0_put_string_emergency("\n-- Recently received messages --");
 	for(i = 0; i < numMessagesReceived; ++i) {
-		uart0_put_string("\nSender ID: ");
+		uart0_put_string_emergency("\nSender ID: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].sender_pid);
 		
-		uart0_put_string("\nReceiver ID: ");
+		uart0_put_string_emergency("\nReceiver ID: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].receiver_pid);
 
-		uart0_put_string("\nMessage type: ");
+		uart0_put_string_emergency("\nMessage type: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
 
-	   	uart0_put_string("\n__________________________________________\n");
+	   	uart0_put_string_emergency("\n__________________________________________\n");
 	}
 
 }

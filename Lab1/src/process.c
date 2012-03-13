@@ -425,15 +425,14 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
 		 	pCurrentProcessPCB->currentState = RUN;
 		}
+		goto exit;
 	} else if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY){
 		// Context switch due to release memory
 		assert(pOldProcessPCB->currentState == RUN, "Error: The old process is not in a running state.");
 		goto save_old_and_set_new_MSP;
-
 	} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
 		// We are switching from an iprocess to an interrupted process
 		goto save_old_and_set_new_MSP;
-
 	} else {
 		/* Otherwise, we must switch from the old process to the new one
 		Switching from an interrupted process to an iprocess
@@ -443,7 +442,6 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		} 
 
 		// "default" switch case (no interrupted processes to consider)
-		
 		if (pOldProcessPCB->currentState == RUN) {
 			pOldProcessPCB->currentState = RDY;
 			if (pOldProcessPCB->processId < NUM_USR_PROCESSES) {
@@ -452,13 +450,8 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 				get_node_of_process(pOldProcessPCB->processId)); 
 			}
 		}
-		
 		goto set_up_next_ready_process;
 	}
-
-
-	//  Don't delete this return even though it is tempting
-	return;
 
 	on_old_process_interrupted:
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
@@ -483,14 +476,12 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 			);	
 		}
 
-		// Don't save the MSP if the process is NEW because it was not running,
-		// so there should be nowhere it sensibly returns to
+		/* Don't save the MSP if the process is NEW because it was not running,
+		 so there should be nowhere it sensibly returns to	 */
 		if (pOldProcessPCB->currentState != NEW) {
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		}
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-		
-
 		
 		if (pCurrentProcessPCB->currentState == NEW) {
 			if (is_i_proc(pCurrentProcessPCB->processId)) {
@@ -500,8 +491,7 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 			}
 		}
 		pCurrentProcessPCB->currentState = RUN;
-		return;
-
+		goto exit;
 	save_old_and_set_new_MSP:
 		assert((
 			(uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
@@ -509,14 +499,15 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		),"Process has stack overflow.");
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-		return;
-	
+		goto exit;
 	set_to_run_and_rte:
 		pCurrentProcessPCB->currentState = RUN;
 		__rte();
 	set_to_run_and_new_iproc_return:
 		pCurrentProcessPCB->currentState = RUN;
 		__new_iproc_return();
+	exit:
+		return;
 }
 
 	

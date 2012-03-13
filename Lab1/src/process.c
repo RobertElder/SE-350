@@ -498,6 +498,7 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 				goto set_to_run_and_rte;
 			}
 		}
+		pCurrentProcessPCB->currentState = RUN;
 		return;
 
 	save_old_and_set_new_MSP:

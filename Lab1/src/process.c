@@ -465,15 +465,10 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_up_next_ready_process;
 	set_up_next_ready_process:
-		if (
-			is_ready_or_new(pCurrentProcessPCB->currentState) && 
-			is_usr_proc(pCurrentProcessPCB->processId)
-		){
+		if (is_ready_or_new(pCurrentProcessPCB->currentState) && is_usr_proc(pCurrentProcessPCB->processId)){
 			// We remove processes from the ready queue
-			assert(
-				pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,
-				"ERROR: ready queue and process priorities not in sync"
-			);	
+			assert(pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,
+				"ERROR: ready queue and process priorities not in sync");	
 		}
 
 		/* Don't save the MSP if the process is NEW because it was not running,

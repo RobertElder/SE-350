@@ -439,7 +439,7 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		Switching from an interrupted process to an iprocess
 		or to a higher priority process	 */
 		if (pOldProcessPCB->currentState == INTERRUPTED) {
-			goto on_current_state_interrupted;
+			goto on_old_process_interrupted;
 		} 
 
 		// "default" switch case (no interrupted processes to consider)
@@ -482,7 +482,7 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 	//  Don't delete this return even though it is tempting
 	return;
 
-	on_current_state_interrupted:
+	on_old_process_interrupted:
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		
 		// check if new process is a user process

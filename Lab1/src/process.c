@@ -484,8 +484,10 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 			pCurrentProcessPCB->processId < NUM_USR_PROCESSES) 
 		{
 			// We remove processes from the ready queue
-			pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
-			assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");	
+			assert(
+				pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,
+				"ERROR: ready queue and process priorities not in sync"
+			);	
 		}
 		
 		if (pCurrentProcessPCB->currentState == NEW) {

@@ -1,9 +1,4 @@
-/**
- * @brief: uart_irq.c 
- * @author: NXP Semiconductors
- * @author: Y. Huang
- * @date: 2012/01/20
- */
+
 
 #include <LPC17xx.h>
 #include "uart.h"
@@ -160,7 +155,7 @@ void execute_uart() {
 
 
 			// If we have space, parse and echo the buffer contents
-		message = k_request_memory_block_debug(0x3);
+		message = k_request_memory_block();
 		message->sender_pid = get_uart_pcb()->processId;
 		message->receiver_pid = get_kcd_pcb()->processId;
 		message->message_type = KEYBOARD_INPUT;

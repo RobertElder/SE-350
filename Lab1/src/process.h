@@ -1,10 +1,3 @@
-/**
- * @brief: process.h  process management hearder file
- * @author Irene Huang
- * @author Thomas Reidemeister
- * @date 2011/01/18
- * NOTE: Assuming there are only two user processes in the system
- */
 
 #ifndef _PROCESS_H_
 #define _PROCESS_H_

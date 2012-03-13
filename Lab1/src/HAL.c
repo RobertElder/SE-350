@@ -1,8 +1,3 @@
-/* @brief: HAL.c Hardware Abstraction Layer
- * @author: Yiqing Huang
- * @date: 2012/01/08
- * NOTE this file contains embedded assembly.
- */
 
 __asm void pre_mem_request (void) {
 

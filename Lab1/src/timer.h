@@ -1,8 +1,4 @@
-/**
- * @brief timer.h - Timer header file
- * @author Y. Huang
- * @date 02/15/2012
- */
+
 #ifndef _TIMER_H_
 #define _TIMER_H_
 

@@ -437,10 +437,10 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		/* Otherwise, we must switch from the old process to the new one
 		Switching from an interrupted process to an iprocess
 		or to a higher priority process	 */
-		goto set_up_next_ready_process;
+		goto save_old_process;
 	}
 
-	set_up_next_ready_process:
+	save_old_process:
 
 		// "default" switch case (no interrupted processes to consider)
 		if (pOldProcessPCB->currentState == RUN) {
@@ -467,6 +467,8 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		if (pOldProcessPCB->currentState != NEW) {
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		}
+		goto set_up_new_process;
+	set_up_new_process:
 
 		if (is_ready_or_new(pCurrentProcessPCB->currentState) && is_usr_proc(pCurrentProcessPCB->processId)){
 			// We remove processes from the ready queue

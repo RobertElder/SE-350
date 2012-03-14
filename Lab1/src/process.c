@@ -423,7 +423,7 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		if (pCurrentProcessPCB->currentState == NEW) {
 			goto set_to_run_and_rte; 	
 		} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
-		 	pCurrentProcessPCB->currentState = RUN;
+		 	goto set_to_run_and_exit;
 		}
 		goto exit;
 	} else if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY){
@@ -441,23 +441,19 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 	}
 
 	save_old_process:
-
-
 		if (pOldProcessPCB->currentState == RUN) {
 			// "default" switch case (no interrupted processes to consider)
 			pOldProcessPCB->currentState = RDY;
 			if (is_usr_proc(pOldProcessPCB->processId)) {
 				// Put old process back in his appropriate priority queue
-				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-				get_node_of_process(pOldProcessPCB->processId)); 
+				enqueue(&(ready_queue[pOldProcessPCB->processPriority]),get_node_of_process(pOldProcessPCB->processId)); 
 			}
 		}else if(pOldProcessPCB->currentState == INTERRUPTED) {
 			// check if new process is a user process
 			if (!is_i_proc(pCurrentProcessPCB->processId)) {
-				pOldProcessPCB->currentState = RDY;
 				assert(is_usr_proc(pOldProcessPCB->processId), "ERROR: Unexpected interrupted sys proc");
-				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-					get_node_of_process(pOldProcessPCB->processId));	
+				pOldProcessPCB->currentState = RDY;
+				enqueue(&(ready_queue[pOldProcessPCB->processPriority]),get_node_of_process(pOldProcessPCB->processId));	
 			}
 		}
 
@@ -468,7 +464,6 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_up_new_process;
 	set_up_new_process:
-
 		if (is_ready_or_new(pCurrentProcessPCB->currentState) && is_usr_proc(pCurrentProcessPCB->processId)){
 			// We remove processes from the ready queue
 			assert(pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,
@@ -484,8 +479,7 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 				goto set_to_run_and_rte;
 			}
 		}
-		pCurrentProcessPCB->currentState = RUN;
-		goto exit;
+		goto set_to_run_and_exit;
 	save_old_and_set_new_MSP:
 		assert((
 			(uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
@@ -500,6 +494,9 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 	set_to_run_and_new_iproc_return:
 		pCurrentProcessPCB->currentState = RUN;
 		__new_iproc_return();
+	set_to_run_and_exit:
+		pCurrentProcessPCB->currentState = RUN;
+		goto exit;
 	exit:
 		return;
 }

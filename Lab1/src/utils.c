@@ -35,7 +35,7 @@ void printDigit(unsigned int i){
 	assert(i < 10, "This should not happen");
 	//Put a null after the digit we want so that we only print that digit
 	digits[i+1] = 0;
-	uart0_put_string(&(digits[i]));
+	uart0_put_string_emergency(&(digits[i]));
 }
 
 void print_unsigned_integer(unsigned int i){
@@ -71,7 +71,7 @@ void print_unsigned_integer(unsigned int i){
 
 void print_signed_integer(signed int i){
 	if(i < 0){
-		uart0_put_string("-");
+		uart0_put_string_emergency("-");
 		print_unsigned_integer((unsigned int)(-i));
 	}else{
 		print_unsigned_integer((unsigned int)i);		

@@ -451,8 +451,6 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 				get_node_of_process(pOldProcessPCB->processId)); 
 			}
 		}else if(pOldProcessPCB->currentState == INTERRUPTED) {
-			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-			
 			// check if new process is a user process
 			if (!is_i_proc(pCurrentProcessPCB->processId)) {
 				pOldProcessPCB->currentState = RDY;

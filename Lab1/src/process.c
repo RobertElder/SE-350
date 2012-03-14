@@ -437,9 +437,6 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		/* Otherwise, we must switch from the old process to the new one
 		Switching from an interrupted process to an iprocess
 		or to a higher priority process	 */
-		if (pOldProcessPCB->currentState == INTERRUPTED) {
-			goto on_old_process_interrupted;
-		} 
 
 		// "default" switch case (no interrupted processes to consider)
 		if (pOldProcessPCB->currentState == RUN) {
@@ -453,18 +450,18 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		goto set_up_next_ready_process;
 	}
 
-	on_old_process_interrupted:
-		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-		
-		// check if new process is a user process
-		if (!is_i_proc(pCurrentProcessPCB->processId)) {
-			pOldProcessPCB->currentState = RDY;
-			assert(is_usr_proc(pOldProcessPCB->processId), "ERROR: Unexpected interrupted sys proc");
-			enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-				get_node_of_process(pOldProcessPCB->processId));	
-		}
-		goto set_up_next_ready_process;
 	set_up_next_ready_process:
+		if (pOldProcessPCB->currentState == INTERRUPTED) {
+			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
+			
+			// check if new process is a user process
+			if (!is_i_proc(pCurrentProcessPCB->processId)) {
+				pOldProcessPCB->currentState = RDY;
+				assert(is_usr_proc(pOldProcessPCB->processId), "ERROR: Unexpected interrupted sys proc");
+				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
+					get_node_of_process(pOldProcessPCB->processId));	
+			}
+		}
 		if (is_ready_or_new(pCurrentProcessPCB->currentState) && is_usr_proc(pCurrentProcessPCB->processId)){
 			// We remove processes from the ready queue
 			assert(pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,

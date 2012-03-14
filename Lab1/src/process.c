@@ -442,8 +442,9 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 
 	save_old_process:
 
-		// "default" switch case (no interrupted processes to consider)
+
 		if (pOldProcessPCB->currentState == RUN) {
+			// "default" switch case (no interrupted processes to consider)
 			pOldProcessPCB->currentState = RDY;
 			if (is_usr_proc(pOldProcessPCB->processId)) {
 				// Put old process back in his appropriate priority queue

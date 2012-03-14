@@ -463,17 +463,19 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 					get_node_of_process(pOldProcessPCB->processId));	
 			}
 		}
-		if (is_ready_or_new(pCurrentProcessPCB->currentState) && is_usr_proc(pCurrentProcessPCB->processId)){
-			// We remove processes from the ready queue
-			assert(pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,
-				"ERROR: ready queue and process priorities not in sync");	
-		}
 
 		/* Don't save the MSP if the process is NEW because it was not running,
 		 so there should be nowhere it sensibly returns to	 */
 		if (pOldProcessPCB->currentState != NEW) {
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		}
+
+		if (is_ready_or_new(pCurrentProcessPCB->currentState) && is_usr_proc(pCurrentProcessPCB->processId)){
+			// We remove processes from the ready queue
+			assert(pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,
+				"ERROR: ready queue and process priorities not in sync");	
+		}
+
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 		
 		if (pCurrentProcessPCB->currentState == NEW) {

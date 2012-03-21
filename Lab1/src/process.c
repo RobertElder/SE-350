@@ -306,8 +306,10 @@ void process_init()
 
 
 void block_current_process() {
-	//TODO  make sure that we are not trying to block a process that is not allowed to block!!!!
-	ListNode *node = get_node_of_process(pCurrentProcessPCB->processId);
+	ListNode *node;
+
+	assert(!is_i_proc(pCurrentProcessPCB->processId),"ERROR: attempting to block an iprocess.");
+	node = get_node_of_process(pCurrentProcessPCB->processId);
  	assert(pCurrentProcessPCB->currentState == RUN, "Error: Attempted to block a non-running process");
 
     pCurrentProcessPCB->currentState = BLOCKED_ON_MEMORY; 
@@ -423,98 +425,63 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		if (pCurrentProcessPCB->currentState == NEW) {
 			goto set_to_run_and_rte; 	
 		} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
-		 	pCurrentProcessPCB->currentState = RUN;
+		 	goto set_to_run_and_exit;
 		}
+		goto exit;
 	} else if (pCurrentProcessPCB->currentState == BLOCKED_ON_MEMORY){
 		// Context switch due to release memory
 		assert(pOldProcessPCB->currentState == RUN, "Error: The old process is not in a running state.");
 		goto save_old_and_set_new_MSP;
-
 	} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
 		// We are switching from an iprocess to an interrupted process
 		goto save_old_and_set_new_MSP;
-
 	} else {
 		/* Otherwise, we must switch from the old process to the new one
 		Switching from an interrupted process to an iprocess
 		or to a higher priority process	 */
-		if (pOldProcessPCB->currentState == INTERRUPTED) {
-			goto on_current_state_interrupted;
-		} 
+		goto save_old_process;
+	}
 
-		// "default" switch case (no interrupted processes to consider)
-		
+	save_old_process:
 		if (pOldProcessPCB->currentState == RUN) {
+			// "default" switch case (no interrupted processes to consider)
 			pOldProcessPCB->currentState = RDY;
-			if (pOldProcessPCB->processId < NUM_USR_PROCESSES) {
+			if (is_usr_proc(pOldProcessPCB->processId)) {
 				// Put old process back in his appropriate priority queue
-				enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-				get_node_of_process(pOldProcessPCB->processId)); 
+				enqueue(&(ready_queue[pOldProcessPCB->processPriority]),get_node_of_process(pOldProcessPCB->processId)); 
+			}
+		}else if(pOldProcessPCB->currentState == INTERRUPTED) {
+			// check if new process is a user process
+			if (!is_i_proc(pCurrentProcessPCB->processId)) {
+				assert(is_usr_proc(pOldProcessPCB->processId), "ERROR: Unexpected interrupted sys proc");
+				pOldProcessPCB->currentState = RDY;
+				enqueue(&(ready_queue[pOldProcessPCB->processPriority]),get_node_of_process(pOldProcessPCB->processId));	
 			}
 		}
-		
-		// Don't save the MSP if the process is NEW because it was not running,
-		// so there should be nowhere it sensibly returns to
+
+		/* Don't save the MSP if the process is NEW because it was not running,
+		 so there should be nowhere it sensibly returns to	 */
 		if (pOldProcessPCB->currentState != NEW) {
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		}
-		
-		/* -- Updating new process -- */
-		if (is_ready_or_new(pCurrentProcessPCB->currentState) && 
-			pCurrentProcessPCB->processId < NUM_USR_PROCESSES) {
-			// We remove running processes from the ready queue
-			pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
-			assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");
-		}
-		
-		// Set to MSP to the process' stack which is about to run.
-		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-		
-		// NOTE: __rte() exits. That is why we assign RUN twice.
-		if (pCurrentProcessPCB->currentState == NEW) {
-			goto set_to_run_and_rte;
-		}
-		pCurrentProcessPCB->currentState = RUN;
-
-	}
-
-
-	//  Don't delete this return even though it is tempting
-	return;
-
-	on_current_state_interrupted:
-		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
-		
-		// check if new process is a user process
-		if (!is_i_proc(pCurrentProcessPCB->processId)) {
-			pOldProcessPCB->currentState = RDY;
-			assert(is_usr_proc(pOldProcessPCB->processId), "ERROR: Unexpected interrupted sys proc");
-			enqueue(&(ready_queue[pOldProcessPCB->processPriority]), 
-				get_node_of_process(pOldProcessPCB->processId));	
-		}
-		
-		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-		
-		if (
-			is_ready_or_new(pCurrentProcessPCB->currentState) && 
-			pCurrentProcessPCB->processId < NUM_USR_PROCESSES) 
-		{
+		goto set_up_new_process;
+	set_up_new_process:
+		if (is_ready_or_new(pCurrentProcessPCB->currentState) && is_usr_proc(pCurrentProcessPCB->processId)){
 			// We remove processes from the ready queue
-			pNewProcessPCB = (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data;
-			assert(pCurrentProcessPCB == pNewProcessPCB, "ERROR: ready queue and process priorities not in sync");	
+			assert(pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,
+				"ERROR: ready queue and process priorities not in sync");	
 		}
+
+		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 		
 		if (pCurrentProcessPCB->currentState == NEW) {
 			if (is_i_proc(pCurrentProcessPCB->processId)) {
-				pCurrentProcessPCB->currentState = RUN;
-				__new_iproc_return();
+				goto set_to_run_and_new_iproc_return;
 			} else {
 				goto set_to_run_and_rte;
 			}
 		}
-		pCurrentProcessPCB->currentState = RUN;
-		return;
-
+		goto set_to_run_and_exit;
 	save_old_and_set_new_MSP:
 		assert((
 			(uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
@@ -522,11 +489,18 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		),"Process has stack overflow.");
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
-		return;
-	
+		goto exit;
 	set_to_run_and_rte:
 		pCurrentProcessPCB->currentState = RUN;
 		__rte();
+	set_to_run_and_new_iproc_return:
+		pCurrentProcessPCB->currentState = RUN;
+		__new_iproc_return();
+	set_to_run_and_exit:
+		pCurrentProcessPCB->currentState = RUN;
+		goto exit;
+	exit:
+		return;
 }
 
 	

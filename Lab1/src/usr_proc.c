@@ -380,9 +380,9 @@ void test_process_3() {
 	}
 
 	if(i == testCases && order_checker(cur_index)){
-		uart0_put_string("G015_test: test 13 OK\n\r");
+		//uart0_put_string("G015_test: test 13 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 13 FAIL\n\r");
+		//uart0_put_string("G015_test: test 13 FAIL\n\r");
 	}
 
 	//GOTO process 6
@@ -424,7 +424,7 @@ void test_process_3() {
 
 void test_process_4() {
 
-	int* sender_id;
+	int sender_id = 0;
 	Envelope * env;
 	int delay_time;
 	char message_test15;
@@ -434,7 +434,7 @@ void test_process_4() {
 	actual_run_order[cur_index++] = 4;
 
 	// This blocks (process 3 takes over)
-	env = (Envelope *)receive_message(sender_id);
+	env = (Envelope *)receive_message(&sender_id);
 	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
    	
 	// Comes in from proc3
@@ -458,13 +458,13 @@ void test_process_4() {
 	delayed_send(4, env, 0);
 
 	// This will block until the message comes.
-	env = (Envelope *)receive_message(sender_id);
+	env = (Envelope *)receive_message(&sender_id);
 	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//Check message contents
-	//Add 1 to delay_time in order to account for context switches and stuff
+	//Add 4 to delay_time in order to account for context switches and stuff
 	//(too late) || (too early) || (Check message contents)
-	if(get_current_time() > delay_time + 1 || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'b')) {
+	if(get_current_time() > delay_time + 4 || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'b')) {
 		test_passed = 0;
 	}
 	
@@ -482,7 +482,7 @@ void test_process_4() {
 	delayed_send(4, env, 10);
 
 	// Blocks until message to self is received.
-	env = (Envelope *)receive_message(sender_id);
+	env = (Envelope *)receive_message(&sender_id);
 	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//(too late) || (too early) || (Check message contents)
@@ -503,7 +503,7 @@ void test_process_4() {
 	delayed_send(4, env, 50);
 
 	// blocks on receive
-	env = (Envelope *)receive_message(sender_id); 
+	env = (Envelope *)receive_message(&sender_id); 
 	//assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
 
 	//(too late) || (too early) || (Check message contents)
@@ -600,9 +600,9 @@ void test_process_5() {
 	actual_run_order[cur_index++] = 5;
 
 	if (order_checker(cur_index)) {
-		uart0_put_string("G015_test: test 11 OK\n\r");
+		uart0_put_string_emergency("G015_test: test 11 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 11 FAIL\n\r");
+		uart0_put_string_emergency("G015_test: test 11 FAIL\n\r");
 	}
 
 	//requested block number 31 - will get blocked
@@ -614,9 +614,9 @@ void test_process_5() {
 	actual_run_order[cur_index++] = 5;
 
 	if (order_checker(cur_index)) {
-		uart0_put_string("G015_test: test 12 OK\n\r");
+		uart0_put_string_emergency("G015_test: test 12 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 12 FAIL\n\r");
+		uart0_put_string_emergency("G015_test: test 12 FAIL\n\r");
 	}
 
 	set_process_priority(5, 1);
@@ -657,9 +657,9 @@ void test_process_6() {
 	cur_index++;
 
 	if(order_checker(cur_index)){
-		uart0_put_string("G015_test: test 9 OK\n\r");
+		uart0_put_string_emergency("G015_test: test 9 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 9 FAIL\n\r");
+		uart0_put_string_emergency("G015_test: test 9 FAIL\n\r");
 	}
 
 	// test_proc_5 is now of highest priority - but it is blocked - should not preempt here
@@ -669,9 +669,9 @@ void test_process_6() {
 	cur_index++;
 
 	if(order_checker(cur_index)){
-		uart0_put_string("G015_test: test 10 OK\n\r");
+		uart0_put_string_emergency("G015_test: test 10 OK\n\r");
 	} else {
-		uart0_put_string("G015_test: test 10 FAIL\n\r");
+		uart0_put_string_emergency("G015_test: test 10 FAIL\n\r");
 	}
 
 	// should be preempted after release - test_proc_5 has a higher priority

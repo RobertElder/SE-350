@@ -1,9 +1,4 @@
-/**
- * @brief: uart_irq.c 
- * @author: NXP Semiconductors
- * @author: Y. Huang
- * @date: 2012/01/20
- */
+
 
 #include <LPC17xx.h>
 #include "uart.h"
@@ -12,6 +7,7 @@
 #include "ipc.h"
 #include "system_proc.h"
 #include "iprocess.h"
+#include "process.h"
 
 volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
@@ -159,7 +155,7 @@ void execute_uart() {
 
 
 			// If we have space, parse and echo the buffer contents
-		message = k_request_memory_block_debug(0x3);
+		message = k_request_memory_block();
 		message->sender_pid = get_uart_pcb()->processId;
 		message->receiver_pid = get_kcd_pcb()->processId;
 		message->message_type = KEYBOARD_INPUT;
@@ -216,7 +212,7 @@ int string_len(unsigned char * c){
 	return i;
 }
 
-void uart0_put_string(unsigned char * c){
+void uart0_put_string_emergency(unsigned char * c){
 	//  Needs to be able to handle string longer than the buffer size
 	int totalStringLen = string_len(c);
 	int lenSoFar = 0;
@@ -240,6 +236,41 @@ void uart0_put_string(unsigned char * c){
 		lenSoFar += BUFSIZE;
 	}
 	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable IER_Receive_Data_Available
+}
+
+void uart0_put_string(unsigned char * c){
+	//  Needs to be able to handle string longer than the buffer size
+	int totalStringLen = string_len(c);
+	int lenSoFar = 0;
+	int nextOutOfBoundsIndex = 0;
+	int currentBufferPos = 0;
+	int i = 0;
+
+	while(lenSoFar < totalStringLen){
+		Envelope * message = NULL;
+		nextOutOfBoundsIndex = lenSoFar + BUFSIZE > totalStringLen ? totalStringLen : lenSoFar + BUFSIZE;
+		currentBufferPos = 0;
+		
+		for(i = lenSoFar; i < nextOutOfBoundsIndex; i++){
+			g_UART0_buffer[currentBufferPos] = c[i];
+			g_UART0_count++;
+			currentBufferPos++;
+		}
+		g_UART0_buffer[currentBufferPos] = 0;
+		g_UART0_count++;
+
+		message = k_request_memory_block_debug(0xfe);
+		message->sender_pid = pCurrentProcessPCB->processId;
+		message->receiver_pid = get_crt_pcb()->processId;
+		message->message_type = OUTPUT_STRING;
+		set_message_bytes(message, &g_UART0_buffer, g_UART0_count);
+		k_send_message(message->receiver_pid, message);
+
+		g_UART0_count = 0;
+		// We have advanced at most one buffersize in the string
+		lenSoFar += BUFSIZE;
+	}
+
 }
 
 

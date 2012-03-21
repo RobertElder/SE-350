@@ -1,8 +1,4 @@
-/**
- * @brief: uart.h 
- * @author: Yiqing Huang
- * @date: 2012/01/20
- */
+
 
 #ifndef _UART_H_
 #define _UART_H_
@@ -118,7 +114,8 @@ Reset value 0
 
 int uart_init(int n_uart);		// initialize the n_uart
 void uart_send_string( uint32_t len );
-void uart0_put_string(unsigned char *);	 // write a string to the n_uart
+void uart0_put_string(unsigned char *);	
+void uart0_put_string_emergency(unsigned char *);	 
                                 
 void execute_uart(void);
 

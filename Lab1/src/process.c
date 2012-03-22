@@ -510,9 +510,8 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_up_new_process;
 	set_up_new_process:
-		//TODO: remove a sys-proc from the ready queue as well
 		if (is_ready_or_new(pCurrentProcessPCB->currentState) && !is_i_proc(pCurrentProcessPCB->processId)){
-			// We remove processes from the ready queue
+			// We remove user and system processes from the ready queue
 			assert(pCurrentProcessPCB == (ProcessControlBlock*)dequeue(&(ready_queue[pCurrentProcessPCB->processPriority]))->data,
 				"ERROR: ready queue and process priorities not in sync");	
 		}

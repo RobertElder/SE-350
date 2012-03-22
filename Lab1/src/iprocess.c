@@ -8,8 +8,6 @@
 #include "uart.h"
 #include "system_proc.h"
 
-#define SECOND 50
-
 LinkedList delayed_messages;
 ProcessControlBlock i_uart_pcb;
 ProcessControlBlock i_timer_pcb;
@@ -82,7 +80,7 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 
 	m.pid = pid;
 	m.envelope = envelope;
-	m.expiry_time = get_current_time() + delay; //Delay is in ms
+	m.expiry_time = get_current_time() + delay/TIMEMULTIPLIER; //Delay is in ms, TIMEMULTIPLIER compensates for simulator
 
 	set_sender_PID(env, pid);  //sender should be original sender
 	set_destination_PID(env, get_timer_pcb()->processId);
@@ -98,7 +96,6 @@ int k_delayed_send(int pid, Envelope * envelope, int delay) {
 
 void timeout_i_process() {
 	while(1) {
-		int time;
 		int senderId = 0;
 		ProcessControlBlock* interrupted_proc = get_interrupted_process();
 		
@@ -124,23 +121,8 @@ void timeout_i_process() {
 				receiver_pid = envelope->receiver_pid;
 				k_send_message( receiver_pid, envelope ); //forward msg to destination
 				k_release_memory_block(node);
-			}						
+			}
 		} 
-		
-			 
-		time = get_current_time();
-		if(time % SECOND == 0) {
-			time = 0;
-
-		 	//send wall_clock a message to tick
-			env = (Envelope *)k_request_memory_block();
-			set_sender_PID(env, get_timer_pcb()->processId);
-			set_destination_PID(env, get_clock_pcb()->processId);
-			set_message_type(env, CLOCK_TICK);
-
-			k_send_message(get_clock_pcb()->processId, env);
-		}		
-
 		context_switch(pCurrentProcessPCB, interrupted_proc);
 	}
 }

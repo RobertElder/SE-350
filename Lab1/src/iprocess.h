@@ -14,3 +14,5 @@ void timeout_i_process(void);
 
 #define UART_START_STACK  ((uint32_t*)(START_STACKS + (NUM_USR_PROCESSES + NUM_SYS_PROCESSES) * STACKS_SIZE + STACKS_SIZE))
 #define TIMER_START_STACK ((UART_START_STACK + (STACKS_SIZE) / sizeof(uint32_t)))
+
+#define TIMEMULTIPLIER 55

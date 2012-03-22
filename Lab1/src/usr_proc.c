@@ -614,7 +614,7 @@ void test_process_5() {
 	   release_processor();
 	} // run inf
 
-	//assert(0,"Should not reach this point. End of proc 6");
+	//assert(0,"Should not reach this point. End of proc 5");
 }
 
 void test_process_6() {

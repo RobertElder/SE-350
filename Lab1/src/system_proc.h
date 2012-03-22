@@ -24,10 +24,8 @@ void crt_display(void);
 void wall_clock(void);
 //----------
 
-void init_sys_procs(void);
-ProcessControlBlock* get_kcd_pcb(void);
-ProcessControlBlock* get_crt_pcb(void);
-ProcessControlBlock* get_clock_pcb(void);
+//void init_sys_procs(void);
+
 ProcessControlBlock* get_new_sys_proc(void);
 
 #endif 

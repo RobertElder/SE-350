@@ -26,14 +26,18 @@ int * pTestPointer1 = 0;
 const int ORDER_LENGTH = 33;
 int expected_run_order[] = 
 // Test case 1: Basic context switching between 2 processes
-{1, 5, 1, 5, 1, 5,
+//{1, 5, 1, 5, 1, 5,
+{1, 4, 1, 4, 1, 4,
 // Test case 2:	Lowering your own priority and getting pre-empted because of it
-1,5,
+//1,5,
+1,4,
 // Test case 3:	When there's 1 high priority process, it should not get pre-empted when releasing processor
-5,
+//5,
+4,
 // Test case 4: High priority process lowers his priority, but should not get pre-empted because there's no higher
 // priority processes
-5,
+//5,
+4,
 // Test case 5:	Now that there are processes with priorities equal to the running process,
 // release_processor should cause pre-emption of the running process
 2,
@@ -46,24 +50,31 @@ int expected_run_order[] =
 // Test case 9:	A process can request 30 blocks without blocking. Any other memory requests cause the
 // requesting process to be blocked. If a process releases some of his blocks, the blocked processes
 // receive the memory block but do not preempt unless their priorities are higher.
-6, 1, 5, 2, 6, 6,
+//6, 1, 5, 2, 6, 6,
+5, 1, 4, 2, 5, 5,
 // Test case 10: Give highest priority to a blocked process. There should be no preemption because it is
 // blocked.
-6,
+//6,
+5,
 // Test case 11: Releasing a memory block causes a higher priority blocked process to not only receive
 // the memory, but preempt the currently executing process.
-5,
+//5,
+4,
 // Test case 12: Additional blocking/premption/priority testing
-2, 1, 6, 5,
-///	TODO: document this test case
+//2, 1, 6, 5,
+2, 1, 5, 4,
+///	Test case 13: document this test case
 3,
-// Test case 14: Proc4 blocks on receive_msg, proc3 executes and sends a message with a delay of 0
+// Test case 14: Proc4 blocks on receive_msg, proc3 executes and sends a message to proc4 with no delay
 // This means proc4 should be unblocked right away and continue executing (Basic send_message preemption test)
-4, 3, 4,
+//4, 3, 4,
+6, 3, 6,
 // Test case 15: proc4 sends itself delayed messages with delays 0, 10, 50 (Basic delayed_send test)
-4, 4, 4,
+//4, 4, 4,
+6, 6, 6, 
 // Test case 16: proc 4 sends message to proc 3, which has the same priority, no preemption occurs
-4, 3
+//4, 3
+6, 3
 };
 // Further test TODOs: test if all processes are blocked, null process should run (keep as last test)
 int actual_run_order[ORDER_LENGTH];
@@ -175,8 +186,19 @@ void nullProc() {
 }
 
 void test_process_1() {
-
 	int * block;
+
+	/*
+	//blocking proc at end
+	void* blocks[MAX_ALLOWED_BLOCKS];
+	void* block;
+	int i = 0;
+
+	for (i = 0; i < MAX_ALLOWED_BLOCKS + 1; i++) {
+	 	block = request_memory_block();
+		blocks[i] = block;
+	}
+	*/
 
 	assert(unit_tests_passed() && memory_tests_passed(), "Unit tests failed.");
 
@@ -199,21 +221,24 @@ void test_process_1() {
 	} else {
 		uart0_put_string("G015_test: test 1 FAIL\n\r");
 	}
+
+	// same up to here
+
 	actual_run_order[cur_index] = 1;
 	cur_index++;
-	set_process_priority(1, 1);
-	// should get preempted by proc 5
+	set_process_priority(1, 2);
+	// should get preempted by proc 4
 
 	actual_run_order[cur_index] = 1;
 	cur_index++;
 
 	//test_process_1 should get blocked - it requested block number 31 (we have max 30 blocks)
-	//test_process_5 should run next
+	//test_process_4 should run next
 	block = request_memory_block();
 	*block = 0;
 
-	//test_proc_1 got its mem block - but test_proc_6 had same priority and did not get preempted
-	//came here after test_proc_5 (higher priority) got blocked and test_proc_2 released processor
+	//test_proc_1 got its mem block - but test_proc_5 had same priority and did not get preempted
+	//came here after test_proc_4 (higher priority) got blocked and test_proc_2 released processor
 	actual_run_order[cur_index] = 1;
 	cur_index++;
 
@@ -221,13 +246,14 @@ void test_process_1() {
 	block = request_memory_block();
 	*block = 0;
 
-	while(1) {}
+	while(1) {
+	   release_processor();
+	} // run inf
 
 	//assert(0,"Should not reach this point. End of proc 1");
 }
 
 void test_process_2() {
-
 	int* block;
 	int i = 0;
 	int alloc_bad = 0;
@@ -290,25 +316,28 @@ void test_process_2() {
 
 	release_processor();
 
-	//comes here after test_proc_5 is blocked on memory
+	//comes here after test_proc_4 is blocked on memory
 	actual_run_order[cur_index] = 2;
 	cur_index++;
 
-	//should switch to test_proc_6
+	//should switch to test_proc_5
 	release_processor();
 
-	//comes here after test_proc_1 is blocked on memory
+	//comes here after test_proc_4 (priority 1) is blocked on memory
 	actual_run_order[cur_index] = 2;
 	cur_index++;
 
-	//should switch to test_proc_6
+	//should switch to test_proc_1
 	release_processor();
 
-	assert(0,"Should not reach this point. End of proc 2");
+	while(1) {
+	   release_processor();
+	} // run inf
+
+	//assert(0,"Should not reach this point. End of proc 2");
 }
 
 void test_process_3() {
-
 	int sender_id = 0;
 	Envelope * env_test15;
 	char message_test15;
@@ -385,30 +414,31 @@ void test_process_3() {
 		//uart0_put_string("G015_test: test 13 FAIL\n\r");
 	}
 
-	//GOTO process 6
-	set_process_priority(6, 0);
+	//GOTO process 5
+	set_process_priority(5, 1);
 	release_processor();
 
-	// comes in from proc4
+	// comes in from test_proc_6
 	actual_run_order[cur_index++] = 3;
 
-	//Send message to proc 4
+	//Send message to proc 6
   	message_test15 = 'a';	
 
 	env_test15 = (Envelope *)request_memory_block();
 
 	set_sender_PID(env_test15, 3);
-	set_destination_PID(env_test15, 4);
+	set_destination_PID(env_test15, 6);
 	set_message_type(env_test15, DELAYED_SEND);
 	set_message_bytes(env_test15, &message_test15, sizeof(char));
 
-	send_message(4, env_test15);
-
-	// Comes in here from test process 4.
-	// Gets blocked on receive until proc 4 sends it a message
+	// test_proc_6 will preempt on receive
+	send_message(6, env_test15);
+	
+	// Comes in here from test process 6.
+	// Gets blocked on receive until proc 6 sends it a message
 	env_test15 = (Envelope *)receive_message(&sender_id);
 
-	// comes here after proc 4 releases processor
+	// comes here after proc 6 releases processor
 	actual_run_order[cur_index++] = 3;
 
 	if (order_checker(cur_index)) {
@@ -423,144 +453,22 @@ void test_process_3() {
 }
 
 void test_process_4() {
-
-	int sender_id = 0;
-	Envelope * env;
-	int delay_time;
-	char message_test15;
-	int test_passed = 1;
-	
-	// STARTING TEST CASE 14 
-	actual_run_order[cur_index++] = 4;
-
-	// This blocks (process 3 takes over)
-	env = (Envelope *)receive_message(&sender_id);
-	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
-   	
-	// Comes in from proc3
-	actual_run_order[cur_index++] = 4;
-
-	if (order_checker(cur_index)) {
-		uart0_put_string("G015_test: test 14 OK\n\r");
-	} else {
-		uart0_put_string("G015_test: test 14 FAIL\n\r");
-	}
-
-	//Set up message 1: delay 0 ms
-	message_test15 = 'b';	
-	set_sender_PID(env, 4);
-	set_destination_PID(env, 4);
-	set_message_type(env, DELAYED_SEND);
-	set_message_bytes(env, &message_test15, sizeof(char));
-
-	//Send msg 1
-	delay_time = get_current_time();
-	delayed_send(4, env, 0);
-
-	// This will block until the message comes.
-	env = (Envelope *)receive_message(&sender_id);
-	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
-
-	//Check message contents
-	//Add 4 to delay_time in order to account for context switches and stuff
-	//(too late) || (too early) || (Check message contents)
-	if(get_current_time() > delay_time + 4 || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'b')) {
-		test_passed = 0;
-	}
-	
-	actual_run_order[cur_index++] = 4;
-
-	//Set up message 2: delay 10 ms
-	message_test15 = 'c';	
-	set_sender_PID(env, 4);
-	set_destination_PID(env, 4);
-	set_message_type(env, DELAYED_SEND);
-	set_message_bytes(env, &message_test15, sizeof(char));
-
-	//Send msg 2
-	delay_time = get_current_time();
-	delayed_send(4, env, 10);
-
-	// Blocks until message to self is received.
-	env = (Envelope *)receive_message(&sender_id);
-	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
-
-	//(too late) || (too early) || (Check message contents)
-	if(get_current_time() > (delay_time + 10 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'c')) {
-		test_passed = 0;
-	}
-	actual_run_order[cur_index++] = 4;
-
-	//Set up message 3: delay 50 ms
-	message_test15 = 'd';	
-	set_sender_PID(env, 4);
-	set_destination_PID(env, 4);
-	set_message_type(env, DELAYED_SEND);
-	set_message_bytes(env, &message_test15, sizeof(char));
-
-	//Send msg 3
-	delay_time = get_current_time();
-	delayed_send(4, env, 50);
-
-	// blocks on receive
-	env = (Envelope *)receive_message(&sender_id); 
-	//assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
-
-	//(too late) || (too early) || (Check message contents)
-	if(get_current_time() > (delay_time + 50 + 1) || get_current_time() < delay_time || !message_checker(env, 4, 4, DELAYED_SEND, 'd')) {
-		test_passed = 0;
-	}
-
-	actual_run_order[cur_index++] = 4;
-
-	if (order_checker(cur_index) && test_passed) {
-		uart0_put_string("G015_test: test 15 OK\n\r");
-	} else {
-		uart0_put_string("G015_test: test 15 FAIL\n\r");
-	}
-
-	set_process_priority(4, 1);
-
-	message_test15 = 'e';	
-	set_sender_PID(env, 4);
-	set_destination_PID(env, 3);
-	set_message_type(env, DELAYED_SEND);
-	set_message_bytes(env, &message_test15, sizeof(char));
-
-	send_message(3, env);
-	// proc 3 should unblock on receive but should not preempt proc 4 since they are same priority
-	actual_run_order[cur_index++] = 4;
-	
-	release_processor();
-
-	uart0_put_string("G015_test: END\n\r");
-
-	while (1) {
-	//	int i = 999999;
-	//	while (i) { i--; }
-
-		release_processor();
-	}
-}
-
-void test_process_5() {
-
-	int * block;
+   	int * block;
 	int * block2;
 
-	actual_run_order[cur_index++] = 5;
+	actual_run_order[cur_index++] = 4;
 	release_processor();
 
-	actual_run_order[cur_index++] = 5;
+	actual_run_order[cur_index++] = 4;
 	release_processor();
 
-	actual_run_order[cur_index++] = 5;
+	actual_run_order[cur_index++] = 4;
 	release_processor();
 
-	actual_run_order[cur_index++] = 5;
+	actual_run_order[cur_index++] = 4;
 
 	//test the priority of test_proc_1
-	if (get_process_priority(1) == 1 && order_checker(cur_index)) {
+	if (get_process_priority(1) == 2 && order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 2 OK\n\r");
 	} else {
 		uart0_put_string("G015_test: test 2 FAIL\n\r");
@@ -569,7 +477,7 @@ void test_process_5() {
 	//should not preempt
 	release_processor();
 
-	actual_run_order[cur_index++] = 5;
+	actual_run_order[cur_index++] = 4;
 
 	if (order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 3 OK\n\r");
@@ -577,27 +485,27 @@ void test_process_5() {
 		uart0_put_string("G015_test: test 3 FAIL\n\r");
 	}
 
-	set_process_priority(5, 1);
+	set_process_priority(4, 2);
 	// shouldn't get preempted by test_proc_2
-	actual_run_order[cur_index++] = 5;
+	actual_run_order[cur_index++] = 4;
 	
-	if (get_process_priority(5) == 1 && order_checker(cur_index)) {
+	if (get_process_priority(4) == 2 && order_checker(cur_index)) {
 		uart0_put_string("G015_test: test 4 OK\n\r");
 	} else {
 		uart0_put_string("G015_test: test 4 FAIL\n\r");
 	}
 	release_processor();
 
-	//should come here after test_proc_1 is blocked on memory
-	actual_run_order[cur_index++] = 5;
+	//should come here after test_proc_1 gets blocked on memory
+	actual_run_order[cur_index++] = 4;
 
 	//requested block number 32 - will get blocked
 	//proc 2 will run next
 	block = request_memory_block();
 	*block = 0;
 
-	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
-	actual_run_order[cur_index++] = 5;
+	//test_proc_5 was preempted after releasing a block - test_proc_4 now got the block it requested
+	actual_run_order[cur_index++] = 4;
 
 	if (order_checker(cur_index)) {
 		uart0_put_string_emergency("G015_test: test 11 OK\n\r");
@@ -610,8 +518,8 @@ void test_process_5() {
 	block2 = request_memory_block();
 	*block2 = 0;
 
-	//test_proc_6 was preempted after releasing a block - test_proc_5 now got the block it requested
-	actual_run_order[cur_index++] = 5;
+	//test_proc_5 was preempted after releasing a block - test_proc_4 now got the block it requested
+	actual_run_order[cur_index++] = 4;
 
 	if (order_checker(cur_index)) {
 		uart0_put_string_emergency("G015_test: test 12 OK\n\r");
@@ -619,20 +527,22 @@ void test_process_5() {
 		uart0_put_string_emergency("G015_test: test 12 FAIL\n\r");
 	}
 
-	set_process_priority(5, 1);
-	actual_run_order[cur_index] = 5;
-	set_process_priority(3, 0);
+	set_process_priority(4, 2);
+	//actual_run_order[cur_index] = 4;
+	// should get preempted since test_proc_3 has a higher priority
+	set_process_priority(3, 1);
 
-	assert(0,"Should not reach this point. End of proc 5");
+	while(1) {
+	   release_processor();
+	} // run inf
 }
 
-void test_process_6() {	
-
+void test_process_5() {
 	void* blocks[MAX_ALLOWED_BLOCKS];
 	void* block;
 	int i = 0;
 
-	actual_run_order[cur_index] = 6;
+	actual_run_order[cur_index] = 5;
 	cur_index++;
 
 	// want to test allocating max number of blocks, blocking a process on
@@ -646,14 +556,14 @@ void test_process_6() {
 	release_processor();
 
 	//gets here after test_proc_2 releases processor
-	//here test_proc_1 and test_proc_5 are blocked
-	actual_run_order[cur_index] = 6;
+	//here test_proc_1 and test_proc_4 are blocked
+	actual_run_order[cur_index] = 5;
 	cur_index++;
 
 	//should not be preempted after release - test_proc_1 has the same priority
 	release_memory_block(blocks[--i]);
 
-	actual_run_order[cur_index] = 6;
+	actual_run_order[cur_index] = 5;
 	cur_index++;
 
 	if(order_checker(cur_index)){
@@ -662,10 +572,10 @@ void test_process_6() {
 		uart0_put_string_emergency("G015_test: test 9 FAIL\n\r");
 	}
 
-	// test_proc_5 is now of highest priority - but it is blocked - should not preempt here
-	set_process_priority(5, 0);
+	// test_proc_4 is now of highest priority - but it is blocked - should not preempt here
+	set_process_priority(4, 1);
 
-	actual_run_order[cur_index] = 6;
+	actual_run_order[cur_index] = 5;
 	cur_index++;
 
 	if(order_checker(cur_index)){
@@ -674,32 +584,156 @@ void test_process_6() {
 		uart0_put_string_emergency("G015_test: test 10 FAIL\n\r");
 	}
 
-	// should be preempted after release - test_proc_5 has a higher priority
+	// should be preempted after release - test_proc_4 has a higher priority
 	release_memory_block(blocks[--i]);
 
-	actual_run_order[cur_index] = 6;
+	actual_run_order[cur_index] = 5;
 	cur_index++;
 
-	//test_proc_1 and test_proc_5 are blocked on memory
-	//after release, test_proc_5 should get memory block and preempt - it has higher priority
+	//test_proc_1 and test_proc_4 are blocked on memory
+	//after release, test_proc_4 should get memory block and preempt - it has higher priority
 	release_memory_block(blocks[--i]);
 
 	// Comes in from process 3
-
 	// Release all the memory blocks
 	while(i > 0) {
 		release_memory_block(blocks[--i]);
 	}
 	
-	set_process_priority(4, 0);
-	set_process_priority(1, 2);
+	// not expecting a preemption until end  - test_proc_5 has priority 1 atm
+	set_process_priority(1, 3);
 	set_process_priority(2, 3);
-	set_process_priority(3, 1);
+	set_process_priority(3, 2);
+	set_process_priority(4, 3);
+	set_process_priority(6, 1);
 	set_process_priority(5, 3);
-	set_process_priority(6, 3);
+	
 	release_processor();
 
-	assert(0,"Should not reach this point. End of proc 6");
+	while(1) {
+	   release_processor();
+	} // run inf
+
+	//assert(0,"Should not reach this point. End of proc 6");
+}
+
+void test_process_6() {
+	int sender_id = 0;
+	Envelope * env;
+	int delay_time;
+	char message_test15;
+	int test_passed = 1;
+
+	// STARTING TEST CASE 14 
+	actual_run_order[cur_index++] = 6;
+
+	// This blocks (process 3 takes over)
+	env = (Envelope *)receive_message(&sender_id);
+	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 6 should have received all messages");
+   	
+	// Comes in from test_proc_3
+	actual_run_order[cur_index++] = 6;
+
+	if (order_checker(cur_index)) {
+		uart0_put_string("G015_test: test 14 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 14 FAIL\n\r");
+	}
+
+	//Set up message 1: delay 0 ms
+	message_test15 = 'b';	
+	set_sender_PID(env, 6);
+	set_destination_PID(env, 6);
+	set_message_type(env, DELAYED_SEND);
+	set_message_bytes(env, &message_test15, sizeof(char));
+
+	//Send msg 1
+	delay_time = get_current_time();
+	delayed_send(6, env, 0);
+
+	// This will block until the message comes.
+	env = (Envelope *)receive_message(&sender_id);
+	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 6 should have received all messages");
+
+	//Check message contents
+	//Add 4 to delay_time in order to account for context switches and stuff
+	//(too late) || (too early) || (Check message contents)
+	if(get_current_time() > delay_time + 4 || get_current_time() < delay_time || !message_checker(env, 6, 6, DELAYED_SEND, 'b')) {
+		test_passed = 0;
+	}
+	
+	actual_run_order[cur_index++] = 6;
+
+	//Set up message 2: delay 10 ms
+	message_test15 = 'c';	
+	set_sender_PID(env, 6);
+	set_destination_PID(env, 6);
+	set_message_type(env, DELAYED_SEND);
+	set_message_bytes(env, &message_test15, sizeof(char));
+
+	//Send msg 2
+	delay_time = get_current_time();
+	delayed_send(6, env, 10);
+
+	// Blocks until message to self is received.
+	env = (Envelope *)receive_message(&sender_id);
+	assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 6 should have received all messages");
+
+	//(too late) || (too early) || (Check message contents)
+	if(get_current_time() > (delay_time + 10 + 1) || get_current_time() < delay_time || !message_checker(env, 6, 6, DELAYED_SEND, 'c')) {
+		test_passed = 0;
+	}
+	actual_run_order[cur_index++] = 6;
+
+	//Set up message 3: delay 50 ms
+	message_test15 = 'd';	
+	set_sender_PID(env, 6);
+	set_destination_PID(env, 6);
+	set_message_type(env, DELAYED_SEND);
+	set_message_bytes(env, &message_test15, sizeof(char));
+
+	//Send msg 3
+	delay_time = get_current_time();
+	delayed_send(6, env, 50);
+
+	// blocks on receive
+	env = (Envelope *)receive_message(&sender_id); 
+	//assert(pCurrentProcessPCB->waitingMessages.head == NULL, "ERROR: process 4 should have received all messages");
+
+	//(too late) || (too early) || (Check message contents)
+	if(get_current_time() > (delay_time + 50 + 1) || get_current_time() < delay_time || !message_checker(env, 6, 6, DELAYED_SEND, 'd')) {
+		test_passed = 0;
+	}
+
+	actual_run_order[cur_index++] = 6;
+
+	if (order_checker(cur_index) && test_passed) {
+		uart0_put_string("G015_test: test 15 OK\n\r");
+	} else {
+		uart0_put_string("G015_test: test 15 FAIL\n\r");
+	}
+
+	set_process_priority(6, 2);
+
+	message_test15 = 'e';	
+	set_sender_PID(env, 6);
+	set_destination_PID(env, 3);
+	set_message_type(env, DELAYED_SEND);
+	set_message_bytes(env, &message_test15, sizeof(char));
+
+	send_message(3, env);
+	// proc 3 should unblock on receive but should not preempt proc 4 since they have the same priority
+	actual_run_order[cur_index++] = 6;
+	
+	release_processor();
+
+	uart0_put_string("G015_test: END\n\r");
+
+	while (1) {
+		release_processor();
+	}
+
+	//assert(0,"Should not reach this point. End of proc 6");
 }
 
 

@@ -66,7 +66,6 @@ void trackReceivedMessage(Envelope * env) {
 //                 Kernel primitives (user-facing API)
 // ------------------------------------------------------------
 int k_send_message(int target_pid, void* envelope) {
-	//atomic(on);
 	Envelope* env = (Envelope*) envelope;
 	ListNode* node = &env->dummyVar;
 	ProcessControlBlock* targetProcess = get_process_pointer_from_id(target_pid);
@@ -87,8 +86,13 @@ int k_send_message(int target_pid, void* envelope) {
 
 	if (targetProcess->currentState == BLOCKED_ON_RECEIVE) {
 	 	targetProcess->currentState = RDY;
-		//TODO remove process from BLOCKED_ON_RECEIVE queue
-		if(is_usr_proc(targetProcess->processId)){
+		
+		//remove process from BLOCKED_ON_RECEIVE queue
+		remove_node(&blocked_receive_queue[targetProcess->processPriority], (void*)targetProcess);
+		
+		// i-procs don't get blocked on receive; since sys procs are part of normal queues enqueue them as well
+		if ( !is_i_proc(targetProcess->processId)) {
+		//if(is_usr_proc(targetProcess->processId)){
 			enqueue(
 				&ready_queue[targetProcess->processPriority],
 				get_node_of_process(targetProcess->processId)
@@ -96,8 +100,9 @@ int k_send_message(int target_pid, void* envelope) {
 		}
 	}
 
-	//atomic(off);
 	// Prempt to a user proc if he has higher priority OR if it is a user proc
+	// Should also preempt to system processes....
+
 	if (((targetProcess->processPriority < pCurrentProcessPCB->processPriority && is_usr_proc(targetProcess->processId)))
 		&& is_ready_or_new(targetProcess->currentState))
 	{
@@ -105,20 +110,26 @@ int k_send_message(int target_pid, void* envelope) {
 	}
 
 	trackSentMessage(env);
-
 	return 0;
 }
 
 void* k_receive_message(int* sender_ID) {
-	// atomic(on)
 	Envelope* env = NULL;
 	ListNode* node;
 	
-	//don't want to block iprocesses (block only user procs pid 0 to 6, and 12 onward)
+	//don't want to block iprocesses (block only user procs pid 0 to 6, and sys procs pid 12 onward)
+	//insert into blocked_on_receive queue
+	if (pCurrentProcessPCB->waitingMessages.head == NULL && !is_i_proc(pCurrentProcessPCB->processId)) {
+		enqueue(&blocked_receive_queue[pCurrentProcessPCB->processPriority], 
+				get_node_of_process(pCurrentProcessPCB->processId));
+	}
+
+	//send_message removes the process from the blocked on receive queue
 	while (pCurrentProcessPCB->waitingMessages.head == NULL && !is_i_proc(pCurrentProcessPCB->processId)) {
 	 	pCurrentProcessPCB->currentState = BLOCKED_ON_RECEIVE;
 		k_release_processor();
 	}
+	
 
 	node = dequeue(&pCurrentProcessPCB->waitingMessages);
 	if (node != NULL) {
@@ -129,8 +140,6 @@ void* k_receive_message(int* sender_ID) {
 	}
 
 	trackReceivedMessage(env);
-
-	//atomic(off)
 	return env;	
 }
 

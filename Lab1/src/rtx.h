@@ -27,6 +27,8 @@ extern unsigned int free_mem;
 #define NUM_SYS_PROCESSES 3
 #define NUM_PROCESSES (NUM_USR_PROCESSES + NUM_I_PROCESSES + NUM_SYS_PROCESSES)
 
+#define USR_SYS_ID_DIFF 6
+
 // dynamic heap for user processes
 #define MEMORY_BLOCK_SIZE                            0x64
 #define MAX_ALLOWED_MEMORY_BLOCKS                    0x1E

@@ -136,13 +136,11 @@ int k_release_memory_block (void * MemoryBlock){
 	//  unblock if blocked}
 	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS && has_blocked_processes()){
 		ProcessControlBlock* blockedProcessPCB;
-		//TODO: This print causes UART to get into an infinite loop!!!!!
-		//uart0_put_string("unblocking\r\n");
 
 		//  Switch to another process.  That process will resume after returning from this function
 		numberOfMemoryBlocksCurrentlyAllocated--;
 		
-		//get highest pririty blocked process
+		//get highest pririty blocked process; sys_procs blocked on mem get priority
 		blockedProcessPCB = getBlockedProcess();
 		//context switch from running process to blocked process
 		context_switch(pCurrentProcessPCB, blockedProcessPCB);
@@ -150,9 +148,7 @@ int k_release_memory_block (void * MemoryBlock){
 		return 0;
 	}
 
-
 	numberOfMemoryBlocksCurrentlyAllocated--;
-
 	return 0;
 }
 

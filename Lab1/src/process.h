@@ -68,13 +68,13 @@ ListNode* get_node_of_process(int);
 void process_init(void);	    
 
 // pick the pid of the next to run process
-ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);				
-int k_release_processor(void);		// kernel release_process API
-// Switch contexts from the passed-in PCB to the pCurrentPCB
+ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB);
 
-void context_switch(ProcessControlBlock*, ProcessControlBlock*);
-//void popstuff(void);
-//void pushstuff(void); 
+// kernel release_process API				
+int k_release_processor(void);		
+
+// Switch contexts from the passed-in PCB to the pCurrentPCB
+void context_switch(ProcessControlBlock*, ProcessControlBlock*); 
 void c_context_switch(ProcessControlBlock*, ProcessControlBlock*);
 
 int has_blocked_processes(void); // check if there are blocked processes
@@ -83,6 +83,10 @@ void block_current_process(void); // Put current process in a blocking state, as
 
 ProcessControlBlock* getBlockedProcess(void); //Gets the highest priority blocked process
 ProcessControlBlock* getRunningProcess(void); //Gets a running process from all processes array
+
+ProcessControlBlock* get_kcd_pcb(void);
+ProcessControlBlock* get_crt_pcb(void);
+ProcessControlBlock* get_clock_pcb(void);
 
 // ------------------------------------------------------
 // External routines
@@ -95,6 +99,11 @@ extern void test_process_3 (void);
 extern void test_process_4 (void);
 extern void test_process_5 (void);
 extern void test_process_6 (void);
+
+// System processes		 
+extern void crt_display (void);
+extern void keyboard_command_decoder (void);
+extern void wall_clock (void);
 
 extern void nullProc(void);				// null process
 

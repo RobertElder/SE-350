@@ -8,33 +8,22 @@
 #include "hot_keys.h"
 
 
-ProcessControlBlock crt_pcb;
-ProcessControlBlock kcd_pcb;
-ProcessControlBlock clock_pcb;
+//ProcessControlBlock crt_pcb;
+//ProcessControlBlock kcd_pcb;
+//ProcessControlBlock clock_pcb;
 
-ProcessControlBlock* get_crt_pcb() {
-	return &crt_pcb;
-}
-
-ProcessControlBlock* get_kcd_pcb() {
-	return &kcd_pcb;
-}
-
-ProcessControlBlock* get_clock_pcb() {
-	return &clock_pcb;
-}
 
 ProcessControlBlock* get_new_sys_proc() {
-	if (crt_pcb.currentState == NEW) return &crt_pcb;
-	if (kcd_pcb.currentState == NEW) return &kcd_pcb;
-	if (clock_pcb.currentState == NEW) return &clock_pcb;
+	//if (crt_pcb.currentState == NEW) return &crt_pcb;
+	//if (kcd_pcb.currentState == NEW) return &kcd_pcb;
+	//if (clock_pcb.currentState == NEW) return &clock_pcb;
 	return NULL;
 }
 
 ProcessControlBlock* get_waiting_sys_proc() {
- 	if (kcd_pcb.waitingMessages.head != NULL) return &kcd_pcb;
-	if (crt_pcb.waitingMessages.head != NULL) return &crt_pcb;
-	if (clock_pcb.waitingMessages.head != NULL) return &clock_pcb;
+ 	//if (kcd_pcb.waitingMessages.head != NULL) return &kcd_pcb;
+	//if (crt_pcb.waitingMessages.head != NULL) return &crt_pcb;
+	//if (clock_pcb.waitingMessages.head != NULL) return &clock_pcb;
 	return NULL;
 }
 
@@ -113,14 +102,14 @@ void keyboard_command_decoder(){
 		int destination = -1;	  
 
 		// Get our new message
-		Envelope* message = (Envelope*)receive_message(&sender_id);
+		Envelope* message = (Envelope*)receive_message(&sender_id);	   // will get BLOCKED_ON_RECEIVE while no messages
 		char * pChar = get_message_data(message);
 		int message_type = get_message_type(message);
 		destination = get_destination_PID(message);
 
 		assert(sender_id == message->sender_pid,
 			 "ERROR: receive_message did not supply sender_id");
-		assert(destination == kcd_pcb.processId,
+		assert(destination == get_kcd_pcb()->processId,
 			 "ERROR: Message destination did not match with KCD pid");
 
 		switch(message_type) {
@@ -137,8 +126,6 @@ void keyboard_command_decoder(){
 				/* If the buffer is full, they are not part of any valid command so 
 				   we don't care (also < because we want space for the terminating null)
 				*/
-
-
 
 				if(current_command_length < MAX_COMMAND_LENGTH){
 					//  Put the character we received into the buffer
@@ -202,7 +189,8 @@ void crt_display(){
 		int destination = -1;
 		LPC_UART_TypeDef *pUart = (LPC_UART_TypeDef *) LPC_UART0;
 
-		Envelope* message = (Envelope*)receive_message(&sender_id);
+		Envelope* message = (Envelope*)receive_message(&sender_id);	 // if has none, gets BLOCKED_ON_RECEIVE
+		// will continuously be blocked on receive - so user procs should be able to run
 
 		uint8_t * current_character = get_message_data(message);
 
@@ -212,7 +200,7 @@ void crt_display(){
 
 		assert(sender_id == message->sender_pid,
 			"ERROR(crt): receive_message did not supply sender_id");
-		assert(destination == crt_pcb.processId,
+		assert(destination == get_crt_pcb()->processId,
 			"ERROR: Message destination did not match with CRT pid");
 
 		pUart->IER = IER_THR_Empty | IER_Receive_Line_Status;
@@ -324,26 +312,50 @@ void wall_clock() {
 
 // --------------------------------------------------------
 
-void init_sys_procs() {
-	int procIndex;
+/*void init_sys_procs() {
+	//int procIndex;
+	int i;
 
 	uint32_t* sp;
-	uint32_t* stacks_start[3];
+	uint32_t* stacks_start[1];
 
-	ProcessControlBlock* sys_procs[3];	 
+	ProcessControlBlock* sys_procs[1];	 
 	uint32_t* funcPointers[] = {  
 		(uint32_t*)crt_display,
 		(uint32_t*)keyboard_command_decoder,
 		(uint32_t*)wall_clock
 	};
 
-	sys_procs[0] = &crt_pcb;
-	sys_procs[1] = &kcd_pcb;
-	sys_procs[2] = &clock_pcb;
+	//sys_procs[0] = &crt_pcb;
+	//sys_procs[1] = &kcd_pcb;
+	sys_procs[0] = &clock_pcb;
 
-	stacks_start[0] = CRT_START_STACK;
-	stacks_start[1] = KCD_START_STACK;
-	stacks_start[2] = CLOCK_START_STACK;
+	//stacks_start[0] = CRT_START_STACK;
+	//stacks_start[1] = KCD_START_STACK;
+	stacks_start[0] = CLOCK_START_STACK;
+
+	sys_procs[0]->processId = 0xE;
+	sys_procs[0]->currentState = NEW;
+	sys_procs[0]->waitingMessages.head = NULL;
+	sys_procs[0]->waitingMessages.tail = NULL;
+	sys_procs[0]->processPriority = 0;
+
+	sp = stacks_start[0];
+
+	if (!(((uint32_t)sp) & 0x04)) {
+	    --sp; 
+	}
+													   
+	*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
+
+	// Set the entry point of the process
+	*(--sp) = (uint32_t) (uint32_t*)wall_clock;
+	
+	for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
+		*(--sp) = 0x0;
+	}
+	
+	sys_procs[0]->processStackPointer = sp;
 
 	for (procIndex = 0; procIndex < 3; procIndex++) {
 		int i;
@@ -369,8 +381,9 @@ void init_sys_procs() {
 		}
 		
 		sys_procs[procIndex]->processStackPointer = sp;
-	}
-}
+	} 
+
+} */
 
 int get_seconds_from_formatted_time(char *c){
 	int h1 = (c[0] - 0x30) * 10 * 60 * 60;	

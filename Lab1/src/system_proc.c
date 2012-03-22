@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "memory.h"
 #include "process.h"
+#include "iprocess.h"
 #include "ipc.h"
 #include "hot_keys.h"
 
@@ -232,38 +233,40 @@ void crt_display(){
 	}
 }
 
-
+//TODO: make into user proc
 void wall_clock() {
 	int doCount = 0;
 	int displayClock = 0;
 	int clock_time = 0;
 	int sender_id = 0;
 		  
-	Envelope* registerMessage = (Envelope*)request_memory_block();
+	Envelope* env = (Envelope*)request_memory_block();
 	uint8_t CMD_SIZE = 4;//bytes
 	char* cmd = "%WS";
 	char* cmd2 = "%WT";
 
-	registerMessage->sender_pid = get_clock_pcb()->processId;
-	registerMessage->receiver_pid = get_kcd_pcb()->processId;
-	registerMessage->message_type = COMMAND_REGISTRATION;
-	set_message_bytes(registerMessage, cmd, CMD_SIZE);
-	send_message(registerMessage->receiver_pid, registerMessage);
+	env->sender_pid = get_clock_pcb()->processId;
+	env->receiver_pid = get_kcd_pcb()->processId;
+	env->message_type = COMMAND_REGISTRATION;
+	set_message_bytes(env, cmd, CMD_SIZE);
+	send_message(env->receiver_pid, env);
 	
-	registerMessage = (Envelope*)request_memory_block();	
-	registerMessage->sender_pid = get_clock_pcb()->processId;
-	registerMessage->receiver_pid = get_kcd_pcb()->processId;
-	registerMessage->message_type = COMMAND_REGISTRATION;
-	set_message_bytes(registerMessage, cmd2, CMD_SIZE);
-	send_message(registerMessage->receiver_pid, registerMessage);	 
+	env = (Envelope*)request_memory_block();	
+	env->sender_pid = get_clock_pcb()->processId;
+	env->receiver_pid = get_kcd_pcb()->processId;
+	env->message_type = COMMAND_REGISTRATION;
+	set_message_bytes(env, cmd2, CMD_SIZE);
+	send_message(env->receiver_pid, env);	 
 
 	while(1) {
-	// TODO: RELEASE ME PROPERLY (after uncommenting and fixing clock_tick case)
 		Envelope * env = (Envelope *)receive_message(&sender_id);
-		//release_memory_block(env); // temporary fix. Remove this line once proc is fixed
+		
 		switch(env->message_type) {
 			case CLOCK_TICK:
+				start_tick:
 				if(doCount) {
+					Envelope * tickEnv = (Envelope *)request_memory_block();
+
 					if(++clock_time >= 86400) { //tick
 						clock_time = 0;
 					}
@@ -279,11 +282,15 @@ void wall_clock() {
 						timeEnv->message_type = OUTPUT_STRING;
 
 						set_message_bytes(timeEnv, time_string, TIME_LEN + 1);
-					//	((char*)&timeEnv->message_data)[TIME_LEN] = 0; //null terminate
 
 						send_message(timeEnv->receiver_pid, timeEnv); //to CRT for display
-
 					}
+
+					//Enqueue next tick
+					set_sender_PID(tickEnv, get_clock_pcb()->processId);
+					set_destination_PID(tickEnv, get_clock_pcb()->processId);
+					set_message_type(tickEnv, CLOCK_TICK);
+					delayed_send(get_clock_pcb()->processId, tickEnv, 1000);
 				}
 				break;
 			case STOP_CLOCK:
@@ -292,7 +299,9 @@ void wall_clock() {
 			case START_CLOCK:
 				clock_time = (int)env->message_data;	
 				doCount = displayClock = 1;
-				break;
+
+				//Start ticking
+				goto start_tick; 
 			case PAUSE_CLOCK:
 				displayClock = 0;
 				break;
@@ -304,8 +313,15 @@ void wall_clock() {
 
 				if(*(msg + 2) == 'S') {
 					clock_time = get_seconds_from_formatted_time((msg + 3));
-					doCount = 1;
-					displayClock = 1;	
+					if(clock_time > -1) {
+						doCount = 1;
+						displayClock = 1;	
+
+						//Start ticking
+						goto start_tick;
+					} else {
+						//Error(?)					 	
+					}
 				} else if(*(msg + 2) == 'T') {
 					clock_time = 0;
 					doCount = 0;
@@ -318,7 +334,7 @@ void wall_clock() {
 				break;
 		}
 
-		release_memory_block(env); //commented until this proc is fixed
+		release_memory_block(env);
 	}
 }
 
@@ -373,13 +389,37 @@ void init_sys_procs() {
 }
 
 int get_seconds_from_formatted_time(char *c){
-	int h1 = (c[0] - 0x30) * 10 * 60 * 60;	
-	int h2 = (c[1] - 0x30) * 60 * 60;	
-	int m1 = (c[3] - 0x30) * 10 * 60;	
-	int m2 = (c[4] - 0x30) * 60;
-	int s1 = (c[6] - 0x30) * 10;	
-	int s2 = c[7] - 0x30;
-	
+	int h1 = c[0];	
+	int h2 = c[1]; 
+	int m1 = c[3]; 
+	int m2 = c[4]; 
+	int s1 = c[6]; 
+	int s2 = c[7];
+
+	//looking for xx:xx:xx([NULL] or RTN)
+	if(c[2] != 0x3A || c[5] != 0x3A || (c[8] != 0x0D && c[8] != 0x0)) {
+	 	return -1;
+	}
+
+	//check between 0-9
+	if(h1 < 0x30 || h1 > 0x39
+		|| h2 < 0x30 || h2 > 0x39
+		|| m1 < 0x30 || m1 > 0x39
+		|| m2 < 0x30 || m2 > 0x39
+		|| s1 < 0x30 || s1 > 0x39
+		|| s2 < 0x30 || s2 > 0x39) {
+
+		return -1;
+	 	
+	}
+
+	h1 = (h1 - 0x30) * 10 * 60 * 60;
+	h2 = (h2 - 0x30) * 60 * 60;	 
+	m1 = (m1 - 0x30) * 10 * 60;	
+	m2 = (m2 - 0x30) * 60;
+	s1 = (s1 - 0x30) * 10;	
+	s2 = s2 - 0x30;
+
 	return h1 + h2 + m1 + m2 + s1 + s2;	
 }
 

@@ -35,13 +35,13 @@ int has_more_important_process(int priority) {
 
 //User processes can only have priorities 1,2,3
 int is_valid_priority(int priority){
-	//return priority >= 0 && priority < NUM_PRIORITIES - 1;
 	return priority > 0 && priority < NUM_PRIORITIES - 1;
 }
 
 int k_set_process_priority (int process_ID, int newPriority) {	
 	ProcessControlBlock * process = get_process_pointer_from_id(process_ID);
 
+	// not applicabale now - always have sys procs of higher priority, decided not to preempt now
 	//assert(!has_more_important_process(pCurrentProcessPCB->processPriority), "Error: running process is not of highest priority");
 	assert(process != NULL, "Invalid process ID in set process priority.");
 	assert(process_ID != 0, "Error: cannot change the priority of the NULL process.");
@@ -53,7 +53,7 @@ int k_set_process_priority (int process_ID, int newPriority) {
 	} else if (process->currentState == BLOCKED_ON_MEMORY) {
 		 ListNode *node = remove_node(&blocked_memory_queue[process->processPriority], (void*)process);
 		 enqueue(&blocked_memory_queue[newPriority], node);
-	} // TODO: need an else if for BLOCKED_ON_RECEIVE queue
+	}
 	process->processPriority = newPriority;
 	if (
 		(has_more_important_process(newPriority) && pCurrentProcessPCB->processId == process_ID) ||
@@ -95,12 +95,6 @@ ProcessControlBlock* get_interrupted_process() {
 	for(i = 0; i < NUM_USR_PROCESSES + NUM_SYS_PROCESSES; i++){	
 	 	if (pcb_array[i].currentState == INTERRUPTED) return &pcb_array[i];
 	}
-	//  These are other process that can be interrupted
-	//part of the pcb_array now
-	//if (get_crt_pcb()->currentState == INTERRUPTED) return get_crt_pcb();
-	//if (get_kcd_pcb()->currentState == INTERRUPTED) return get_kcd_pcb();
-	//if (get_clock_pcb()->currentState == INTERRUPTED) return get_clock_pcb();
-
 	return NULL;
 }
 
@@ -166,15 +160,12 @@ uint32_t * get_start_stack(int proc_id){
 
  	if(proc_id == get_kcd_pcb()->processId)	 
 		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
-		//return proc_init_table[proc_id].start_sp;
 		
 	if(proc_id == get_crt_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
-		//return CRT_START_STACK;	   
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;   
 		
 	if(proc_id == get_clock_pcb()->processId)
 		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
-		//return CLOCK_START_STACK;
 																	  
 	if(proc_id == get_timer_pcb()->processId)
 		return TIMER_START_STACK;
@@ -196,14 +187,13 @@ void init_processe_table() {
 	unsigned int sp = free_mem;
    	int i;
 
-	// increase number of processes to include sys procs	- 1 clock process :(
+	// increase number of processes to include sys procs
 	// on sys procs, override the id and priority values in the case statement 
 	for( i = 0; i < NUM_USR_PROCESSES + NUM_SYS_PROCESSES; i++ ){
 		ProcessEntry proc;
 		int priority;
 
 		proc.pid = i;
-		//proc.priority = (i == 0) ? NUM_PRIORITIES - 1 : (i - 1) % (NUM_PRIORITIES - 1);
 		// want to only assign priorities 1 2 3 to user processes 
 		priority = (i == 0) ? NUM_PRIORITIES - 1 : i % 3;
 		if (priority == 0) { priority = 3; }
@@ -327,17 +317,14 @@ void process_init()
 
 ProcessControlBlock* get_crt_pcb() {
 	return &pcb_array[NUM_USR_PROCESSES];
-	//return &crt_pcb;
 }
 
 ProcessControlBlock* get_kcd_pcb() {
 	return &pcb_array[NUM_USR_PROCESSES + 1];
-	//return &kcd_pcb;
 }
 
 ProcessControlBlock* get_clock_pcb() {
 	return &pcb_array[NUM_USR_PROCESSES + 2];
-	//return &clock_pcb;
 }
 
 // --------------------------------------------------------------------------------------
@@ -402,8 +389,6 @@ ProcessControlBlock* getRunningProcess() {
 
 ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock* pNewPCB) {
 	ProcessControlBlock* interruptedPCB = NULL;
-	//ProcessControlBlock * newSysProc = NULL;
-	//ProcessControlBlock * waitingSysProc = NULL;
 	
 	assert(pOldPCB != NULL && pNewPCB != NULL, "ERROR: Attempted to schedule NULL");
 
@@ -415,28 +400,10 @@ ProcessControlBlock* scheduler(ProcessControlBlock* pOldPCB, ProcessControlBlock
 
 	// If there is an interrupted process with higher priority, it should run next
 	interruptedPCB  = get_interrupted_process();
-	
-	//If a sys proc is ready, release_processor would choose it to run next
-
-	//TODO: this is here just for the clock_proc --> put this proc with others later!!
-	// Otherwise, if there is a new sys proc, we should schedule it
-	//newSysProc = get_new_sys_proc();
-
-	// Otherwise, if there are any system procs that need to run (have waiting messages), they have priority
-	//waitingSysProc = get_waiting_sys_proc();
 
 	if (interruptedPCB != NULL && (is_sys_proc(pNewPCB->processId) || pNewPCB->processPriority >= interruptedPCB->processPriority)) {
 		return interruptedPCB;
- 	} /*else if (newSysProc != NULL) {
-		assert(newSysProc->currentState == NEW, "ERROR: New sys proc was not new.");
-		return newSysProc;
-	} else if (waitingSysProc != NULL) { 
-		assert(
-			waitingSysProc->currentState == RDY || waitingSysProc->currentState == NEW,
-			"ERROR: New sys proc was not new or ready."
-		);
-		return waitingSysProc;
-	}*/ else if (pNewPCB->processPriority <= pOldPCB->processPriority) {
+ 	} else if (pNewPCB->processPriority <= pOldPCB->processPriority) {
 		return pNewPCB;
 	} else {
 		if (pOldPCB->currentState == RUN || pOldPCB->currentState == NEW) {
@@ -527,6 +494,7 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_to_run_and_exit;
 	save_old_and_set_new_MSP:
+		//TODO: will remove later, added for debug purposes
 		if(!( (uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
 			(uint32_t *) __get_MSP() > get_start_stack(pOldProcessPCB->processId) - (STACKS_SIZE/ sizeof(int)) )) {
 			 	assert(0, "Process has stack overflow."); 

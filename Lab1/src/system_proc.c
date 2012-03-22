@@ -9,25 +9,6 @@
 #include "hot_keys.h"
 
 
-//ProcessControlBlock crt_pcb;
-//ProcessControlBlock kcd_pcb;
-//ProcessControlBlock clock_pcb;
-
-
-ProcessControlBlock* get_new_sys_proc() {
-	//if (crt_pcb.currentState == NEW) return &crt_pcb;
-	//if (kcd_pcb.currentState == NEW) return &kcd_pcb;
-	//if (clock_pcb.currentState == NEW) return &clock_pcb;
-	return NULL;
-}
-
-ProcessControlBlock* get_waiting_sys_proc() {
- 	//if (kcd_pcb.waitingMessages.head != NULL) return &kcd_pcb;
-	//if (crt_pcb.waitingMessages.head != NULL) return &crt_pcb;
-	//if (clock_pcb.waitingMessages.head != NULL) return &clock_pcb;
-	return NULL;
-}
-
 typedef struct cmd {
 	uint32_t registered_pid;
 	char command_string[MAX_COMMAND_LENGTH] ;
@@ -128,8 +109,6 @@ void keyboard_command_decoder(){
 				   we don't care (also < because we want space for the terminating null)
 				*/
 
-
-
 				if(current_command_length < MAX_COMMAND_LENGTH){
 					//  Put the character we received into the buffer
 					current_command_buffer[current_command_length] = *pChar;
@@ -223,7 +202,6 @@ void crt_display(){
 	}
 }
 
-//TODO: make into user proc
 void wall_clock() {
 	int doCount = 0;
 	int displayClock = 0;
@@ -328,79 +306,6 @@ void wall_clock() {
 }
 
 // --------------------------------------------------------
-
-/*void init_sys_procs() {
-	//int procIndex;
-	int i;
-
-	uint32_t* sp;
-	uint32_t* stacks_start[1];
-
-	ProcessControlBlock* sys_procs[1];	 
-	uint32_t* funcPointers[] = {  
-		(uint32_t*)crt_display,
-		(uint32_t*)keyboard_command_decoder,
-		(uint32_t*)wall_clock
-	};
-
-	//sys_procs[0] = &crt_pcb;
-	//sys_procs[1] = &kcd_pcb;
-	sys_procs[0] = &clock_pcb;
-
-	//stacks_start[0] = CRT_START_STACK;
-	//stacks_start[1] = KCD_START_STACK;
-	stacks_start[0] = CLOCK_START_STACK;
-
-	sys_procs[0]->processId = 0xE;
-	sys_procs[0]->currentState = NEW;
-	sys_procs[0]->waitingMessages.head = NULL;
-	sys_procs[0]->waitingMessages.tail = NULL;
-	sys_procs[0]->processPriority = 0;
-
-	sp = stacks_start[0];
-
-	if (!(((uint32_t)sp) & 0x04)) {
-	    --sp; 
-	}
-													   
-	*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
-
-	// Set the entry point of the process
-	*(--sp) = (uint32_t) (uint32_t*)wall_clock;
-	
-	for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
-		*(--sp) = 0x0;
-	}
-	
-	sys_procs[0]->processStackPointer = sp;
-
-	for (procIndex = 0; procIndex < 3; procIndex++) {
-		int i;
-		sys_procs[procIndex]->processId = 0xC + i;
-		sys_procs[procIndex]->currentState = NEW;
-		sys_procs[procIndex]->waitingMessages.head = NULL;
-		sys_procs[procIndex]->waitingMessages.tail = NULL;
-		sys_procs[procIndex]->processPriority = 0;
-
-		sp = stacks_start[procIndex];
-
-		if (!(((uint32_t)sp) & 0x04)) {
-		    --sp; 
-		}
-														   
-		*(--sp) = INITIAL_xPSR;      // user process initial xPSR  
-	
-		// Set the entry point of the process
-		*(--sp) = (uint32_t) funcPointers[procIndex];
-		
-		for (i = 0; i < 6; i++) { // R0-R3, R12 are cleared with 0
-			*(--sp) = 0x0;
-		}
-		
-		sys_procs[procIndex]->processStackPointer = sp;
-	} 
-
-} */
 
 int get_seconds_from_formatted_time(char *c){
 	int h1 = c[0];	

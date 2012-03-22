@@ -50,7 +50,6 @@ int main(){
 	// Initialize stack and PCB for processes
 	process_init();
 	init_i_processes();
-	//init_sys_procs();
 
 	//  Set up memory
 	init_memory_allocation_table();

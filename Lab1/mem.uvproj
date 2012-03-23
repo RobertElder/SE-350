@@ -476,6 +476,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\hot_keys.c</FilePath>
             </File>
+            <File>
+              <FileName>uart_polling.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\uart_polling.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

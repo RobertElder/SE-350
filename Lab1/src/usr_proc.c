@@ -191,7 +191,6 @@ void test_process_1() {
 	/*
 	//blocking proc at end
 	void* blocks[MAX_ALLOWED_BLOCKS];
-	void* block;
 	int i = 0;
 
 	for (i = 0; i < MAX_ALLOWED_BLOCKS + 1; i++) {
@@ -199,9 +198,8 @@ void test_process_1() {
 		blocks[i] = block;
 	}
 	*/
-
 	assert(unit_tests_passed() && memory_tests_passed(), "Unit tests failed.");
-
+	
 	uart0_put_string("G015_test: START\n\r");
 	actual_run_order[cur_index] = 1;
 	cur_index++;
@@ -249,15 +247,16 @@ void test_process_1() {
 	while(1) {
 	   release_processor();
 	} // run inf
-
+	
 	//assert(0,"Should not reach this point. End of proc 1");
 }
 
 void test_process_2() {
+	
 	int* block;
 	int i = 0;
 	int alloc_bad = 0;
-
+	
 	actual_run_order[cur_index] = 2;
 	cur_index++;
 
@@ -329,19 +328,20 @@ void test_process_2() {
 
 	//should switch to test_proc_1
 	release_processor();
-
+	
 	while(1) {
 	   release_processor();
 	} // run inf
-
+	
 	//assert(0,"Should not reach this point. End of proc 2");
 }
 
 void test_process_3() {
+	
 	int sender_id = 0;
 	Envelope * env_test15;
 	char message_test15;
-
+	
 	int a = 0;
 	int b = 1;
 	int c = 2;
@@ -446,16 +446,17 @@ void test_process_3() {
 	} else {
 		uart0_put_string("G015_test: test 16 FAIL\n\r");
 	}
-
+	
 	while (1) {
 		release_processor();
 	}
 }
 
 void test_process_4() {
-   	int * block;
+   	
+	int * block;
 	int * block2;
-
+	
 	actual_run_order[cur_index++] = 4;
 	release_processor();
 
@@ -531,17 +532,18 @@ void test_process_4() {
 	//actual_run_order[cur_index] = 4;
 	// should get preempted since test_proc_3 has a higher priority
 	set_process_priority(3, 1);
-
+	
 	while(1) {
 	   release_processor();
 	} // run inf
 }
 
 void test_process_5() {
+	
 	void* blocks[MAX_ALLOWED_BLOCKS];
 	void* block;
 	int i = 0;
-
+	
 	actual_run_order[cur_index] = 5;
 	cur_index++;
 
@@ -609,7 +611,7 @@ void test_process_5() {
 	set_process_priority(5, 3);
 	
 	release_processor();
-
+	
 	while(1) {
 	   release_processor();
 	} // run inf
@@ -618,12 +620,20 @@ void test_process_5() {
 }
 
 void test_process_6() {
+	
 	int sender_id = 0;
 	Envelope * env;
 	int delay_time;
 	char message_test15;
 	int test_passed = 1;
 
+	/*
+	//blocking proc at end
+	void* blocks[MAX_ALLOWED_BLOCKS];
+	void* block;
+	int i = 0;
+	*/
+	
 	// STARTING TEST CASE 14 
 	actual_run_order[cur_index++] = 6;
 
@@ -728,6 +738,13 @@ void test_process_6() {
 	release_processor();
 
 	uart0_put_string("G015_test: END\n\r");
+	
+	/*
+	for (i = 0; i < MAX_ALLOWED_BLOCKS + 1; i++) {
+	 	block = request_memory_block();
+		blocks[i] = block;
+	}
+	*/
 
 	while (1) {
 		release_processor();

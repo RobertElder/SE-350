@@ -8,6 +8,7 @@
 #endif // DEBUG_0
 #include "process.h"
 #include "uart.h"
+#include "uart_polling.h"
 #include "timer.h"
 #include "memory.h"
 #include "utils.h" 
@@ -46,7 +47,8 @@ int main(){
 
 	// Initialize UART output
 	timer_init(0);
-	uart0_init();   
+	uart0_init(); 
+	uart0_polling_init();  
 	// Initialize stack and PCB for processes
 	process_init();
 	init_i_processes();

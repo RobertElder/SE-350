@@ -20,7 +20,7 @@
 #define NUM_MESSAGES_TO_TRACK 10
 
 typedef struct env {
-	ListNode node_pointer; // DO NOT USE ME.
+	ListNode node_pointer; 
 	uint32_t sender_pid;
 	uint32_t receiver_pid;
 	uint32_t message_type;

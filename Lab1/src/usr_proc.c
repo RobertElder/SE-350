@@ -771,7 +771,7 @@ void test_proc_A() {
 	uint8_t CMD_SIZE = 4;//bytes
 	char* cmd = "%Z";
 	
-	env = (Envelope *)request_memory_block();	
+	env = (Envelope *)request_memory_block_debug(0xAA);	
 	//Register with command decoder as handler  of %Z commands
 	env->sender_pid = 7;
 	env->receiver_pid = get_kcd_pcb()->processId;
@@ -791,13 +791,14 @@ void test_proc_A() {
 	}
 
 	while(1) {
-	   	env = (Envelope *)request_memory_block();
+	   	env = (Envelope *)request_memory_block_debug(0XAB);
 		set_message_type(env, COUNT_REPORT);
 		message = (char *)&num;
 		set_sender_PID(env, 7);
 		set_destination_PID(env, 8);
 		set_message_bytes(env, message, sizeof(char));
 		send_message(8, env);
+		num = num + 1;
 		release_processor();
 	}
 }
@@ -841,17 +842,17 @@ void test_proc_C() {
 			int i = (int)*msg;
 
 			if (i % 20 == 0) {
-				char * msg_1 = "Process C";
+				char * msg_1 = "Process C \n\r";
+				int msg_length = 13;
 				// send message to CRT
-			 	//message = "Process C";
-				//set_sender_PID(env, 9);
-				//set_destination_PID(env, get_crt_pcb()->processId);
-				//set_message_bytes(env, msg_1, sizeof(char));
-				//send_message(get_crt_pcb()->processId, env);
-				uart0_put_string("Process C");
+				set_sender_PID(env, 9);
+				set_destination_PID(env, get_crt_pcb()->processId);
+				set_message_bytes(env, msg_1, msg_length);
+				send_message(get_crt_pcb()->processId, env);
+				//uart0_put_string_env("Process C \n", env);
 
 				// Hibernate for 10 seconds
-				env_delay = (Envelope *)request_memory_block();
+				env_delay = (Envelope *)request_memory_block_debug(0xCC);
 
 				set_message_type(env_delay, WAKEUP10);
 				message = 'a';
@@ -865,7 +866,7 @@ void test_proc_C() {
 					if (get_message_type(env) == WAKEUP10) {
 						break;
 					} else {
-						ListNode* m_node = &env->dummyVar;
+						ListNode* m_node = &env->node_pointer;
 						m_node->data = env;
 						m_node->next = NULL;
 					 	enqueue(&local_message_queue, m_node);

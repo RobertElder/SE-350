@@ -6,6 +6,8 @@
 
 void irq_handler(irq_type type) {
 
+	assert(pCurrentProcessPCB->currentState != NEW,"A new process has been interrupted.");
+
 	pCurrentProcessPCB->currentState = INTERRUPTED;
 
 	switch (type) {

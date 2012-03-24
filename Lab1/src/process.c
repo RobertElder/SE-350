@@ -237,7 +237,7 @@ void init_processe_table() {
 			case 9: 
 				proc.process = (uint32_t*) wall_clock;
 				proc.pid = 0xE;
-				proc.priority = 0;
+				proc.priority = 1;
 				break;						
 			default:
 				proc.process  = (uint32_t*) nullProc;

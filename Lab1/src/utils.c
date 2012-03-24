@@ -11,6 +11,13 @@ void assert(int value, unsigned char * message){
 	}
 }
 
+unsigned int string_len(char * c){
+	int i = 0;
+	while(c[i]){i++;}
+
+	return i;
+}
+
 unsigned int pow(unsigned int base, unsigned int exponent){
 	// Big surprise we have to write our own pow function
 	if(exponent == 0)
@@ -72,7 +79,7 @@ void print_unsigned_integer(unsigned int i){
 
 void print_signed_integer(signed int i){
 	if(i < 0){
-		uart0_put_string_emergency("-");
+		uart0_put_string("-");
 		print_unsigned_integer((unsigned int)(-i));
 	}else{
 		print_unsigned_integer((unsigned int)i);		

@@ -64,57 +64,53 @@ void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 	uart0_polling_put_string("\r\n-- ");
 	uart0_polling_put_string(queueName);
 	uart0_polling_put_string(" process queues (by priority) --\r\n");
+	uart0_polling_put_string("+================================================+\r\n");
 	for(i = 0; i < NUM_PRIORITIES; i++){
 		ListNode * current_ready_queue_node = linkedListArray[i].head;
-		uart0_polling_put_string("Priority ");
+		uart0_polling_put_string("| Priority ");
 	    print_unsigned_integer(i);
-		uart0_polling_put_string(": \r\n");
-		while(current_ready_queue_node){
-			ProcessControlBlock* currentPCB = current_ready_queue_node->data;
-			uart0_polling_put_string("->  Id: ");
-			print_unsigned_integer(currentPCB->processId);
-			uart0_polling_put_string(" .. State: ");
-			print_unsigned_integer(currentPCB->currentState);
-			uart0_polling_put_string(" .. Priority: ");
-			print_unsigned_integer(currentPCB->processPriority);
-			uart0_polling_put_string("\r\n");
-			current_ready_queue_node = current_ready_queue_node->next;
+		uart0_polling_put_string(" Queue:                              |\r\n");
+		if(current_ready_queue_node){
+			while(current_ready_queue_node){
+				ProcessControlBlock* currentPCB = current_ready_queue_node->data;
+				uart0_polling_put_string("| ->  Id: ");
+				print_unsigned_integer(currentPCB->processId);
+				uart0_polling_put_string(" .. State: ");
+				print_unsigned_integer(currentPCB->currentState);
+				uart0_polling_put_string(" .. Priority: ");
+				print_unsigned_integer(currentPCB->processPriority);
+				uart0_polling_put_string("           |\r\n");
+				current_ready_queue_node = current_ready_queue_node->next;
+			}
+		}else{
+			uart0_polling_put_string("    Queue is empty.                              |\r\n");	
 		}
-		uart0_polling_put_string("\r\n__________________________________________\r\n");
+		uart0_polling_put_string("+================================================+\r\n");
 	}	
 
 }
 
-void do_print_messages() {
+void do_print_messages(Envelope messagesToPrint[],unsigned char * typeName) {
 	int i = 0;
-	uart0_polling_put_string("\n-- Recently sent messages --");
+	uart0_polling_put_string("\n-- Recently ");
+	uart0_polling_put_string(typeName);
+	uart0_polling_put_string(" messages --\r\n");
+	uart0_polling_put_string("+================================================+\r\n");
 	for(i = 0; i < numMessagesSent; ++i) {
-		uart0_polling_put_string("\nSender ID: ");
-		print_unsigned_integer(recentlySentMessages[i].sender_pid);
+		uart0_polling_put_string("|   Sender ID: ");
+		print_unsigned_integer(messagesToPrint[i].sender_pid);
+		uart0_polling_put_string("                                 |\r\n");
 		
-		uart0_polling_put_string("\nReceiver ID: ");
-		print_unsigned_integer(recentlySentMessages[i].receiver_pid);
+		uart0_polling_put_string("|   Receiver ID: ");
+		print_unsigned_integer(messagesToPrint[i].receiver_pid);
+		uart0_polling_put_string("                              |\r\n");
 
-		uart0_polling_put_string("\nMessage type: ");
-		print_unsigned_integer(recentlySentMessages[i].message_type);
+		uart0_polling_put_string("|   Message type: ");
+		print_unsigned_integer(messagesToPrint[i].message_type);
+		uart0_polling_put_string("                              |\r\n");
 
-		uart0_polling_put_string("\n__________________________________________\n");
+		uart0_polling_put_string("+================================================+\r\n");
 	}
-
-	uart0_polling_put_string("\n-- Recently received messages --");
-	for(i = 0; i < numMessagesReceived; ++i) {
-		uart0_polling_put_string("\nSender ID: ");
-		print_unsigned_integer(recentlyReceivedMessages[i].sender_pid);
-		
-		uart0_polling_put_string("\nReceiver ID: ");
-		print_unsigned_integer(recentlyReceivedMessages[i].receiver_pid);
-
-		uart0_polling_put_string("\nMessage type: ");
-		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
-
-	   	uart0_polling_put_string("\n__________________________________________\n");
-	}
-
 }
 
 uint8_t do_hot_key(char c){
@@ -132,14 +128,16 @@ uint8_t do_hot_key(char c){
 			break;
 		}
 		case '~' : {
-			do_print_messages();
+			do_print_messages(recentlySentMessages,"sent");
+			do_print_messages(recentlyReceivedMessages,"received");
 			break;
 		}
 		default: {
 			return 0;
 		}
 	}
-
+	
+	uart0_polling_put_string("Press Enter to continue.");
 	while (1) {
 		char c = uart0_get_char();
 		if (c == 0xD) return 1;

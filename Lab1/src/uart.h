@@ -113,9 +113,7 @@ Reset value 0
      
 
 int uart_init(int n_uart);		// initialize the n_uart
-void uart_send_string( uint32_t len );
-void uart0_put_string(unsigned char *);	
-void uart0_put_string_emergency(unsigned char *);	 
+void uart0_put_string(char *);		 
                                 
 void execute_uart(void);
 

@@ -509,9 +509,9 @@ void test_process_4() {
 	actual_run_order[cur_index++] = 4;
 
 	if (order_checker(cur_index)) {
-		uart0_put_string_emergency("G015_test: test 11 OK\n\r");
+		uart0_put_string("G015_test: test 11 OK\n\r");
 	} else {
-		uart0_put_string_emergency("G015_test: test 11 FAIL\n\r");
+		uart0_put_string("G015_test: test 11 FAIL\n\r");
 	}
 
 	//requested block number 31 - will get blocked
@@ -523,9 +523,9 @@ void test_process_4() {
 	actual_run_order[cur_index++] = 4;
 
 	if (order_checker(cur_index)) {
-		uart0_put_string_emergency("G015_test: test 12 OK\n\r");
+		uart0_put_string("G015_test: test 12 OK\n\r");
 	} else {
-		uart0_put_string_emergency("G015_test: test 12 FAIL\n\r");
+		uart0_put_string("G015_test: test 12 FAIL\n\r");
 	}
 
 	set_process_priority(4, 2);
@@ -569,9 +569,9 @@ void test_process_5() {
 	cur_index++;
 
 	if(order_checker(cur_index)){
-		uart0_put_string_emergency("G015_test: test 9 OK\n\r");
+		uart0_put_string("G015_test: test 9 OK\n\r");
 	} else {
-		uart0_put_string_emergency("G015_test: test 9 FAIL\n\r");
+		uart0_put_string("G015_test: test 9 FAIL\n\r");
 	}
 
 	// test_proc_4 is now of highest priority - but it is blocked - should not preempt here
@@ -581,9 +581,9 @@ void test_process_5() {
 	cur_index++;
 
 	if(order_checker(cur_index)){
-		uart0_put_string_emergency("G015_test: test 10 OK\n\r");
+		uart0_put_string("G015_test: test 10 OK\n\r");
 	} else {
-		uart0_put_string_emergency("G015_test: test 10 FAIL\n\r");
+		uart0_put_string("G015_test: test 10 FAIL\n\r");
 	}
 
 	// should be preempted after release - test_proc_4 has a higher priority

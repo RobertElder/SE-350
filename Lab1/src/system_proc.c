@@ -80,6 +80,7 @@ int get_index_of_matching_command(){
 
 void keyboard_command_decoder(){
 	while (1) {
+		int enter_pressed = 0;
 		int sender_id = -1;
 		int destination = -1;	  
 
@@ -119,6 +120,7 @@ void keyboard_command_decoder(){
 				// Did they type a carriage return?
 				if(*pChar == 0xD){
 					int indexOfMatchedCommand = get_index_of_matching_command();
+					enter_pressed = 1;
 
 					//  Does the thing in the buffer match a command that was registered? 
 					if(indexOfMatchedCommand > -1) {
@@ -141,9 +143,6 @@ void keyboard_command_decoder(){
 					current_command_length++;
 					current_command_buffer[current_command_length] = '\n';
 					current_command_length++;
-			
-					// Reset the buffer for new commands
-					current_command_length = 0;
 
 					set_message_type(clockMsg, UNPAUSE_CLOCK);
 				} else {
@@ -156,6 +155,12 @@ void keyboard_command_decoder(){
 			   	//Null terminate
 				current_command_buffer[current_command_length] = 0;
 	
+				if(enter_pressed) {
+				 	// Reset the buffer for new commands
+					current_command_length = 0;
+					enter_pressed = 0;
+				}
+
 				// edit msg and forward to crt to echo
 				message->sender_pid = get_kcd_pcb()->processId;
 				message->receiver_pid = get_crt_pcb()->processId;
@@ -293,7 +298,8 @@ void wall_clock() {
 						//Start ticking
 						goto start_tick;
 					} else {
-						//Error(?)					 	
+						char* errorMsg = "\r\nInvalid time input\r\n";
+						send_error_message(get_clock_pcb()->processId, errorMsg);				 	
 					}
 				} else if(*(msg + 2) == 'T') {
 					clock_time = 0;
@@ -332,7 +338,8 @@ void priority_process() {
 				int priority;				
 
 				if(!is_pid_valid(pid)) {
-					uart0_put_string("\r\nInvalid process ID\r\n");				 	
+					char * errorMsg = "\r\nInvalid process ID\r\n";
+					send_error_message(get_priority_process_pcb()->processId, errorMsg);
 				} else {
 				 	if(pid < 10) {
 						priority = get_int_from_string(msg + 5 * sizeof(char)); 	
@@ -341,7 +348,8 @@ void priority_process() {
 					}
 
 					if(!is_valid_priority(priority)) {
-					 	uart0_put_string("\r\nInvalid priority\r\n");
+					 	char * errorMsg = "\r\nInvalid priority ID\r\n";
+						send_error_message(get_priority_process_pcb()->processId, errorMsg);
 					} else {
 						set_process_priority(pid, priority);
 					}
@@ -350,6 +358,17 @@ void priority_process() {
 
 		release_memory_block(env);
 	}
+}
+
+void send_error_message(int sender, char* errorMsg) {
+ 	Envelope* errorEnv = (Envelope *)request_memory_block();
+
+	errorEnv->sender_pid = sender;
+	errorEnv->receiver_pid = get_crt_pcb()->processId;
+	errorEnv->message_type = OUTPUT_STRING;
+	set_message_bytes(errorEnv, errorMsg, sizeof(char) * string_len(errorMsg));
+	
+	send_message(errorEnv->receiver_pid, errorEnv);
 }
 
 // --------------------------------------------------------

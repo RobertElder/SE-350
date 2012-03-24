@@ -76,7 +76,7 @@ int k_get_process_priority (int process_ID) {
 // -----------------------------------------------------------------------------------
 
 int is_pid_valid(int process_ID) {
-	return (process_ID < NUM_USR_PROCESSES ||
+	return process_ID > 0 && (process_ID < NUM_USR_PROCESSES ||
 			process_ID == get_crt_pcb()->processId ||
 			process_ID == get_kcd_pcb()->processId ||
 			process_ID == get_uart_pcb()->processId ||
@@ -139,7 +139,7 @@ int is_process_blocked(int processId){
 int is_deadlocked(){
 	int i;
 	//  We don't need to check the null process, pid 0
-	for(i = 1; i < NUM_USR_PROCESSES; i++){
+	for(i = 1; i < NUM_USR_PROCESSES + NUM_SYS_PROCESSES; i++){
 		if(!(is_process_blocked(i))){
 			return 0;
 		}
@@ -151,7 +151,7 @@ int is_deadlocked(){
 int has_blocked_processes(){
 	int i;
 	//  We don't need to check the null process, pid 0
-	for(i = 1; i < NUM_USR_PROCESSES; i++){
+	for(i = 1; i < NUM_USR_PROCESSES + NUM_SYS_PROCESSES; i++){
 		if(is_process_blocked(i)){
 			return 1;
 		}
@@ -171,16 +171,16 @@ uint32_t * get_start_stack(int proc_id){
 	}
 
  	if(proc_id == get_kcd_pcb()->processId)	 
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
 		
 	if(proc_id == get_crt_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;   
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;   
 		
 	if(proc_id == get_clock_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
 
 	if(proc_id == get_priority_process_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
 																	  
 	if(proc_id == get_timer_pcb()->processId)
 		return TIMER_START_STACK;
@@ -413,7 +413,7 @@ ProcessControlBlock* getRunningProcess() {
 	int i;
 	ProcessControlBlock* runningProcess = NULL;
 	//run for all processes; need to make sure no more than 1 process is running
-	for (i = 0; i < NUM_USR_PROCESSES; i++) { 
+	for (i = 0; i < NUM_USR_PROCESSES + NUM_SYS_PROCESSES; i++) { 
 		if (pcb_array[i].currentState == RUN){
 			assert(runningProcess == NULL, "Error: multiple processes with state RUN.");
 			runningProcess = &pcb_array[i];	
@@ -463,7 +463,19 @@ __asm void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlo
 	POP{r0-r11, pc}
 } 
 
+int has_stack_overflow(uint32_t * p, int processId){
+	/*  The stack grows down so if the sp is lower than the start of the previous stack there is a problem */
+	return p <= get_start_stack(processId) - (STACKS_SIZE/ sizeof(int));
+}
+
+
+int has_stack_underflow(uint32_t * p, int processId){
+	/*  The stack grows down so if the sp is before the start stack there was an underflow */
+	return p > get_start_stack(processId);
+}
+
 void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
+	uint32_t * tmpMSP = 0;
 	pCurrentProcessPCB = pNewProcessPCB;
 
 	if (pCurrentProcessPCB == pOldProcessPCB) {
@@ -509,6 +521,14 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		/* Don't save the MSP if the process is NEW because it was not running,
 		 so there should be nowhere it sensibly returns to	 */
 		if (pOldProcessPCB->currentState != NEW) {
+			uint32_t * tmpMSP1 = get_start_stack(pOldProcessPCB->processId);
+			tmpMSP = (uint32_t *)__get_MSP();
+			if(has_stack_underflow(tmpMSP,pOldProcessPCB->processId)) {
+				 	assert(0, "Old process has stack underflow."); 
+			}
+			if(has_stack_overflow(tmpMSP,pOldProcessPCB->processId)) {
+				 	assert(0, "Old process has stack overflow."); 
+			}
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		}
 		goto set_up_new_process;
@@ -530,15 +550,15 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_to_run_and_exit;
 	save_old_and_set_new_MSP:
-		//TODO: will remove later, added for debug purposes
-		if(!( (uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
-			(uint32_t *) __get_MSP() > get_start_stack(pOldProcessPCB->processId) - (STACKS_SIZE/ sizeof(int)) )) {
-			 	assert(0, "Process has stack overflow."); 
-			}
-		assert((
-			(uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
-			(uint32_t *) __get_MSP() > get_start_stack(pOldProcessPCB->processId) - (STACKS_SIZE/ sizeof(int))
-		),"Process has stack overflow.");
+		// Put this in a tmp valariable because calling getmsp as a fcn param might have unexpected consequences
+		tmpMSP = (uint32_t *)__get_MSP();
+		if(has_stack_underflow(tmpMSP,pOldProcessPCB->processId)) {
+			 	assert(0, "Old process has stack underflow."); 
+		}
+		if(has_stack_overflow(tmpMSP,pOldProcessPCB->processId)) {
+			 	assert(0, "Old process has stack overflow."); 
+		}
+
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 		goto exit;

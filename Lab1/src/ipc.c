@@ -67,7 +67,7 @@ void trackReceivedMessage(Envelope * env) {
 // ------------------------------------------------------------
 int k_send_message(int target_pid, void* envelope) {
 	Envelope* env = (Envelope*) envelope;
-	ListNode* node = &env->dummyVar;
+	ListNode* node = &env->node_pointer;
 	ProcessControlBlock* targetProcess = get_process_pointer_from_id(target_pid);
 
 	if (env->sender_pid == NULL) {

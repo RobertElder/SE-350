@@ -332,7 +332,8 @@ void priority_process() {
 				int priority;				
 
 				if(!is_pid_valid(pid)) {
-					uart0_put_string("\r\nInvalid process ID\r\n");				 	
+					char * errorMsg = "\r\nInvalid process ID\r\n";
+					send_error_message(get_priority_process_pcb()->processId, errorMsg);
 				} else {
 				 	if(pid < 10) {
 						priority = get_int_from_string(msg + 5 * sizeof(char)); 	
@@ -341,7 +342,8 @@ void priority_process() {
 					}
 
 					if(!is_valid_priority(priority)) {
-					 	uart0_put_string("\r\nInvalid priority\r\n");
+					 	char * errorMsg = "\r\nInvalid priority ID\r\n";
+						send_error_message(get_priority_process_pcb()->processId, errorMsg);
 					} else {
 						set_process_priority(pid, priority);
 					}
@@ -350,6 +352,17 @@ void priority_process() {
 
 		release_memory_block(env);
 	}
+}
+
+void send_error_message(int sender, char* errorMsg) {
+ 	Envelope* errorEnv = (Envelope *)request_memory_block();
+
+	errorEnv->sender_pid = sender;
+	errorEnv->receiver_pid = get_crt_pcb()->processId;
+	errorEnv->message_type = OUTPUT_STRING;
+	set_message_bytes(errorEnv, errorMsg, sizeof(char) * string_len(errorMsg));
+	
+	send_message(errorEnv->receiver_pid, errorEnv);
 }
 
 // --------------------------------------------------------

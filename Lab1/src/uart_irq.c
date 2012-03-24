@@ -9,6 +9,7 @@
 #include "iprocess.h"
 #include "process.h"
 #include "hot_keys.h"
+#include "utils.h"
 
 volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
@@ -209,14 +210,7 @@ void uart_send_string(uint32_t len){
     return;
 }
 
-int string_len(unsigned char * c){
-	int i = 0;
-	while(c[i]){i++;}
-
-	return i;
-}
-
-void uart0_put_string_emergency(unsigned char * c){
+void uart0_put_string_emergency(char * c){
 	//  Needs to be able to handle string longer than the buffer size
 	int totalStringLen = string_len(c);
 	int lenSoFar = 0;
@@ -242,7 +236,7 @@ void uart0_put_string_emergency(unsigned char * c){
 	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable IER_Receive_Data_Available
 }
 
-void uart0_put_string(unsigned char * c){
+void uart0_put_string(char * c){
 	//  Needs to be able to handle string longer than the buffer size
 	int totalStringLen = string_len(c);
 	int lenSoFar = 0;

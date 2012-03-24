@@ -11,6 +11,13 @@ void assert(int value, unsigned char * message){
 	}
 }
 
+unsigned int string_len(char * c){
+	int i = 0;
+	while(c[i]){i++;}
+
+	return i;
+}
+
 unsigned int pow(unsigned int base, unsigned int exponent){
 	// Big surprise we have to write our own pow function
 	if(exponent == 0)

@@ -76,7 +76,7 @@ int k_get_process_priority (int process_ID) {
 // -----------------------------------------------------------------------------------
 
 int is_pid_valid(int process_ID) {
-	return (process_ID < NUM_USR_PROCESSES ||
+	return process_ID > 0 && (process_ID < NUM_USR_PROCESSES ||
 			process_ID == get_crt_pcb()->processId ||
 			process_ID == get_kcd_pcb()->processId ||
 			process_ID == get_uart_pcb()->processId ||

@@ -10,13 +10,14 @@
 #include "process.h"
 #include "hot_keys.h"
 #include "utils.h"
+#include "uart_polling.h"
 
 volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
 volatile uint32_t g_UART0_count = 0;
 
 int i = 0;
-char buffer[100];
+unsigned char buffer[100];
 
 /**
  * @brief: initialize the n_uart
@@ -158,13 +159,20 @@ void execute_uart() {
 
 		hot_key_exec = do_hot_key(*buffer);
 		if (hot_key_exec == 0) {
-			// If we have space, parse and echo the buffer contents
-			message = k_request_memory_block();
-			message->sender_pid = get_uart_pcb()->processId;
-			message->receiver_pid = get_kcd_pcb()->processId;
-			message->message_type = KEYBOARD_INPUT;
-			set_message_bytes(message, buffer, 2);
-			k_send_message(message->receiver_pid, message);
+			/* If we have space, parse and echo the buffer contents
+			Sending the messages takes 2 blocks so we need at least that many
+			*/
+			if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS -1){
+				message = k_request_memory_block();
+				message->sender_pid = get_uart_pcb()->processId;
+				message->receiver_pid = get_kcd_pcb()->processId;
+				message->message_type = KEYBOARD_INPUT;
+				set_message_bytes(message, buffer, 2);
+				k_send_message(message->receiver_pid, message);
+			}else{
+				// Otherwise just use polling since we have no choice
+				uart0_polling_put_string(buffer);
+			}
 		}
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;

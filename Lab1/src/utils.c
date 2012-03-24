@@ -79,7 +79,7 @@ void print_unsigned_integer(unsigned int i){
 
 void print_signed_integer(signed int i){
 	if(i < 0){
-		uart0_put_string_emergency("-");
+		uart0_put_string("-");
 		print_unsigned_integer((unsigned int)(-i));
 	}else{
 		print_unsigned_integer((unsigned int)i);		

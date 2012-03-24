@@ -202,48 +202,6 @@ void execute_uart() {
 	}
 }
 
-void uart_send_string(uint32_t len){
-    LPC_UART_TypeDef *pUart = (LPC_UART_TypeDef *) LPC_UART0;
-	uint8_t *p_buffer =(uint8_t *)g_UART0_buffer;
-
-    while ( len != 0 ) {
-	    // THRE status, contain valid data  
-	    while ( !(g_UART0_TX_empty & 0x01) );
-		//  Setting this value makes the interrupt fire at a later time	
-	    pUart->THR = *p_buffer;
-		g_UART0_TX_empty = 0;  // not empty in the THR until it shifts out
-	    p_buffer++;
-	    len--;
-    }
-    return;
-}
-
-void uart0_put_string_emergency(char * c){
-	//  Needs to be able to handle string longer than the buffer size
-	int totalStringLen = string_len(c);
-	int lenSoFar = 0;
-	int nextOutOfBoundsIndex = 0;
-	int currentBufferPos = 0;
-	int i = 0;
-
-	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status;	// Disable IER_Receive_Data_Available 
-	while(lenSoFar < totalStringLen){
-		nextOutOfBoundsIndex = lenSoFar + BUFSIZE > totalStringLen ? totalStringLen : lenSoFar + BUFSIZE;
-		currentBufferPos = 0;																																	 
-
-		for(i = lenSoFar; i < nextOutOfBoundsIndex; i++){
-			g_UART0_buffer[currentBufferPos] = c[i];
-			g_UART0_count++;
-			currentBufferPos++;
-		}
-		uart_send_string( g_UART0_count );
-		g_UART0_count = 0;
-		// We have advanced at most one buffersize in the string
-		lenSoFar += BUFSIZE;
-	}
-	LPC_UART0->IER = IER_THR_Empty | IER_Receive_Line_Status | IER_Receive_Data_Available;	// Re-enable IER_Receive_Data_Available
-}
-
 void uart0_put_string(char * c){
 	//  Needs to be able to handle string longer than the buffer size
 	int totalStringLen = string_len(c);
@@ -265,18 +223,21 @@ void uart0_put_string(char * c){
 		g_UART0_buffer[currentBufferPos] = 0;
 		g_UART0_count++;
 
-		message = k_request_memory_block_debug(0xfe);
-		message->sender_pid = pCurrentProcessPCB->processId;
-		message->receiver_pid = get_crt_pcb()->processId;
-		message->message_type = OUTPUT_STRING;
-		set_message_bytes(message, &g_UART0_buffer, g_UART0_count);
-		k_send_message(message->receiver_pid, message);
+		if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS -1){
+			message = k_request_memory_block_debug(0xfe);
+			message->sender_pid = pCurrentProcessPCB->processId;
+			message->receiver_pid = get_crt_pcb()->processId;
+			message->message_type = OUTPUT_STRING;
+			set_message_bytes(message, &g_UART0_buffer, g_UART0_count);
+			k_send_message(message->receiver_pid, message);
+		}else{
+			uart0_polling_put_string((unsigned char *)&g_UART0_buffer);
+		}
 
 		g_UART0_count = 0;
 		// We have advanced at most one buffersize in the string
 		lenSoFar += BUFSIZE;
 	}
-
 }
 
 

@@ -77,8 +77,6 @@ int k_send_message(int target_pid, void* envelope) {
 	if (env->receiver_pid == NULL) {
 		env->receiver_pid = target_pid;
 	}
-	
-	// TODO set some message
 
 	//add envelope to the message queue of Target Process
 	node->data = env;

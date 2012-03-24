@@ -65,17 +65,6 @@ expiry_sorted_enqueue_error_check:
 
 int k_delayed_send(int pid, Envelope * envelope, int delay) {
 	DelayedMessage m;
-	/* TODO	Figure out how the hell all this message passing works
-		The block below that is allocated, never gets de-allocated
-		which is why we fail with out of memory problems, since we
-		allocate one extra block for every character typed.
-
-		It looks like the concepts of memory blocks, enveolpes, nodes
-		ListNotes and DelayedMessages are being confused which is 
-		resulting in circular references in some places.  Check  
-		all the message functions and re-factor them into to use 
-		consistent data structures properly. 
-	*/
 	Envelope * env = (Envelope *)k_request_memory_block();
 
 	m.pid = pid;

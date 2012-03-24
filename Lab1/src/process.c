@@ -451,7 +451,19 @@ __asm void context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlo
 	POP{r0-r11, pc}
 } 
 
+int has_stack_overflow(uint32_t * p, int processId){
+	/*  The stack grows down so if the sp is lower than the start of the previous stack there is a problem */
+	return p <= get_start_stack(processId) - (STACKS_SIZE/ sizeof(int));
+}
+
+
+int has_stack_underflow(uint32_t * p, int processId){
+	/*  The stack grows down so if the sp is before the start stack there was an underflow */
+	return p > get_start_stack(processId);
+}
+
 void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
+	uint32_t * tmpMSP = 0;
 	pCurrentProcessPCB = pNewProcessPCB;
 
 	if (pCurrentProcessPCB == pOldProcessPCB) {
@@ -518,15 +530,15 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_to_run_and_exit;
 	save_old_and_set_new_MSP:
-		//TODO: will remove later, added for debug purposes
-		if(!( (uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
-			(uint32_t *) __get_MSP() > get_start_stack(pOldProcessPCB->processId) - (STACKS_SIZE/ sizeof(int)) )) {
-			 	assert(0, "Process has stack overflow."); 
-			}
-		assert((
-			(uint32_t *) __get_MSP() <= get_start_stack(pOldProcessPCB->processId) &&
-			(uint32_t *) __get_MSP() > get_start_stack(pOldProcessPCB->processId) - (STACKS_SIZE/ sizeof(int))
-		),"Process has stack overflow.");
+		// Put this in a tmp valariable because calling getmsp as a fcn param might have unexpected consequences
+		tmpMSP = (uint32_t *)__get_MSP();
+		if(has_stack_underflow(tmpMSP,pOldProcessPCB->processId)) {
+			 	assert(0, "Old process has stack underflow."); 
+		}
+		if(has_stack_overflow(tmpMSP,pOldProcessPCB->processId)) {
+			 	assert(0, "Old process has stack overflow."); 
+		}
+
 		pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 		goto exit;

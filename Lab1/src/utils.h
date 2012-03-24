@@ -14,6 +14,7 @@ void printDigit(unsigned int);
 void print_unsigned_integer(unsigned int);
 void print_signed_integer(signed int);
 
+int myatoi(const char *string);
 
 #endif
 

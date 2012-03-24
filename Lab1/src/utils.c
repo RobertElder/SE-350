@@ -78,3 +78,16 @@ void print_signed_integer(signed int i){
 		print_unsigned_integer((unsigned int)i);		
 	}
 }
+
+int myatoi(const char *string)
+{
+	int i;
+	i=0;
+	while(*string)
+	{
+		i = (i<<3) + (i<<1) + (*string - '0');
+		string++;
+		// Dont increment i!
+	}
+	return i;
+}

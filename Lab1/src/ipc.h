@@ -14,6 +14,8 @@
 #define CLOCK_TICK 9
 #define PAUSE_CLOCK 10
 #define UNPAUSE_CLOCK 11
+#define COUNT_REPORT 12
+#define WAKEUP10 13
 
 #define NUM_MESSAGES_TO_TRACK 10
 

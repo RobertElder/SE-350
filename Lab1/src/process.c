@@ -114,7 +114,7 @@ ListNode* get_node_of_process(int process_ID) {
 	ListNode *node = (process_ID > NUM_USR_PROCESSES - 1) ? NULL : &node_array[process_ID];
 
 	if(node == NULL && is_sys_proc(process_ID))	 
-		node = &node_array[process_ID - USR_SYS_ID_DIFF + 1];	 // +1 since null proc is part of the array   
+		node = &node_array[process_ID - USR_SYS_ID_DIFF];	 // +1 since null proc is part of the array   
 
 	assert(node != NULL, "ERROR: process does not have a list node");
 	assert(((ProcessControlBlock*)node->data)->processId == process_ID, 
@@ -240,21 +240,33 @@ void init_processe_table() {
 				proc.process  = (uint32_t*) test_process_6;
 				break;
 			case 7:
+				proc.process  = (uint32_t*) test_proc_A;
+				proc.priority = 3;
+				break;
+			case 8:
+				proc.process  = (uint32_t*) test_proc_B;
+				proc.priority = 3;
+				break;
+			case 9:
+				proc.process  = (uint32_t*) test_proc_C;
+				proc.priority = 3;
+				break;
+			case 10:
 				proc.process = (uint32_t*) crt_display;
 				proc.pid  = 0xC;
 				proc.priority = 0;
 				break;
-			case 8:
+			case 11:
 				proc.process = (uint32_t*) keyboard_command_decoder;
 				proc.pid  = 0xD;
 				proc.priority = 0;
 				break;
-			case 9: 
+			case 12: 
 				proc.process = (uint32_t*) wall_clock;
 				proc.pid = 0xE;
 				proc.priority = 1;
 				break;	
-			case 10: 
+			case 13: 
 				proc.process = (uint32_t*) priority_process;
 				proc.pid = 0xF;
 				proc.priority = 1;

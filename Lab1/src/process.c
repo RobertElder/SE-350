@@ -75,6 +75,17 @@ int k_get_process_priority (int process_ID) {
 
 // -----------------------------------------------------------------------------------
 
+int is_pid_valid(int process_ID) {
+	return (process_ID < NUM_USR_PROCESSES ||
+			process_ID == get_crt_pcb()->processId ||
+			process_ID == get_kcd_pcb()->processId ||
+			process_ID == get_uart_pcb()->processId ||
+			process_ID == get_timer_pcb()->processId ||
+			process_ID == get_clock_pcb()->processId||
+			process_ID == get_priority_process_pcb()->processId);
+
+}
+
 
 ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 	if (process_ID < NUM_USR_PROCESSES) {
@@ -85,6 +96,7 @@ ProcessControlBlock * get_process_pointer_from_id(int process_ID) {
 		if (process_ID == get_uart_pcb()->processId) return get_uart_pcb();
 		if (process_ID == get_timer_pcb()->processId) return get_timer_pcb();
 		if (process_ID == get_clock_pcb()->processId) return get_clock_pcb();
+		if (process_ID == get_priority_process_pcb()->processId) return get_priority_process_pcb();
 		assert(0,"error invalid process id.");
 		return NULL;
 	}
@@ -116,7 +128,7 @@ int is_usr_proc(int process_id) {
 }
 
 uint8_t is_sys_proc(int proc_id) {
- 	return proc_id == get_kcd_pcb()->processId || proc_id == get_crt_pcb()->processId || proc_id == get_clock_pcb()->processId;
+ 	return proc_id == get_kcd_pcb()->processId || proc_id == get_crt_pcb()->processId || proc_id == get_clock_pcb()->processId || proc_id == get_priority_process_pcb()->processId;
 }
 
 int is_process_blocked(int processId){
@@ -165,6 +177,9 @@ uint32_t * get_start_stack(int proc_id){
 		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;   
 		
 	if(proc_id == get_clock_pcb()->processId)
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
+
+	if(proc_id == get_priority_process_pcb()->processId)
 		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
 																	  
 	if(proc_id == get_timer_pcb()->processId)
@@ -237,6 +252,11 @@ void init_processe_table() {
 			case 9: 
 				proc.process = (uint32_t*) wall_clock;
 				proc.pid = 0xE;
+				proc.priority = 0;
+				break;	
+			case 10: 
+				proc.process = (uint32_t*) priority_process;
+				proc.pid = 0xF;
 				proc.priority = 0;
 				break;						
 			default:
@@ -325,6 +345,10 @@ ProcessControlBlock* get_kcd_pcb() {
 
 ProcessControlBlock* get_clock_pcb() {
 	return &pcb_array[NUM_USR_PROCESSES + 2];
+}
+	 
+ProcessControlBlock* get_priority_process_pcb() {
+	return &pcb_array[NUM_USR_PROCESSES + 3];
 }
 
 // --------------------------------------------------------------------------------------

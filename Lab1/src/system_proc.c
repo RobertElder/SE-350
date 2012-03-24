@@ -135,6 +135,10 @@ void keyboard_command_decoder(){
 
 						send_message(registeredCommand->registered_pid, responseEnvelope); //to registered process
 					}
+
+					//Append a newline
+					current_command_buffer[current_command_length] = '\n';
+					current_command_length++;
 			
 					// Reset the buffer for new commands
 					current_command_length = 0;
@@ -305,7 +309,72 @@ void wall_clock() {
 	}
 }
 
+void priority_process() {
+	Envelope* env = (Envelope*)request_memory_block();
+	uint8_t CMD_SIZE = 4;//bytes
+	char* cmd = "%C";
+	int sender_id = 0;
+
+	env->sender_pid = get_priority_process_pcb()->processId;
+	env->receiver_pid = get_kcd_pcb()->processId;
+	env->message_type = COMMAND_REGISTRATION;
+	set_message_bytes(env, cmd, CMD_SIZE);
+	send_message(env->receiver_pid, env);
+
+	while(1) {
+		Envelope * env = (Envelope *)receive_message(&sender_id);
+		if(env->message_type == COMMAND_MATCHED) {
+
+				char* msg = get_message_data(env);
+				int pid = get_int_from_string(msg + 3 * sizeof(char));
+				int priority;				
+
+				if(!is_pid_valid(pid)) {
+					uart0_put_string("\nInvalid process ID\n");				 	
+				} else {
+				 	if(pid < 10) {
+						priority = get_int_from_string(msg + 5 * sizeof(char)); 	
+					} else {
+						priority = get_int_from_string(msg + 6 * sizeof(char));	
+					}
+
+					if(!is_valid_priority(priority)) {
+					 	uart0_put_string("\nInvalid priority\n");
+					} else {
+						set_process_priority(pid, priority);
+					}
+				}
+		}
+
+		release_memory_block(env);
+	}
+}
+
 // --------------------------------------------------------
+
+int get_int_from_string(char *str) {
+	int i = 0;
+	int x = 0;
+	int temp = str[0];
+
+	//Check for end of string (NUL, CR, or SPACE)
+	if(temp == 0 || temp == 0xD || temp == 0x20) {
+	 	return -1;
+	}
+
+	while(!(temp == 0 || temp == 0xD || temp == 0x20)) {	
+		temp = str[i] - 0x30;
+
+		if(temp > 9 || temp < 0) {
+		 	return -1;
+		}
+
+		x += temp;
+		temp = str[++i];
+	}
+
+	return x;
+}
 
 int get_seconds_from_formatted_time(char *c){
 	int h1 = c[0];	
@@ -321,11 +390,11 @@ int get_seconds_from_formatted_time(char *c){
 	}
 
 	//check between 0-9
-	if(h1 < 0x30 || h1 > 0x39
+	if(h1 < 0x30 || h1 > 0x32
 		|| h2 < 0x30 || h2 > 0x39
-		|| m1 < 0x30 || m1 > 0x39
+		|| m1 < 0x30 || m1 > 0x36
 		|| m2 < 0x30 || m2 > 0x39
-		|| s1 < 0x30 || s1 > 0x39
+		|| s1 < 0x30 || s1 > 0x36
 		|| s2 < 0x30 || s2 > 0x39) {
 
 		return -1;

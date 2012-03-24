@@ -56,6 +56,8 @@ extern ProcessControlBlock * pCurrentProcessPCB;  // always point to the current
 // -----------------------------------------------------
 // Public routines
 // -----------------------------------------------------
+int is_pid_valid(int process_ID);
+int is_valid_priority(int priority);
 int is_ready_or_new(proc_state_t state );
 int is_usr_proc(int process_id);
 uint8_t is_i_proc(int proc_id);
@@ -87,6 +89,7 @@ ProcessControlBlock* getRunningProcess(void); //Gets a running process from all 
 ProcessControlBlock* get_kcd_pcb(void);
 ProcessControlBlock* get_crt_pcb(void);
 ProcessControlBlock* get_clock_pcb(void);
+ProcessControlBlock* get_priority_process_pcb(void);
 
 // ------------------------------------------------------
 // External routines
@@ -104,7 +107,7 @@ extern void test_process_6 (void);
 extern void crt_display (void);
 extern void keyboard_command_decoder (void);
 extern void wall_clock (void);
-
+extern void priority_process (void);
 extern void nullProc(void);				// null process
 
 #endif // ! _PROCESS_H_

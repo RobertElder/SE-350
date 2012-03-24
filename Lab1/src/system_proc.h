@@ -12,6 +12,7 @@
 #include "rtx.h"
 
 int get_seconds_from_formatted_time(char *);
+int get_int_from_string(char *);
 char* get_formatted_time_from_seconds(int);
 void register_command(char * s, int process_id);
 void unregister_all_commands(void);
@@ -22,6 +23,7 @@ ProcessControlBlock* get_waiting_sys_proc(void);
 void keyboard_command_decoder(void);
 void crt_display(void);
 void wall_clock(void);
+void priority_process(void);
 //----------
 
 //void init_sys_procs(void);

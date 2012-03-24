@@ -1,11 +1,11 @@
 #include "system_proc.h"
 #include "rtx.h"
-#include "uart.h"
 #include "utils.h"
 #include "memory.h"
 #include "process.h"
 #include "hot_keys.h"
 #include "ipc.h"
+#include "uart_polling.h"
 
 /*
   As well, the UART i-process is used to provide debugging services which will be used during the demonstration. Upon receiving
@@ -61,63 +61,63 @@ typedef struct pcb {
 */
 void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 	int i = 0;
-	uart0_put_string_emergency("\n-- ");
-	uart0_put_string_emergency(queueName);
-	uart0_put_string_emergency(" process queues (by priority) --\r\n");
+	uart0_polling_put_string("\n-- ");
+	uart0_polling_put_string(queueName);
+	uart0_polling_put_string(" process queues (by priority) --\r\n");
 	for(i = 0; i < NUM_PRIORITIES; i++){
 		ListNode * current_ready_queue_node = linkedListArray[i].head;
-		uart0_put_string_emergency("Priority ");
+		uart0_polling_put_string("Priority ");
 	    print_unsigned_integer(i);
-		uart0_put_string_emergency("->  ");
+		uart0_polling_put_string("->  ");
 		while(current_ready_queue_node){
 			ProcessControlBlock* currentPCB = current_ready_queue_node->data;
-			uart0_put_string_emergency("Id: ");
+			uart0_polling_put_string("Id: ");
 			print_unsigned_integer(currentPCB->processId);
-			uart0_put_string_emergency(" .. State: ");
+			uart0_polling_put_string(" .. State: ");
 			print_unsigned_integer(currentPCB->currentState);
-			uart0_put_string_emergency(" .. Priority: ");
+			uart0_polling_put_string(" .. Priority: ");
 			print_unsigned_integer(currentPCB->processPriority);
-			uart0_put_string_emergency(" || ");
+			uart0_polling_put_string(" || ");
 			current_ready_queue_node = current_ready_queue_node->next;
 		}
-		uart0_put_string_emergency("\r\n__________________________________________\r\n");
+		uart0_polling_put_string("\r\n__________________________________________\r\n");
 	}	
 
 }
 
 void do_print_messages() {
 	int i = 0;
-	uart0_put_string_emergency("\n-- Recently sent messages --");
+	uart0_polling_put_string("\n-- Recently sent messages --");
 	for(i = 0; i < numMessagesSent; ++i) {
-		uart0_put_string_emergency("\nSender ID: ");
+		uart0_polling_put_string("\nSender ID: ");
 		print_unsigned_integer(recentlySentMessages[i].sender_pid);
 		
-		uart0_put_string_emergency("\nReceiver ID: ");
+		uart0_polling_put_string("\nReceiver ID: ");
 		print_unsigned_integer(recentlySentMessages[i].receiver_pid);
 
-		uart0_put_string_emergency("\nMessage type: ");
+		uart0_polling_put_string("\nMessage type: ");
 		print_unsigned_integer(recentlySentMessages[i].message_type);
 
-		uart0_put_string_emergency("\n__________________________________________\n");
+		uart0_polling_put_string("\n__________________________________________\n");
 	}
 
-	uart0_put_string_emergency("\n-- Recently received messages --");
+	uart0_polling_put_string("\n-- Recently received messages --");
 	for(i = 0; i < numMessagesReceived; ++i) {
-		uart0_put_string_emergency("\nSender ID: ");
+		uart0_polling_put_string("\nSender ID: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].sender_pid);
 		
-		uart0_put_string_emergency("\nReceiver ID: ");
+		uart0_polling_put_string("\nReceiver ID: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].receiver_pid);
 
-		uart0_put_string_emergency("\nMessage type: ");
+		uart0_polling_put_string("\nMessage type: ");
 		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
 
-	   	uart0_put_string_emergency("\n__________________________________________\n");
+	   	uart0_polling_put_string("\n__________________________________________\n");
 	}
 
 }
 
-void do_hot_key(char c){
+uint8_t do_hot_key(char c){
 	#ifdef _DEBUG_HOTKEYS
 	switch(c){
 
@@ -136,9 +136,15 @@ void do_hot_key(char c){
 			break;
 		}
 		default: {
-			return;
-
+			return 0;
 		}
 	}
+
+	while (1) {
+		char c = uart0_get_char();
+		if (c == 0xD) return 1;
+	}
+	#else
+		return 0;
 	#endif
 }

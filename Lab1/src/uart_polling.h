@@ -30,7 +30,7 @@
 #define uart0_polling_init()   	uart_polling_init(0)	
 #define uart0_get_char()		uart_get_char(0)
 #define uart0_put_char(c)   	uart_put_char(0,c)
-#define uart0_put_string(s) 	uart_put_string(0,s)
+#define uart0_polling_put_string(s) 	uart_polling_put_string(0,s)
 
 #define uart1_init()        uart_init(1)	
 #define uart1_get_char()	uart_get_char(1)
@@ -40,6 +40,6 @@
 int uart_polling_init(int n_uart);		// initialize the n_uart
 int uart_get_char(int n_uart); 	// read a char from the n_uart
 int uart_put_char(int n_uart, unsigned char c);	// write a char to the n_uart
-int uart_put_string(int n_uart, unsigned char *s);
+int uart_polling_put_string(int n_uart, unsigned char *s);
 
 #endif // ! _UART_POLLING_H_

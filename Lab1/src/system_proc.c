@@ -115,7 +115,7 @@ void keyboard_command_decoder(){
 					current_command_length++;
 				}
 
-				do_hot_key(*pChar);
+				//do_hot_key(*pChar);
 				// Did they type a carriage return?
 				if(*pChar == 0xD){
 					int indexOfMatchedCommand = get_index_of_matching_command();

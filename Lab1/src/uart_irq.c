@@ -8,6 +8,7 @@
 #include "system_proc.h"
 #include "iprocess.h"
 #include "process.h"
+#include "hot_keys.h"
 
 volatile uint8_t g_UART0_TX_empty=1;
 volatile uint8_t g_UART0_buffer[BUFSIZE];
@@ -146,6 +147,7 @@ void execute_uart() {
 
 	if (IIR_IntId & IIR_Receive_Data_Available) {  // Receive Data Available
 		 Envelope * message = 0;
+		 int hot_key_exec = 0;
 		// Note: read RBR will clear the interrupt
 		c =   pUart->RBR; // read from the uart
 
@@ -153,14 +155,16 @@ void execute_uart() {
 		i++;
 		buffer[1] = 0;
 
-
+		hot_key_exec = do_hot_key(*buffer);
+		if (hot_key_exec == 0) {
 			// If we have space, parse and echo the buffer contents
-		message = k_request_memory_block();
-		message->sender_pid = get_uart_pcb()->processId;
-		message->receiver_pid = get_kcd_pcb()->processId;
-		message->message_type = KEYBOARD_INPUT;
-		set_message_bytes(message, &buffer, 2);
-		k_send_message(message->receiver_pid, message);
+			message = k_request_memory_block();
+			message->sender_pid = get_uart_pcb()->processId;
+			message->receiver_pid = get_kcd_pcb()->processId;
+			message->message_type = KEYBOARD_INPUT;
+			set_message_bytes(message, buffer, 2);
+			k_send_message(message->receiver_pid, message);
+		}
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty
 	    LSR_Val = pUart->LSR;
 	    if(LSR_Val & LSR_THR_Empty) {

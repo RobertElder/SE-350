@@ -13,6 +13,7 @@ unsigned int get_random(void);
 void printDigit(unsigned int);
 void print_unsigned_integer(unsigned int);
 void print_signed_integer(signed int);
+unsigned int string_len(char * c);
 
 
 #endif

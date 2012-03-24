@@ -16,6 +16,7 @@ int get_int_from_string(char *);
 char* get_formatted_time_from_seconds(int);
 void register_command(char * s, int process_id);
 void unregister_all_commands(void);
+void send_error_message(int sender, char* message);
 
 ProcessControlBlock* get_waiting_sys_proc(void);
 

@@ -83,7 +83,7 @@ void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 				current_ready_queue_node = current_ready_queue_node->next;
 			}
 		}else{
-			uart0_polling_put_string("    Queue is empty.                              |\r\n");	
+			uart0_polling_put_string("|   Queue is empty.                              |\r\n");	
 		}
 		uart0_polling_put_string("+================================================+\r\n");
 	}	

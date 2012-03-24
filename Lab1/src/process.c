@@ -171,16 +171,16 @@ uint32_t * get_start_stack(int proc_id){
 	}
 
  	if(proc_id == get_kcd_pcb()->processId)	 
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
 		
 	if(proc_id == get_crt_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;   
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;   
 		
 	if(proc_id == get_clock_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
 
 	if(proc_id == get_priority_process_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
 																	  
 	if(proc_id == get_timer_pcb()->processId)
 		return TIMER_START_STACK;

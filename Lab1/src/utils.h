@@ -11,7 +11,9 @@ unsigned int pow(unsigned int, unsigned int);
 unsigned int get_random(void);
 
 void printDigit(unsigned int);
+void print_printable_character(unsigned char);
 void print_unsigned_integer(unsigned int);
+void print_hex_byte(unsigned int);
 void print_signed_integer(signed int);
 unsigned int string_len(char * c);
 

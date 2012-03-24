@@ -46,6 +46,75 @@ void printDigit(unsigned int i){
 	uart0_polling_put_string(&(digits[i]));
 }
 
+void printHexDigit(unsigned int i){
+	unsigned char digits[] = "0123456789ABCDEF";
+	assert(i < 16, "This should not happen");
+	//Put a null after the digit we want so that we only print that digit
+	digits[i+1] = 0;
+	uart0_polling_put_string(&(digits[i]));
+}
+
+void print_printable_character(unsigned char c){
+	unsigned char b[3];
+	if(
+		c > 31 && c < 127 ||
+		c == 20
+		){
+		b[0] = c;
+		b[1] = 32;
+		b[2] = 0;
+	}else if(c == 0){
+		b[0] = 92;
+		b[1] = 48;
+		b[2] = 0;
+	}else if(c == 10){
+		b[0] = 92;
+		b[1] = 110;
+		b[2] = 0;
+	}else if(c == 13){
+		b[0] = 92;
+		b[1] = 114;
+		b[2] = 0;
+	}else{
+		b[0] = 46;
+		b[1] = 32;
+		b[2] = 0;
+	}
+	uart0_polling_put_string(b);
+}
+
+void print_hex_byte(unsigned int i){
+
+	int hasSeenADigitYet = 1;
+	// Max int is 4,294,967,295
+	int currentExponent = 1;
+
+	if(i == 0){
+		printHexDigit(i);
+		printHexDigit(i);
+		return;
+	}
+
+	while(currentExponent >= 0){
+		// What value does a digit have for this exponent? 
+		int currentDigitValue = pow(16,currentExponent); 
+		//  What is the value for this digit?
+		int currentDigit = i / currentDigitValue;
+		//  We have accounted for this quantity in our representation, remove it
+		i -= currentDigit * currentDigitValue;
+
+		//  Don't print leading 0's but do print interior zeros
+		if(hasSeenADigitYet || currentDigit){
+			//  Always print 0's now
+			hasSeenADigitYet = 1;
+			//  Determines if P = NP
+			printHexDigit(currentDigit);
+		}
+		// Next value 
+		currentExponent--;
+	}
+}
+
 void print_unsigned_integer(unsigned int i){
 
 	int hasSeenADigitYet = 0;

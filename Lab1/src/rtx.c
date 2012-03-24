@@ -19,7 +19,7 @@ unsigned int free_mem = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
 void enqueue(LinkedList* listHead, ListNode* node) {
 	ListNode* oldTail = (*listHead).tail;
 	(*listHead).tail = node;
-	(*node).next = NULL; // TODO what if pcb is NULL?
+	(*node).next = NULL;
 
 	if (oldTail != NULL) {
 		(*oldTail).next = node;

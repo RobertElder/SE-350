@@ -59,6 +59,25 @@ typedef struct pcb {
 
 } ProcessControlBlock;
 */
+void do_print_process(ProcessControlBlock* pcb, unsigned char * message) {
+	uart0_polling_put_string("\r\n-- ");
+	uart0_polling_put_string(message);
+	uart0_polling_put_string("\r\n");
+	uart0_polling_put_string("+================================================+\r\n");
+	if(pcb != NULL) {
+		uart0_polling_put_string("| ->  Id: ");
+		print_unsigned_integer(pcb->processId);
+		uart0_polling_put_string(" .. State: ");
+		print_unsigned_integer(pcb->currentState);
+		uart0_polling_put_string(" .. Priority: ");
+		print_unsigned_integer(pcb->processPriority);
+		uart0_polling_put_string("           |\r\n");
+	} else {
+		uart0_polling_put_string("    No Process found.                            |\r\n");	
+	}
+	uart0_polling_put_string("+================================================+\r\n");
+}
+
 void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 	int i = 0;
 	uart0_polling_put_string("\r\n-- ");
@@ -83,32 +102,57 @@ void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 				current_ready_queue_node = current_ready_queue_node->next;
 			}
 		}else{
-			uart0_polling_put_string("    Queue is empty.                              |\r\n");	
+			uart0_polling_put_string("|   Queue is empty.                              |\r\n");	
 		}
 		uart0_polling_put_string("+================================================+\r\n");
 	}	
 
 }
 
-void do_print_messages(Envelope messagesToPrint[],unsigned char * typeName) {
+void do_print_messages(TrackedEnvelope messagesToPrint[],unsigned char * typeName) {
 	int i = 0;
+	int j = 0;
+
 	uart0_polling_put_string("\n-- Recently ");
 	uart0_polling_put_string(typeName);
 	uart0_polling_put_string(" messages --\r\n");
 	uart0_polling_put_string("+================================================+\r\n");
 	for(i = 0; i < numMessagesSent; ++i) {
 		uart0_polling_put_string("|   Sender ID: ");
-		print_unsigned_integer(messagesToPrint[i].sender_pid);
+		print_unsigned_integer(messagesToPrint[i].trackedEnvelope.sender_pid);
 		uart0_polling_put_string("                                 |\r\n");
 		
 		uart0_polling_put_string("|   Receiver ID: ");
-		print_unsigned_integer(messagesToPrint[i].receiver_pid);
+		print_unsigned_integer(messagesToPrint[i].trackedEnvelope.receiver_pid);
 		uart0_polling_put_string("                              |\r\n");
 
 		uart0_polling_put_string("|   Message type: ");
-		print_unsigned_integer(messagesToPrint[i].message_type);
+		print_unsigned_integer(messagesToPrint[i].trackedEnvelope.message_type);
 		uart0_polling_put_string("                              |\r\n");
 
+		for(j = 0; j < MEMORY_BLOCK_SIZE; j++){
+			if(j == 0){
+				uart0_polling_put_string("|");
+			}else if(j % 16 == 0)
+				uart0_polling_put_string(" |\r\n|");
+			else
+				uart0_polling_put_string(" ");
+
+			print_hex_byte(messagesToPrint[i].savedData[j]);
+
+		}
+		uart0_polling_put_string(" |\r\n+------------------------------------------------+\r\n");
+		for(j = 0; j < MEMORY_BLOCK_SIZE; j++){
+			if(j == 0){
+				uart0_polling_put_string("|");
+			}else if(j % 16 == 0)
+				uart0_polling_put_string(" |\r\n|");
+			else
+				uart0_polling_put_string(" ");
+
+			print_printable_character(messagesToPrint[i].savedData[j]);
+		}
+		uart0_polling_put_string(" |\r\n");
 		uart0_polling_put_string("+================================================+\r\n");
 	}
 }
@@ -125,6 +169,10 @@ uint8_t do_hot_key(char c){
 			break;
 		}case '#' :{
 			do_print_processes(blocked_receive_queue,"Blocked On Receive");
+			break;
+		}case '$' :{
+			do_print_process(pCurrentProcessPCB, "Currently Running Process:");
+			do_print_process(get_interrupted_process(), "Currently Interrupted Process:");
 			break;
 		}
 		case '~' : {

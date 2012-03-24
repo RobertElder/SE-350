@@ -76,7 +76,6 @@ int expected_run_order[] =
 //4, 3
 6, 3
 };
-// Further test TODOs: test if all processes are blocked, null process should run (keep as last test)
 int actual_run_order[ORDER_LENGTH];
 int cur_index = 0;
 

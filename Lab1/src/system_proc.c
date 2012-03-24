@@ -80,6 +80,7 @@ int get_index_of_matching_command(){
 
 void keyboard_command_decoder(){
 	while (1) {
+		int enter_pressed = 0;
 		int sender_id = -1;
 		int destination = -1;	  
 
@@ -119,6 +120,7 @@ void keyboard_command_decoder(){
 				// Did they type a carriage return?
 				if(*pChar == 0xD){
 					int indexOfMatchedCommand = get_index_of_matching_command();
+					enter_pressed = 1;
 
 					//  Does the thing in the buffer match a command that was registered? 
 					if(indexOfMatchedCommand > -1) {
@@ -141,9 +143,6 @@ void keyboard_command_decoder(){
 					current_command_length++;
 					current_command_buffer[current_command_length] = '\n';
 					current_command_length++;
-			
-					// Reset the buffer for new commands
-					current_command_length = 0;
 
 					set_message_type(clockMsg, UNPAUSE_CLOCK);
 				} else {
@@ -156,6 +155,12 @@ void keyboard_command_decoder(){
 			   	//Null terminate
 				current_command_buffer[current_command_length] = 0;
 	
+				if(enter_pressed) {
+				 	// Reset the buffer for new commands
+					current_command_length = 0;
+					enter_pressed = 0;
+				}
+
 				// edit msg and forward to crt to echo
 				message->sender_pid = get_kcd_pcb()->processId;
 				message->receiver_pid = get_crt_pcb()->processId;
@@ -293,7 +298,8 @@ void wall_clock() {
 						//Start ticking
 						goto start_tick;
 					} else {
-						//Error(?)					 	
+						char* errorMsg = "\r\nInvalid time input\r\n";
+						send_error_message(get_clock_pcb()->processId, errorMsg);				 	
 					}
 				} else if(*(msg + 2) == 'T') {
 					clock_time = 0;

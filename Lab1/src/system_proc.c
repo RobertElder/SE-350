@@ -348,7 +348,7 @@ void priority_process() {
 					}
 
 					if(!is_valid_priority(priority)) {
-					 	char * errorMsg = "\r\nInvalid priority ID\r\n";
+					 	char * errorMsg = "\r\nInvalid priority\r\n";
 						send_error_message(get_priority_process_pcb()->processId, errorMsg);
 					} else {
 						set_process_priority(pid, priority);

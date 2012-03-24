@@ -139,7 +139,7 @@ int is_process_blocked(int processId){
 int is_deadlocked(){
 	int i;
 	//  We don't need to check the null process, pid 0
-	for(i = 1; i < NUM_USR_PROCESSES; i++){
+	for(i = 1; i < NUM_USR_PROCESSES + NUM_SYS_PROCESSES; i++){
 		if(!(is_process_blocked(i))){
 			return 0;
 		}
@@ -151,7 +151,7 @@ int is_deadlocked(){
 int has_blocked_processes(){
 	int i;
 	//  We don't need to check the null process, pid 0
-	for(i = 1; i < NUM_USR_PROCESSES; i++){
+	for(i = 1; i < NUM_USR_PROCESSES + NUM_SYS_PROCESSES; i++){
 		if(is_process_blocked(i)){
 			return 1;
 		}

@@ -11,14 +11,19 @@
 
 extern int numMessagesSent = 0;
 extern int numMessagesReceived = 0;
-Envelope recentlySentMessages[NUM_MESSAGES_TO_TRACK];
-Envelope recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK];
+TrackedEnvelope recentlySentMessages[NUM_MESSAGES_TO_TRACK];
+TrackedEnvelope recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK];
 
-void copyEnvelope(Envelope * toCopy, Envelope * fromCopy) {
-	toCopy->sender_pid = fromCopy->sender_pid;
-	toCopy->receiver_pid = fromCopy->receiver_pid;
-	toCopy->message_type = fromCopy->message_type;
-	toCopy->message_data = fromCopy->message_data;
+void copyEnvelope(TrackedEnvelope * toCopy, Envelope * fromCopy) {
+	int i = 0;
+	toCopy->trackedEnvelope.sender_pid = fromCopy->sender_pid;
+	toCopy->trackedEnvelope.receiver_pid = fromCopy->receiver_pid;
+	toCopy->trackedEnvelope.message_type = fromCopy->message_type;
+	toCopy->trackedEnvelope.message_data = fromCopy->message_data;
+	for(i = 0; i < MEMORY_BLOCK_SIZE; i++){
+		unsigned char c1 = ((unsigned char *)fromCopy)[i];
+		(toCopy->savedData)[i] = c1;	
+	}
 }
 
 void trackSentMessage(Envelope * env) {

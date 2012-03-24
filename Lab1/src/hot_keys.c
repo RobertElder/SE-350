@@ -109,25 +109,50 @@ void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 
 }
 
-void do_print_messages(Envelope messagesToPrint[],unsigned char * typeName) {
+void do_print_messages(TrackedEnvelope messagesToPrint[],unsigned char * typeName) {
 	int i = 0;
+	int j = 0;
+
 	uart0_polling_put_string("\n-- Recently ");
 	uart0_polling_put_string(typeName);
 	uart0_polling_put_string(" messages --\r\n");
 	uart0_polling_put_string("+================================================+\r\n");
 	for(i = 0; i < numMessagesSent; ++i) {
 		uart0_polling_put_string("|   Sender ID: ");
-		print_unsigned_integer(messagesToPrint[i].sender_pid);
+		print_unsigned_integer(messagesToPrint[i].trackedEnvelope.sender_pid);
 		uart0_polling_put_string("                                 |\r\n");
 		
 		uart0_polling_put_string("|   Receiver ID: ");
-		print_unsigned_integer(messagesToPrint[i].receiver_pid);
+		print_unsigned_integer(messagesToPrint[i].trackedEnvelope.receiver_pid);
 		uart0_polling_put_string("                              |\r\n");
 
 		uart0_polling_put_string("|   Message type: ");
-		print_unsigned_integer(messagesToPrint[i].message_type);
+		print_unsigned_integer(messagesToPrint[i].trackedEnvelope.message_type);
 		uart0_polling_put_string("                              |\r\n");
 
+		for(j = 0; j < MEMORY_BLOCK_SIZE; j++){
+			if(j == 0){
+				uart0_polling_put_string("|");
+			}else if(j % 16 == 0)
+				uart0_polling_put_string(" |\r\n|");
+			else
+				uart0_polling_put_string(" ");
+
+			print_hex_byte(messagesToPrint[i].savedData[j]);
+
+		}
+		uart0_polling_put_string(" |\r\n+------------------------------------------------+\r\n");
+		for(j = 0; j < MEMORY_BLOCK_SIZE; j++){
+			if(j == 0){
+				uart0_polling_put_string("|");
+			}else if(j % 16 == 0)
+				uart0_polling_put_string(" |\r\n|");
+			else
+				uart0_polling_put_string(" ");
+
+			print_printable_character(messagesToPrint[i].savedData[j]);
+		}
+		uart0_polling_put_string(" |\r\n");
 		uart0_polling_put_string("+================================================+\r\n");
 	}
 }

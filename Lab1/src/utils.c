@@ -55,7 +55,7 @@ void printHexDigit(unsigned int i){
 }
 
 void print_printable_character(unsigned char c){
-	char b[3];
+	unsigned char b[3];
 	if(
 		c > 31 && c < 127 ||
 		c == 20

@@ -15,7 +15,7 @@
 #define PAUSE_CLOCK 10
 #define UNPAUSE_CLOCK 11
 
-#define NUM_MESSAGES_TO_TRACK 10
+#define NUM_MESSAGES_TO_TRACK 2
 
 typedef struct env {
 	ListNode node_pointer; // DO NOT USE ME.

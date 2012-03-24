@@ -401,7 +401,7 @@ ProcessControlBlock* getRunningProcess() {
 	int i;
 	ProcessControlBlock* runningProcess = NULL;
 	//run for all processes; need to make sure no more than 1 process is running
-	for (i = 0; i < NUM_USR_PROCESSES; i++) { 
+	for (i = 0; i < NUM_USR_PROCESSES + NUM_SYS_PROCESSES; i++) { 
 		if (pcb_array[i].currentState == RUN){
 			assert(runningProcess == NULL, "Error: multiple processes with state RUN.");
 			runningProcess = &pcb_array[i];	

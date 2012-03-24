@@ -94,18 +94,22 @@ void do_print_messages(Envelope messagesToPrint[],unsigned char * typeName) {
 	int i = 0;
 	uart0_polling_put_string("\n-- Recently ");
 	uart0_polling_put_string(typeName);
-	uart0_polling_put_string(" messages --");
+	uart0_polling_put_string(" messages --\r\n");
+	uart0_polling_put_string("+================================================+\r\n");
 	for(i = 0; i < numMessagesSent; ++i) {
-		uart0_polling_put_string("\nSender ID: ");
+		uart0_polling_put_string("|   Sender ID: ");
 		print_unsigned_integer(messagesToPrint[i].sender_pid);
+		uart0_polling_put_string("                                 |\r\n");
 		
-		uart0_polling_put_string("\nReceiver ID: ");
+		uart0_polling_put_string("|   Receiver ID: ");
 		print_unsigned_integer(messagesToPrint[i].receiver_pid);
+		uart0_polling_put_string("                              |\r\n");
 
-		uart0_polling_put_string("\nMessage type: ");
+		uart0_polling_put_string("|   Message type: ");
 		print_unsigned_integer(messagesToPrint[i].message_type);
+		uart0_polling_put_string("                              |\r\n");
 
-		uart0_polling_put_string("\n__________________________________________\n");
+		uart0_polling_put_string("+================================================+\r\n");
 	}
 }
 

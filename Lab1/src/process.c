@@ -509,6 +509,14 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		/* Don't save the MSP if the process is NEW because it was not running,
 		 so there should be nowhere it sensibly returns to	 */
 		if (pOldProcessPCB->currentState != NEW) {
+			uint32_t * tmpMSP1 = get_start_stack(pOldProcessPCB->processId);
+			tmpMSP = (uint32_t *)__get_MSP();
+			if(has_stack_underflow(tmpMSP,pOldProcessPCB->processId)) {
+				 	assert(0, "Old process has stack underflow."); 
+			}
+			if(has_stack_overflow(tmpMSP,pOldProcessPCB->processId)) {
+				 	assert(0, "Old process has stack overflow."); 
+			}
 			pOldProcessPCB->processStackPointer = (uint32_t *) __get_MSP();
 		}
 		goto set_up_new_process;

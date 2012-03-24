@@ -115,7 +115,7 @@ void keyboard_command_decoder(){
 					current_command_length++;
 				}
 
-				do_hot_key(*pChar);
+				//do_hot_key(*pChar);
 				// Did they type a carriage return?
 				if(*pChar == 0xD){
 					int indexOfMatchedCommand = get_index_of_matching_command();
@@ -137,6 +137,8 @@ void keyboard_command_decoder(){
 					}
 
 					//Append a newline
+					current_command_buffer[current_command_length] = '\r';
+					current_command_length++;
 					current_command_buffer[current_command_length] = '\n';
 					current_command_length++;
 			
@@ -330,7 +332,7 @@ void priority_process() {
 				int priority;				
 
 				if(!is_pid_valid(pid)) {
-					uart0_put_string("\nInvalid process ID\n");				 	
+					uart0_put_string("\r\nInvalid process ID\r\n");				 	
 				} else {
 				 	if(pid < 10) {
 						priority = get_int_from_string(msg + 5 * sizeof(char)); 	
@@ -339,7 +341,7 @@ void priority_process() {
 					}
 
 					if(!is_valid_priority(priority)) {
-					 	uart0_put_string("\nInvalid priority\n");
+					 	uart0_put_string("\r\nInvalid priority\r\n");
 					} else {
 						set_process_priority(pid, priority);
 					}

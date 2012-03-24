@@ -4,8 +4,8 @@
 void assert(int value, unsigned char * message){
 	if(value == 0){
 		//uart0_put_string("\nTHERE WAS AN ASSERTION FAILURE!!!\n");
-		uart0_put_string(message);
-		uart0_put_string("\nAbnormal program termination.\n");
+		uart0_polling_put_string(message);
+		uart0_polling_put_string("\nAbnormal program termination.\n");
 		// I can't figure out any other way to get it to stop executing.
 		while (1) {}
 	}
@@ -36,7 +36,7 @@ void printDigit(unsigned int i){
 	assert(i < 10, "This should not happen");
 	//Put a null after the digit we want so that we only print that digit
 	digits[i+1] = 0;
-	uart0_put_string_emergency(&(digits[i]));
+	uart0_polling_put_string(&(digits[i]));
 }
 
 void print_unsigned_integer(unsigned int i){

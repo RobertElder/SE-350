@@ -2,7 +2,7 @@
 #define _H_HOT_KEYS_
 
 
-void do_hot_key(char c);
+uint8_t do_hot_key(char c);
 
 #define _DEBUG_HOTKEYS 1337
 

@@ -30,7 +30,7 @@ extern unsigned int free_mem;
 #define USR_SYS_ID_DIFF 6
 
 // dynamic heap for user processes
-#define MEMORY_BLOCK_SIZE                            0x64
+#define MEMORY_BLOCK_SIZE                            0x80
 #define MAX_ALLOWED_MEMORY_BLOCKS                    0x1E
 // there are 7 user processes plus 2 iprocesses 
 #define START_OF_MEMORY_ALLOCATION_TABLE             START_STACKS + (NUM_PROCESSES) * STACKS_SIZE

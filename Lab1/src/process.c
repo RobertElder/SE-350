@@ -302,8 +302,7 @@ void process_init()
 		sp  = proc_init_table[procIndex].start_sp;
 		
 		// 8 bytes alignement adjustment to exception stack frame
-		// TODO: figure out why we want sp to have 4 right-aligned non-zero bits before 
-		// decrementing it.
+		//Double word alignment
 		if (!(((uint32_t)sp) & 0x04)) {
 		    --sp; 
 		}
@@ -565,7 +564,6 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 
 	
 /**	  
- * TODO: @return -1 on error and zero on success
  * POST: pCurrentProcessPCB gets updated
  */
 int k_release_processor(void){

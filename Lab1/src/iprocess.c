@@ -100,7 +100,7 @@ void timeout_i_process() {
 		ProcessControlBlock* interrupted_proc = get_interrupted_process();
 		
 		Envelope * env = k_receive_message(&senderId);
-		ListNode * node = &env->dummyVar;
+		ListNode * node = &env->node_pointer;
 		int receiver_pid;
 	
 		while(env != NULL) {

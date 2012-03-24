@@ -463,6 +463,7 @@ int has_stack_underflow(uint32_t * p, int processId){
 }
 
 void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* pNewProcessPCB) {
+	uint32_t * tmpMSP = 0;
 	pCurrentProcessPCB = pNewProcessPCB;
 
 	if (pCurrentProcessPCB == pOldProcessPCB) {
@@ -529,10 +530,12 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		}
 		goto set_to_run_and_exit;
 	save_old_and_set_new_MSP:
-		if(has_stack_underflow((uint32_t *)__get_MSP(),pOldProcessPCB->processId)) {
+		// Put this in a tmp valariable because calling getmsp as a fcn param might have unexpected consequences
+		tmpMSP = (uint32_t *)__get_MSP();
+		if(has_stack_underflow(tmpMSP,pOldProcessPCB->processId)) {
 			 	assert(0, "Old process has stack underflow."); 
 		}
-		if(has_stack_overflow((uint32_t *)__get_MSP(),pOldProcessPCB->processId)) {
+		if(has_stack_overflow(tmpMSP,pOldProcessPCB->processId)) {
 			 	assert(0, "Old process has stack overflow."); 
 		}
 

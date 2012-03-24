@@ -59,6 +59,25 @@ typedef struct pcb {
 
 } ProcessControlBlock;
 */
+void do_print_process(ProcessControlBlock* pcb, unsigned char * message) {
+	uart0_polling_put_string("\r\n-- ");
+	uart0_polling_put_string(message);
+	uart0_polling_put_string("\r\n");
+	uart0_polling_put_string("+================================================+\r\n");
+	if(pcb != NULL) {
+		uart0_polling_put_string("| ->  Id: ");
+		print_unsigned_integer(pcb->processId);
+		uart0_polling_put_string(" .. State: ");
+		print_unsigned_integer(pcb->currentState);
+		uart0_polling_put_string(" .. Priority: ");
+		print_unsigned_integer(pcb->processPriority);
+		uart0_polling_put_string("           |\r\n");
+	} else {
+		uart0_polling_put_string("    No Process found.                            |\r\n");	
+	}
+	uart0_polling_put_string("+================================================+\r\n");
+}
+
 void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 	int i = 0;
 	uart0_polling_put_string("\r\n-- ");
@@ -125,6 +144,10 @@ uint8_t do_hot_key(char c){
 			break;
 		}case '#' :{
 			do_print_processes(blocked_receive_queue,"Blocked On Receive");
+			break;
+		}case '$' :{
+			do_print_process(pCurrentProcessPCB, "Currently Running Process:");
+			do_print_process(get_interrupted_process(), "Currently Interrupted Process:");
 			break;
 		}
 		case '~' : {

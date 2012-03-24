@@ -90,36 +90,23 @@ void do_print_processes(LinkedList linkedListArray[],unsigned char * queueName){
 
 }
 
-void do_print_messages() {
+void do_print_messages(Envelope messagesToPrint[],unsigned char * typeName) {
 	int i = 0;
-	uart0_polling_put_string("\n-- Recently sent messages --");
+	uart0_polling_put_string("\n-- Recently ");
+	uart0_polling_put_string(typeName);
+	uart0_polling_put_string(" messages --");
 	for(i = 0; i < numMessagesSent; ++i) {
 		uart0_polling_put_string("\nSender ID: ");
-		print_unsigned_integer(recentlySentMessages[i].sender_pid);
+		print_unsigned_integer(messagesToPrint[i].sender_pid);
 		
 		uart0_polling_put_string("\nReceiver ID: ");
-		print_unsigned_integer(recentlySentMessages[i].receiver_pid);
+		print_unsigned_integer(messagesToPrint[i].receiver_pid);
 
 		uart0_polling_put_string("\nMessage type: ");
-		print_unsigned_integer(recentlySentMessages[i].message_type);
+		print_unsigned_integer(messagesToPrint[i].message_type);
 
 		uart0_polling_put_string("\n__________________________________________\n");
 	}
-
-	uart0_polling_put_string("\n-- Recently received messages --");
-	for(i = 0; i < numMessagesReceived; ++i) {
-		uart0_polling_put_string("\nSender ID: ");
-		print_unsigned_integer(recentlyReceivedMessages[i].sender_pid);
-		
-		uart0_polling_put_string("\nReceiver ID: ");
-		print_unsigned_integer(recentlyReceivedMessages[i].receiver_pid);
-
-		uart0_polling_put_string("\nMessage type: ");
-		print_unsigned_integer(recentlyReceivedMessages[i].message_type);
-
-	   	uart0_polling_put_string("\n__________________________________________\n");
-	}
-
 }
 
 uint8_t do_hot_key(char c){
@@ -137,14 +124,15 @@ uint8_t do_hot_key(char c){
 			break;
 		}
 		case '~' : {
-			do_print_messages();
+			do_print_messages(recentlySentMessages,"sent");
+			do_print_messages(recentlyReceivedMessages,"received");
 			break;
 		}
 		default: {
 			return 0;
 		}
 	}
-
+	
 	uart0_polling_put_string("Press Enter to continue.");
 	while (1) {
 		char c = uart0_get_char();

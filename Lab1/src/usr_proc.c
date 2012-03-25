@@ -847,7 +847,7 @@ void test_proc_C() {
 				set_sender_PID(env_delay, 9);
 				set_destination_PID(env_delay, 9);
 				set_message_bytes(env_delay, &message, sizeof(char));
-				delayed_send(9, env_delay, 10);
+				delayed_send(9, env_delay, 10000);
 
 				while(1) {
 				 	env = (Envelope *)receive_message(&sender_id);

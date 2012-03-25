@@ -250,18 +250,8 @@ void wall_clock() {
 					}
 
 					if(displayClock) {
-						uint8_t TIME_LEN = 12; //bytes
 						char* time_string = get_formatted_time_from_seconds(clock_time);
-
-						Envelope* timeEnv = (Envelope *)request_memory_block();
-						
-					 	timeEnv->sender_pid = get_clock_pcb()->processId;
-						timeEnv->receiver_pid = get_crt_pcb()->processId;
-						timeEnv->message_type = OUTPUT_STRING;
-
-						set_message_bytes(timeEnv, time_string, TIME_LEN + 1);
-
-						send_message(timeEnv->receiver_pid, timeEnv); //to CRT for display
+						uart0_put_string(time_string);
 					}
 
 					//Enqueue next tick

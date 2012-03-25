@@ -576,15 +576,34 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		__set_MSP((uint32_t) pCurrentProcessPCB->processStackPointer);
 		goto exit;
 	set_to_run_and_rte:
+		if(has_stack_underflow(pCurrentProcessPCB->processStackPointer,pCurrentProcessPCB->processId)) {
+			 	assert(0, "Process has stack underflow on rte.  Probably initialized wrong."); 
+		}
+		if(has_stack_overflow(pCurrentProcessPCB->processStackPointer,pCurrentProcessPCB->processId)) {
+			 	assert(0, "Process has stack overflow on rte.  Probably initialized wrong."); 
+		}
 		pCurrentProcessPCB->currentState = RUN;
 		__rte();
 	set_to_run_and_new_iproc_return:
+		if(has_stack_underflow(pCurrentProcessPCB->processStackPointer,pCurrentProcessPCB->processId)) {
+			 	assert(0, "Process has stack underflow on __new_iproc_return.  Probably initialized wrong."); 
+		}
+		if(has_stack_overflow(pCurrentProcessPCB->processStackPointer,pCurrentProcessPCB->processId)) {
+			 	assert(0, "Process has stack overflow on __new_iproc_return.  Probably initialized wrong."); 
+		}
 		pCurrentProcessPCB->currentState = RUN;
 		__new_iproc_return();
 	set_to_run_and_exit:
 		pCurrentProcessPCB->currentState = RUN;
 		goto exit;
 	exit:
+		if(has_stack_underflow(pCurrentProcessPCB->processStackPointer,pCurrentProcessPCB->processId)) {
+			 	assert(0, "Process has stack underflow in context switch function."); 
+		}
+		if(has_stack_overflow(pCurrentProcessPCB->processStackPointer,pCurrentProcessPCB->processId)) {
+			 	assert(0, "Process has stack overflow in context switch function."); 
+		}
+
 		return;
 }
 

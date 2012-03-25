@@ -21,7 +21,7 @@ extern unsigned int free_mem;
 
 // user process stack size 512 = 0x80 *4 bytes	 (128 4-byte words)
 #define START_STACKS free_mem
-#define STACKS_SIZE 0x200
+#define STACKS_SIZE 0x500
 #define NUM_USR_PROCESSES 10
 #define NUM_I_PROCESSES 2
 #define NUM_SYS_PROCESSES 4

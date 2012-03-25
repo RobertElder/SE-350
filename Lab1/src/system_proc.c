@@ -21,7 +21,7 @@ RegisteredCommand registered_commands[MAX_NUMBER_OF_REGISTERABLE_COMMANDS];
 char current_command_buffer[MAX_COMMAND_LENGTH];
 int current_command_length = 0;
 
-char time[] = "\r\n00:00:00\r\n";
+char time[] = "00:00:00\r\n";
 
 volatile extern uint8_t g_UART0_TX_empty;
 
@@ -251,8 +251,11 @@ void wall_clock() {
 
 					if(displayClock) {
 						char* time_string = get_formatted_time_from_seconds(clock_time);
+						uart0_put_string((char *)get_erase_display_sequence());
 						uart0_put_string(time_string);
 					}
+
+
 
 					//Enqueue next tick
 					set_sender_PID(tickEnv, get_clock_pcb()->processId);
@@ -431,12 +434,12 @@ char* get_formatted_time_from_seconds(int seconds) {
 	seconds -= (m * 60);
 	s = seconds;
 
-	time[2] = (h / 10) + 0x30;
-	time[3] = (h % 10) + 0x30;
-	time[5] = (m / 10) + 0x30;
-	time[6] = (m % 10) + 0x30;
-	time[8] = (s / 10) + 0x30;
-	time[9] = (s % 10) + 0x30;
+	time[0] = (h / 10) + 0x30;
+	time[1] = (h % 10) + 0x30;
+	time[3] = (m / 10) + 0x30;
+	time[4] = (m % 10) + 0x30;
+	time[6] = (s / 10) + 0x30;
+	time[7] = (s % 10) + 0x30;
 	
 	return time; 
 }

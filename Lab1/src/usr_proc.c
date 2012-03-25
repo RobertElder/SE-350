@@ -830,14 +830,13 @@ void test_proc_C() {
 			int i = (int)*msg;
 
 			if (i % 20 == 0) {
-				char * msg_1 = "Process C \n\r";
-				int msg_length = 13;
+				char * msg_1 = "\r\nProcess C \r\n";
+				int msg_length = 15;
 				// send message to CRT
 				set_sender_PID(env, 9);
 				set_destination_PID(env, get_crt_pcb()->processId);
 				set_message_bytes(env, msg_1, msg_length);
 				send_message(get_crt_pcb()->processId, env);
-				//uart0_put_string_env("Process C \n", env);
 
 				// Hibernate for 10 seconds
 				env_delay = (Envelope *)request_memory_block_debug(0xCC);

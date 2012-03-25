@@ -26,17 +26,13 @@ int * pTestPointer1 = 0;
 const int ORDER_LENGTH = 33;
 int expected_run_order[] = 
 // Test case 1: Basic context switching between 2 processes
-//{1, 5, 1, 5, 1, 5,
 {1, 4, 1, 4, 1, 4,
 // Test case 2:	Lowering your own priority and getting pre-empted because of it
-//1,5,
 1,4,
 // Test case 3:	When there's 1 high priority process, it should not get pre-empted when releasing processor
-//5,
 4,
 // Test case 4: High priority process lowers his priority, but should not get pre-empted because there's no higher
 // priority processes
-//5,
 4,
 // Test case 5:	Now that there are processes with priorities equal to the running process,
 // release_processor should cause pre-emption of the running process
@@ -50,30 +46,23 @@ int expected_run_order[] =
 // Test case 9:	A process can request 30 blocks without blocking. Any other memory requests cause the
 // requesting process to be blocked. If a process releases some of his blocks, the blocked processes
 // receive the memory block but do not preempt unless their priorities are higher.
-//6, 1, 5, 2, 6, 6,
 5, 1, 4, 2, 5, 5,
 // Test case 10: Give highest priority to a blocked process. There should be no preemption because it is
 // blocked.
-//6,
 5,
 // Test case 11: Releasing a memory block causes a higher priority blocked process to not only receive
 // the memory, but preempt the currently executing process.
-//5,
 4,
 // Test case 12: Additional blocking/premption/priority testing
-//2, 1, 6, 5,
 2, 1, 5, 4,
 ///	Test case 13: document this test case
 3,
 // Test case 14: Proc4 blocks on receive_msg, proc3 executes and sends a message to proc4 with no delay
 // This means proc4 should be unblocked right away and continue executing (Basic send_message preemption test)
-//4, 3, 4,
 6, 3, 6,
 // Test case 15: proc4 sends itself delayed messages with delays 0, 10, 50 (Basic delayed_send test)
-//4, 4, 4,
 6, 6, 6, 
 // Test case 16: proc 4 sends message to proc 3, which has the same priority, no preemption occurs
-//4, 3
 6, 3
 };
 int actual_run_order[ORDER_LENGTH];

@@ -4,6 +4,8 @@
 
 #include "uart.h"
 
+#define PI_CONSTANT 3.14159265
+
 void assert(int, unsigned char *);
  
 unsigned int pow(unsigned int, unsigned int);
@@ -18,6 +20,13 @@ void print_signed_integer(signed int);
 unsigned int string_len(char * c);
 
 int myatoi(const char *string);
+
+double sine(double);
+double cosine(double);
+
+unsigned char * get_erase_display_sequence(void);
+
+
 
 #endif
 

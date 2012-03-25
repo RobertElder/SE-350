@@ -1,6 +1,54 @@
 #include "utils.h"
 #include "uart_polling.h"
 
+unsigned char currentEscapeSequence[100];
+
+unsigned int pow(unsigned int base, unsigned int exponent){
+	// Big surprise we have to write our own pow function
+	if(exponent == 0)
+		return 1;
+	else
+		return base * pow(base,exponent - 1);
+}
+
+double doublepow(double base, unsigned int exponent){
+	if(exponent == 0)
+		return 1;
+	else
+		return base * doublepow(base,exponent - 1);
+}
+
+int factorial(int i){
+	if(i == 1) return 1;
+	if(i == 0) return 1;
+	return i * factorial(i-1);
+}
+
+double sine(double d){
+	int i;
+	double sumSoFar = 0;
+	signed int useNegative = 1;
+	while (d > ((double)2) * PI_CONSTANT) {d -= ((double)2) * PI_CONSTANT;}
+	while (d < 0) {d = d + ((double)2) * PI_CONSTANT;}
+	if(d > PI_CONSTANT){
+		d = d - PI_CONSTANT;
+		useNegative =-1;
+	}
+	for(i = 1; i < 12; i +=2){
+		sumSoFar = sumSoFar + ((double)useNegative) * (doublepow(d,i) / factorial(i));
+
+		if(useNegative == 1)
+			useNegative = -1;
+		else
+			useNegative = 1;	
+	}
+	return sumSoFar;
+}
+
+double cosine(double d){
+	return sine((PI_CONSTANT / ((double)2)) - d);
+}
+
 void assert(int value, unsigned char * message){
 	if(value == 0){
 		//uart0_put_string("\nTHERE WAS AN ASSERTION FAILURE!!!\n");
@@ -11,6 +59,15 @@ void assert(int value, unsigned char * message){
 	}
 }
 
+unsigned char * get_erase_display_sequence(){
+	currentEscapeSequence[0] = 27;
+	currentEscapeSequence[1] = 91;
+	currentEscapeSequence[2] = 50;
+	currentEscapeSequence[3] = 74;
+	currentEscapeSequence[4] = 0;
+	return &(currentEscapeSequence[0]);
+}
+
 unsigned int string_len(char * c){
 	int i = 0;
 	while(c[i]){i++;}
@@ -18,13 +75,7 @@ unsigned int string_len(char * c){
 	return i;
 }
 
-unsigned int pow(unsigned int base, unsigned int exponent){
-	// Big surprise we have to write our own pow function
-	if(exponent == 0)
-		return 1;
-	else
-		return base * pow(base,exponent - 1);
-}
+
 
 int RANDOM_NUMBER_GENERATOR_m_w = 7;    /* must not be zero */
 int RANDOM_NUMBER_GENERATOR_m_z = 123;    /* must not be zero */
@@ -148,7 +199,7 @@ void print_unsigned_integer(unsigned int i){
 
 void print_signed_integer(signed int i){
 	if(i < 0){
-		uart0_put_string("-");
+		uart0_polling_put_string("-");
 		print_unsigned_integer((unsigned int)(-i));
 	}else{
 		print_unsigned_integer((unsigned int)i);		

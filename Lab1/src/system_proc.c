@@ -213,6 +213,82 @@ void crt_display(){
 	}
 }
 
+#define CLOCK_WIDTH 40
+#define CLOCK_HEIGHT 10
+char clock_ui[CLOCK_HEIGHT][CLOCK_WIDTH + 3];
+
+
+void draw_hand(double angle, double padding_ratio, char c){
+	double rise = sine(angle);
+	double run = cosine(angle);
+	double current_x = CLOCK_WIDTH / 2;
+	double current_y = CLOCK_HEIGHT / 2;
+
+	while(
+		current_x > (padding_ratio * (double)CLOCK_WIDTH)  && current_x < CLOCK_WIDTH - (padding_ratio * (double)CLOCK_WIDTH) &&
+		current_y > (padding_ratio * (double)CLOCK_HEIGHT) && current_y < CLOCK_HEIGHT - (padding_ratio * (double)CLOCK_HEIGHT)
+	){
+		clock_ui[(int)current_y][(int)current_x] = c;
+		current_x += run;
+		current_y -= rise;	
+	}
+}
+
+
+double get_angle(double n, double d){
+	return -(
+		((double) 2 * PI_CONSTANT)*
+		((double)n/(double)d)
+	)
+	+ (PI_CONSTANT / (double)2);
+}
+
+void print_the_time(int clock_time){
+	/* USE THIS CODE IF THE CLOCK BREAKS
+	char* time_string = get_formatted_time_from_seconds(clock_time);
+	uart0_put_string((char *)get_erase_display_sequence());
+	uart0_put_string(time_string);
+	*/
+	int seconds = clock_time % 60;
+	int minutes = clock_time / 60;
+	int hours = clock_time / 3600;
+	double second_angle = get_angle(seconds,60);
+	double minute_angle = get_angle(minutes,60);
+	double hour_angle = get_angle(hours,12);
+
+	int i = 0;
+	int j = 0;
+	char* time_string = get_formatted_time_from_seconds(clock_time);
+
+	for(i = 0; i < CLOCK_HEIGHT; i++){
+		clock_ui[i][CLOCK_WIDTH] = 10;
+		clock_ui[i][CLOCK_WIDTH + 1] = 13;
+		// Null terminate the strings
+		clock_ui[i][CLOCK_WIDTH + 2] = 0;	
+	}
+
+	for(i = 0; i < CLOCK_WIDTH; i++){
+		for(j = 0;j < CLOCK_HEIGHT; j++){
+			//space
+			clock_ui[j][i] = 46;
+		}
+	}
+
+	draw_hand(second_angle,0.1,115);
+	draw_hand(minute_angle,0.2,109);
+	draw_hand(hour_angle,0.3,104);
+
+	clock_ui[CLOCK_HEIGHT/2][CLOCK_WIDTH/2] = 35;
+
+	uart0_put_string((char *)get_erase_display_sequence());
+	for(i = 0; i < CLOCK_HEIGHT; i++){
+		uart0_put_string(&(clock_ui[i][0]));
+	}
+
+
+	uart0_put_string(time_string);
+}
+
 void wall_clock() {
 	int doCount = 0;
 	int displayClock = 0;
@@ -250,12 +326,8 @@ void wall_clock() {
 					}
 
 					if(displayClock) {
-						char* time_string = get_formatted_time_from_seconds(clock_time);
-						uart0_put_string((char *)get_erase_display_sequence());
-						uart0_put_string(time_string);
+						print_the_time(clock_time);
 					}
-
-
 
 					//Enqueue next tick
 					set_sender_PID(tickEnv, get_clock_pcb()->processId);

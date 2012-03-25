@@ -759,7 +759,7 @@ void test_proc_A() {
 	uint8_t CMD_SIZE = 4;//bytes
 	char* cmd = "%Z";
 	
-	env = (Envelope *)request_memory_block_debug(0xAA);	
+	env = (Envelope *)request_memory_block();	
 	//Register with command decoder as handler  of %Z commands
 	env->sender_pid = 7;
 	env->receiver_pid = get_kcd_pcb()->processId;
@@ -779,7 +779,7 @@ void test_proc_A() {
 	}
 
 	while(1) {
-	   	env = (Envelope *)request_memory_block_debug(0XAB);
+	   	env = (Envelope *)request_memory_block();
 		set_message_type(env, COUNT_REPORT);
 		message = (char *)&num;
 		set_sender_PID(env, 7);

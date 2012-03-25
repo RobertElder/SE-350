@@ -224,7 +224,7 @@ void uart0_put_string(char * c){
 		g_UART0_count++;
 
 		if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS -1){
-			message = request_memory_block_debug(0xfe);
+			message = request_memory_block();
 			message->sender_pid = pCurrentProcessPCB->processId;
 			message->receiver_pid = get_crt_pcb()->processId;
 			message->message_type = OUTPUT_STRING;

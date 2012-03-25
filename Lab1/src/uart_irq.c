@@ -172,6 +172,7 @@ void execute_uart() {
 			}else{
 				// Otherwise just use polling since we have no choice
 				uart0_polling_put_string(buffer);
+				uart0_polling_put_string("Insufficient memory: Unable to pass message to KCD.\r\n");
 			}
 		}
 	} else if (IIR_IntId & IIR_THR_Empty) {  // THRE Interrupt, transmit holding register empty

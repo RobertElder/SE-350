@@ -7,6 +7,7 @@
 #include "memory.h"
 #include "uart.h"
 #include "system_proc.h"
+#include "uart_polling.h"
 
 LinkedList delayed_messages;
 ProcessControlBlock i_uart_pcb;
@@ -65,7 +66,14 @@ expiry_sorted_enqueue_error_check:
 
 int k_delayed_send(int pid, Envelope * envelope, int delay) {
 	DelayedMessage m;
-	Envelope * env = (Envelope *)k_request_memory_block();
+	Envelope * env;
+
+	// If this is an iprocess, we cannot block
+	if(numberOfMemoryBlocksCurrentlyAllocated == MAX_ALLOWED_MEMORY_BLOCKS && is_i_proc(pCurrentProcessPCB->processId)){
+		uart0_polling_put_string("Insufficient memory: Unable to create envelope for delayed send.");
+		return -1;	
+	}
+   	env = (Envelope *)k_request_memory_block();
 
 	m.pid = pid;
 	m.envelope = envelope;

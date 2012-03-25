@@ -21,4 +21,10 @@ void test_process_5(void);
 
 void test_process_6(void);
 
+void test_proc_A (void);
+
+void test_proc_B (void);
+
+void test_proc_C (void);
+
 #endif 

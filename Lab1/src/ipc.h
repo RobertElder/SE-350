@@ -14,21 +14,28 @@
 #define CLOCK_TICK 9
 #define PAUSE_CLOCK 10
 #define UNPAUSE_CLOCK 11
+#define COUNT_REPORT 12
+#define WAKEUP10 13
 
-#define NUM_MESSAGES_TO_TRACK 10
+#define NUM_MESSAGES_TO_TRACK 2
 
 typedef struct env {
-	ListNode node_pointer; // DO NOT USE ME.
+	ListNode node_pointer; 
 	uint32_t sender_pid;
 	uint32_t receiver_pid;
 	uint32_t message_type;
 	uint32_t message_data; 
 } Envelope;
 
+typedef struct envtracked {
+	Envelope trackedEnvelope;
+	char savedData[MEMORY_BLOCK_SIZE];
+} TrackedEnvelope;
+
 extern int numMessagesSent;
 extern int numMessagesReceived;
-extern Envelope recentlySentMessages[NUM_MESSAGES_TO_TRACK];
-extern Envelope recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK];
+extern TrackedEnvelope recentlySentMessages[NUM_MESSAGES_TO_TRACK];
+extern TrackedEnvelope recentlyReceivedMessages[NUM_MESSAGES_TO_TRACK];
 
 extern int k_send_message(int target_pid, void* envelope);
 #define send_message(pid, env) _send_message((U32)k_send_message, pid, env)

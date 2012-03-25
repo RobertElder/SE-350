@@ -108,6 +108,12 @@ extern void crt_display (void);
 extern void keyboard_command_decoder (void);
 extern void wall_clock (void);
 extern void priority_process (void);
+
+// Stress Test processes
+extern void test_proc_A (void);
+extern void test_proc_B (void);
+extern void test_proc_C (void);
+
 extern void nullProc(void);				// null process
 
 #endif // ! _PROCESS_H_

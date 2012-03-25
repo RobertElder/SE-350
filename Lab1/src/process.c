@@ -113,8 +113,9 @@ ProcessControlBlock* get_interrupted_process() {
 ListNode* get_node_of_process(int process_ID) {
 	ListNode *node = (process_ID > NUM_USR_PROCESSES - 1) ? NULL : &node_array[process_ID];
 
-	if(node == NULL && is_sys_proc(process_ID))	 
-		node = &node_array[process_ID - USR_SYS_ID_DIFF + 1];	 // +1 since null proc is part of the array   
+	if(node == NULL && is_sys_proc(process_ID)) {	 
+		node = &node_array[process_ID - USR_SYS_ID_DIFF];
+	}
 
 	assert(node != NULL, "ERROR: process does not have a list node");
 	assert(((ProcessControlBlock*)node->data)->processId == process_ID, 
@@ -171,16 +172,16 @@ uint32_t * get_start_stack(int proc_id){
 	}
 
  	if(proc_id == get_kcd_pcb()->processId)	 
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
 		
 	if(proc_id == get_crt_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;   
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;   
 		
 	if(proc_id == get_clock_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
 
 	if(proc_id == get_priority_process_pcb()->processId)
-		return proc_init_table[proc_id - USR_SYS_ID_DIFF +1].start_sp;
+		return proc_init_table[proc_id - USR_SYS_ID_DIFF].start_sp;
 																	  
 	if(proc_id == get_timer_pcb()->processId)
 		return TIMER_START_STACK;
@@ -240,21 +241,33 @@ void init_processe_table() {
 				proc.process  = (uint32_t*) test_process_6;
 				break;
 			case 7:
+				proc.process  = (uint32_t*) test_proc_A;
+				proc.priority = 3;
+				break;
+			case 8:
+				proc.process  = (uint32_t*) test_proc_B;
+				proc.priority = 3;
+				break;
+			case 9:
+				proc.process  = (uint32_t*) test_proc_C;
+				proc.priority = 3;
+				break;
+			case 10:
 				proc.process = (uint32_t*) crt_display;
 				proc.pid  = 0xC;
 				proc.priority = 0;
 				break;
-			case 8:
+			case 11:
 				proc.process = (uint32_t*) keyboard_command_decoder;
 				proc.pid  = 0xD;
 				proc.priority = 0;
 				break;
-			case 9: 
+			case 12: 
 				proc.process = (uint32_t*) wall_clock;
 				proc.pid = 0xE;
 				proc.priority = 1;
 				break;	
-			case 10: 
+			case 13: 
 				proc.process = (uint32_t*) priority_process;
 				proc.pid = 0xF;
 				proc.priority = 1;
@@ -406,6 +419,17 @@ ProcessControlBlock* getRunningProcess() {
 			runningProcess = &pcb_array[i];	
 		}
 	}
+
+	if (get_timer_pcb()->currentState == RUN) {
+		assert(runningProcess == NULL, "Error: multiple processes with state RUN.");
+		runningProcess = get_timer_pcb();
+	}
+
+	if (get_uart_pcb()->currentState == RUN) {
+		assert(runningProcess == NULL, "Error: multiple processes with state RUN.");
+	 	runningProcess = get_uart_pcb();
+	}
+
 	assert(runningProcess != NULL, "Error: there are no running processes.");
 	return runningProcess;
 }
@@ -479,6 +503,8 @@ void c_context_switch(ProcessControlBlock* pOldProcessPCB, ProcessControlBlock* 
 		assert(pOldProcessPCB->currentState == RUN, "Error: The old process is not in a running state.");
 		goto save_old_and_set_new_MSP;
 	} else if (pCurrentProcessPCB->currentState == INTERRUPTED) {
+		assert(is_i_proc(pOldProcessPCB->processId), "ERROR: Unexpected switch from non_iproc to interrupted.");
+		pOldProcessPCB->currentState = RDY;
 		// We are switching from an iprocess to an interrupted process
 		goto save_old_and_set_new_MSP;
 	} else {

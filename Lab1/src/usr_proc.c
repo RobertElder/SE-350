@@ -736,6 +736,15 @@ void test_process_6() {
 	
 	release_processor();
 
+	set_process_priority(3, 3);
+	set_process_priority(6, 1);
+
+	set_process_priority(7, 1);
+	set_process_priority(8, 1);
+	set_process_priority(9, 1);
+
+	set_process_priority(6, 3);
+
 	uart0_put_string("G015_test: END\n\r");
 	
 	/*
@@ -750,6 +759,124 @@ void test_process_6() {
 	}
 
 	//assert(0,"Should not reach this point. End of proc 6");
+}
+
+//process id is 7
+void test_proc_A() {
+	Envelope * env;
+	int sender_id = 0;
+	char* message;
+	uint8_t num = 0;
+	uint8_t CMD_SIZE = 4;//bytes
+	char* cmd = "%Z";
+	
+	env = (Envelope *)request_memory_block_debug(0xAA);	
+	//Register with command decoder as handler  of %Z commands
+	env->sender_pid = 7;
+	env->receiver_pid = get_kcd_pcb()->processId;
+	env->message_type = COMMAND_REGISTRATION;
+	set_message_bytes(env, cmd, CMD_SIZE);
+	send_message(env->receiver_pid, env);
+
+	while(1) {
+	 	env = (Envelope *)receive_message(&sender_id);
+		message = get_message_data(env);
+		if (*(message) == '%' && *(message + 1) == 'Z') {
+		 	release_memory_block(env);
+			break;
+		} else {
+		 	release_memory_block(env);
+		}
+	}
+
+	while(1) {
+	   	env = (Envelope *)request_memory_block_debug(0XAB);
+		set_message_type(env, COUNT_REPORT);
+		message = (char *)&num;
+		set_sender_PID(env, 7);
+		set_destination_PID(env, 8);
+		set_message_bytes(env, message, sizeof(char));
+		send_message(8, env);
+		num = num + 1;
+		release_processor();
+	}
+}
+
+//process id is 8
+void test_proc_B() {
+	Envelope * env;
+	int sender_id = 0;
+
+	while(1) {
+	  	env = (Envelope *)receive_message(&sender_id);
+		set_sender_PID(env, 8);
+		set_destination_PID(env, 9);
+		send_message(9, env);
+	}
+}
+
+//process id is 9
+void test_proc_C() {
+	LinkedList local_message_queue;
+	Envelope * env;
+	Envelope * env_delay;
+	ListNode * node;
+	int sender_id = 0;
+	char message;
+
+	local_message_queue.head = NULL;
+	local_message_queue.tail = NULL;
+
+	while(1) {
+		if (local_message_queue.head == NULL) {
+		 	env = (Envelope *)receive_message(&sender_id);
+		} else {
+			node = dequeue(&local_message_queue);
+			if (node != NULL) {
+				env = (Envelope*)node->data;
+			}
+		}
+		if (get_message_type(env) == COUNT_REPORT) {
+			char* msg = (char*)get_message_data(env); 
+			int i = (int)*msg;
+
+			if (i % 20 == 0) {
+				char * msg_1 = "Process C \n\r";
+				int msg_length = 13;
+				// send message to CRT
+				set_sender_PID(env, 9);
+				set_destination_PID(env, get_crt_pcb()->processId);
+				set_message_bytes(env, msg_1, msg_length);
+				send_message(get_crt_pcb()->processId, env);
+				//uart0_put_string_env("Process C \n", env);
+
+				// Hibernate for 10 seconds
+				env_delay = (Envelope *)request_memory_block_debug(0xCC);
+
+				set_message_type(env_delay, WAKEUP10);
+				message = 'a';
+				set_sender_PID(env_delay, 9);
+				set_destination_PID(env_delay, 9);
+				set_message_bytes(env_delay, &message, sizeof(char));
+				delayed_send(9, env_delay, 10);
+
+				while(1) {
+				 	env = (Envelope *)receive_message(&sender_id);
+					if (get_message_type(env) == WAKEUP10) {
+						break;
+					} else {
+						ListNode* m_node = &env->node_pointer;
+						m_node->data = env;
+						m_node->next = NULL;
+					 	enqueue(&local_message_queue, m_node);
+					}
+				}
+			}
+		}
+		release_memory_block(env);
+		release_processor();						  	
+	}
+	
 }
 
 

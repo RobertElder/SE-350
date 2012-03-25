@@ -223,16 +223,16 @@ void uart0_put_string(char * c){
 		g_UART0_buffer[currentBufferPos] = 0;
 		g_UART0_count++;
 
-		if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS -1){
-			message = k_request_memory_block_debug(0xfe);
-			message->sender_pid = pCurrentProcessPCB->processId;
-			message->receiver_pid = get_crt_pcb()->processId;
-			message->message_type = OUTPUT_STRING;
-			set_message_bytes(message, &g_UART0_buffer, g_UART0_count);
-			k_send_message(message->receiver_pid, message);
-		}else{
-			uart0_polling_put_string((unsigned char *)&g_UART0_buffer);
-		}
+		//if(numberOfMemoryBlocksCurrentlyAllocated < MAX_ALLOWED_MEMORY_BLOCKS -1){
+		message = k_request_memory_block_debug(0xfe);
+		message->sender_pid = pCurrentProcessPCB->processId;
+		message->receiver_pid = get_crt_pcb()->processId;
+		message->message_type = OUTPUT_STRING;
+		set_message_bytes(message, &g_UART0_buffer, g_UART0_count);
+		k_send_message(message->receiver_pid, message);
+		//}else{
+		//	uart0_polling_put_string((unsigned char *)&g_UART0_buffer);
+		//}
 
 		g_UART0_count = 0;
 		// We have advanced at most one buffersize in the string

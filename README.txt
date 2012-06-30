@@ -3,7 +3,7 @@ This project is the real-time operating system, developed by Robert Elder, James
 The information of the IDE this was developed on is as follows.
 
 IDE-Version:
-ÎåÎéÎÝVision V4.23.00.0
+Keil (mu)Vision V4.23.00.0
 Copyright (C) 2011 ARM Ltd and ARM Germany GmbH. All rights reserved.
 
 Tool Version Numbers:
@@ -19,4 +19,4 @@ Dialog DLL:         DARMP1.DLL       V1.22.0.6
 Target DLL:             UL2CM3.DLL       V1.95
 Dialog DLL:         TARMP1.DLL       V1.22.0.6
 
-
+Documentation about how to configure the editor to run this code can be found in the files from learn folder.
